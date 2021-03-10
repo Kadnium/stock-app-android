@@ -1,6 +1,7 @@
 package com.example.stockapplication;
 
 import android.content.Context;
+import android.os.Build;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,6 +11,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class StockApi {
     private Context context;
@@ -42,7 +46,21 @@ public class StockApi {
 
     public void getTrending(int count,StockApiCallback cb){
         String API = trendingApi(count);
-        fetchData(API,cb);
+
+        fetchData(API, new StockApiCallback() {
+            @Override
+            public void onSuccess(String response, Context context) {
+                List<String> tickers = new ArrayList<>();
+                // parse response to JSON
+                // loop tickers and add them to array
+                getByTickerNames(tickers,cb);
+            }
+
+            @Override
+            public void onError(VolleyError error, Context context) {
+
+            }
+        });
     }
     public void getSearchResults(String args,int queryCount,StockApiCallback cb){
         String API = searchApi(args,queryCount);
@@ -58,11 +76,11 @@ public class StockApi {
         fetchData(API,cb);
     }
 
-    public void getByTickerNames(String[] tickers,StockApiCallback cb){
+    public void getByTickerNames(List<String> tickers, StockApiCallback cb){
         // TODO fix for lower versions
         String joinedTickers ="";
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            joinedTickers = String.join("%",tickers);
+            joinedTickers = String.join("%2C",tickers);
         }
         String API = stockDataApi(joinedTickers);
         fetchData(API,cb);
@@ -77,9 +95,10 @@ public class StockApi {
                     callback.onError(error,context);
         });
 
-        if(requestQueue != null){
-            requestQueue.add(stringRequest);
+        if(requestQueue == null){
+            requestQueue = Volley.newRequestQueue(context);
         }
+        requestQueue.add(stringRequest);
     }
 
 
