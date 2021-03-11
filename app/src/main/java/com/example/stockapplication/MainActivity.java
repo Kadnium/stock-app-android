@@ -24,6 +24,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity{
     StockApi stockApi;
@@ -39,8 +40,8 @@ public class MainActivity extends AppCompatActivity{
     public void initBackend(){
         stockApi = new StockApi(this);
         appData = AppData.getAppData();
-        StockData temp1 = new StockData("NOK","HKI","NOKIA CORPORATION",5,5.5,true);
-        StockData temp12 = new StockData("GME","NDQ","GAMESTOP CORPORATION",25,259,true);
+        StockData temp1 = new StockData("NOK","HKI","NOKIA CORPORATION",5,5.5,true,generateUuid());
+        StockData temp12 = new StockData("GME","NDQ","GAMESTOP CORPORATION",25,259,true,generateUuid());
         List<StockData> list = new ArrayList<>();
         list.add(temp1);
         list.add(temp12);
@@ -53,8 +54,8 @@ public class MainActivity extends AppCompatActivity{
         list.add(temp12);
         list.add(temp12);
         list.add(temp12);
-        StockData temp2 = new StockData("AMC","NDQ","AMERICAN MOVIE CORP",-5,6.9,false);
-        StockData temp22 = new StockData("TSLA","NDQ","TESLA",20,500,false);
+        StockData temp2 = new StockData("AMC","NDQ","AMERICAN MOVIE CORP",-5,6.9,false,generateUuid());
+        StockData temp22 = new StockData("TSLA","NDQ","TESLA",20,500,false,generateUuid());
         List<StockData> list2 = new ArrayList<>();
         list2.add(temp2);
         list2.add(temp22);
@@ -63,12 +64,13 @@ public class MainActivity extends AppCompatActivity{
     }
     public void initListViews(){
         // Most changed
-        mostChangedAdapter = new RecyclerAdapter(this,appData.getMostChanged());
+        mostChangedAdapter = new RecyclerAdapter(this,appData.getMostChanged(),appData);
         mostChangedRecyclerView = findViewById(R.id.mostChangedRecyclerView);
         mostChangedRecyclerView.setAdapter(mostChangedAdapter);
         mostChangedRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         // Favourites
-        favouriteAdapter = new RecyclerAdapter(this,appData.getFavouriteData());
+        favouriteAdapter = new RecyclerAdapter(this,appData.getFavouriteData(),appData);
         favouriteRecyclerView = findViewById(R.id.favouriteRecyclerView);
         favouriteRecyclerView.setAdapter(favouriteAdapter);
         favouriteRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -150,7 +152,11 @@ public class MainActivity extends AppCompatActivity{
             });
         }
 
+    }
 
+
+    public static String generateUuid(){
+        return UUID.randomUUID().toString().replace("-", "");
     }
 
 

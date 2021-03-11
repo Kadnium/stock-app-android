@@ -45,19 +45,28 @@ public class StockData {
     private String symbol;
     private String market;
     private String name;
+    private String uuid;
     private double percentChange;
     private double marketPrice;
     private boolean isFavourite;
 
-    public StockData(String symbol, String market, String name, double percentChange, double marketPrice, boolean isFavourite) {
+    public StockData(String symbol, String market, String name, double percentChange, double marketPrice, boolean isFavourite,String uuid) {
         this.symbol = symbol;
         this.market = market;
         this.name = name;
         this.percentChange = percentChange;
         this.marketPrice = marketPrice;
         this.isFavourite = isFavourite;
+        this.uuid = uuid;
     }
 
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 
     public void setPercentChange(double percentChange) {
         this.percentChange = percentChange;

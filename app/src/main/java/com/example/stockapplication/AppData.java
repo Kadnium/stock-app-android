@@ -42,7 +42,7 @@ public class AppData {
 
 
     public void setFavouriteData(List<StockData> favouriteData) {
-        this.favouriteData = favouriteData;
+        this.favouriteData =  new ArrayList<>(favouriteData);
     }
 
     public void setMostChanged(List<StockData> mostChanged) {

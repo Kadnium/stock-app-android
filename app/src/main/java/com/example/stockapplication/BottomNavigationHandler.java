@@ -22,7 +22,7 @@ public class BottomNavigationHandler {
         if (!(context instanceof AppCompatActivity)) {
             return;
         }
-        AppCompatActivity activity = ((AppCompatActivity) context);
+        AppCompatActivity activity = (AppCompatActivity) context;
         activity.getSupportActionBar().hide();
         BottomNavigationView bottomNavigationView = activity.findViewById(viewId);
         bottomNavigationView.setSelectedItemId(navId);
@@ -35,24 +35,15 @@ public class BottomNavigationHandler {
                     return true;
                 }else if (id == R.id.home){
                     context.startActivity(new Intent(context.getApplicationContext(),MainActivity.class));
-                    if (context instanceof Activity) {
-                        activity.overridePendingTransition(0,0);
-
-                    }
+                    activity.overridePendingTransition(0,0);
                     return true;
                 }else if(id == R.id.search){
                     context.startActivity(new Intent(context.getApplicationContext(),SearchActivity.class));
-                    if (context instanceof Activity) {
-                        activity.overridePendingTransition(0,0);
-
-                    }
+                    activity.overridePendingTransition(0,0);
                     return true;
                 }else if (id == R.id.settings){
                     context.startActivity(new Intent(context.getApplicationContext(),OptionsActivity.class));
-                    if (context instanceof Activity) {
-                        activity.overridePendingTransition(0,0);
-
-                    }
+                    activity.overridePendingTransition(0,0);
                     return true;
                 }
                 return false;
