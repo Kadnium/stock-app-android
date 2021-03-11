@@ -44,6 +44,15 @@ public class MainActivity extends AppCompatActivity{
         List<StockData> list = new ArrayList<>();
         list.add(temp1);
         list.add(temp12);
+        list.add(temp12);
+        list.add(temp12);
+        list.add(temp12);
+        list.add(temp12);
+        list.add(temp12);
+        list.add(temp12);
+        list.add(temp12);
+        list.add(temp12);
+        list.add(temp12);
         StockData temp2 = new StockData("AMC","NDQ","AMERICAN MOVIE CORP",-5,6.9,false);
         StockData temp22 = new StockData("TSLA","NDQ","TESLA",20,500,false);
         List<StockData> list2 = new ArrayList<>();
