@@ -21,12 +21,22 @@
             app:layout_constraintBottom_toBottomOf="@+id/stockTicker"
             app:layout_constraintTop_toBottomOf="@+id/stockTicker">
 
+            <ImageView
+                android:id="@+id/favouriteStatus"
+                android:layout_width="39dp"
+                android:layout_height="35dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="12dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_not_favourite" />
+
             <TextView
                 android:id="@+id/priceChange"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="25dp"
-                android:layout_marginBottom="6dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="4dp"
                 android:text="Change"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
@@ -35,32 +45,33 @@
                 android:id="@+id/stockPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:layout_marginEnd="41dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="32dp"
                 android:text="Price"
+                android:textSize="20sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/stockTicker"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/stockName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="36dp"
-                android:layout_marginBottom="6dp"
+                android:layout_marginStart="52dp"
+                android:layout_marginBottom="4dp"
                 android:text="Name"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <TextView
                 android:id="@+id/stockTicker"
-                android:layout_width="0dp"
-                android:layout_height="21dp"
-                android:layout_marginStart="38dp"
+                android:layout_width="78dp"
+                android:layout_height="26dp"
+                android:layout_marginStart="52dp"
                 android:layout_marginTop="4dp"
-                android:layout_marginEnd="215dp"
                 android:text="Ticker"
-                app:layout_constraintEnd_toStartOf="@+id/stockPrice"
+                android:textSize="20sp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -47,13 +47,15 @@ public class StockData {
     private String name;
     private double percentChange;
     private double marketPrice;
+    private boolean isFavourite;
 
-    public StockData(String symbol, String market, String name, double percentChange, double marketPrice) {
+    public StockData(String symbol, String market, String name, double percentChange, double marketPrice, boolean isFavourite) {
         this.symbol = symbol;
         this.market = market;
         this.name = name;
         this.percentChange = percentChange;
         this.marketPrice = marketPrice;
+        this.isFavourite = isFavourite;
     }
 
 
@@ -64,6 +66,12 @@ public class StockData {
     public void setMarketPrice(double marketPrice) {
         this.marketPrice = marketPrice;
     }
+
+    public void setFavourite(boolean favourite) {
+        isFavourite = favourite;
+    }
+
+
 
     public String getSymbol() {
         return symbol;
@@ -83,5 +91,9 @@ public class StockData {
 
     public double getMarketPrice() {
         return marketPrice;
+    }
+
+    public boolean isFavourite() {
+        return isFavourite;
     }
 }

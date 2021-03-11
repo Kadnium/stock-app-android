@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -29,10 +30,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         // priceChange, stockPrice, stockName, stockTicker;
-        holder.priceChange.setText(String.valueOf(stockList.get(position).getPercentChange()));
-        holder.stockPrice.setText(String.valueOf(stockList.get(position).getMarketPrice()));
-        holder.stockName.setText(String.valueOf(stockList.get(position).getName()));
-        holder.stockTicker.setText(String.valueOf(stockList.get(position).getSymbol()));
+        StockData stock = stockList.get(position);
+        holder.priceChange.setText(String.valueOf(stock.getPercentChange()));
+        holder.stockPrice.setText(String.valueOf(stock.getMarketPrice()));
+        holder.stockName.setText(String.valueOf(stock.getName()));
+        holder.stockTicker.setText(String.valueOf(stock.getSymbol()));
+        holder.favouriteStatus.setImageResource(stock.isFavourite()?R.drawable.ic_favourite:R.drawable.ic_not_favourite);
     }
 
     @Override
@@ -42,12 +45,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView priceChange, stockPrice, stockName, stockTicker;
+        ImageView favouriteStatus;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             priceChange = itemView.findViewById(R.id.priceChange);
             stockPrice = itemView.findViewById(R.id.stockPrice);
             stockName = itemView.findViewById(R.id.stockName);
             stockTicker = itemView.findViewById(R.id.stockTicker);
+            favouriteStatus = itemView.findViewById(R.id.favouriteStatus);
 
         }
     }

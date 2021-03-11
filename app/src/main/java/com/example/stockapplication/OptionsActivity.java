@@ -10,5 +10,7 @@ public class OptionsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_options);
+        BottomNavigationHandler bottomNavigationHandler = new BottomNavigationHandler(this);
+        bottomNavigationHandler.initNavigation(R.id.bottomNav,R.id.settings);
     }
 }
