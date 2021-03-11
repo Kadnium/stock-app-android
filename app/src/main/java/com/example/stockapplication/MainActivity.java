@@ -2,6 +2,7 @@ package com.example.stockapplication;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -43,8 +44,8 @@ public class MainActivity extends AppCompatActivity{
         List<StockData> list = new ArrayList<>();
         list.add(temp1);
         list.add(temp12);
-        StockData temp2 = new StockData("NOK","HKI","NOKIA CORPORATION",5,5.5,false);
-        StockData temp22 = new StockData("GME","NDQ","GAMESTOP CORPORATION",25,259,false);
+        StockData temp2 = new StockData("AMC","NDQ","AMERICAN MOVIE CORP",-5,6.9,false);
+        StockData temp22 = new StockData("TSLA","NDQ","TESLA",20,500,false);
         List<StockData> list2 = new ArrayList<>();
         list2.add(temp2);
         list2.add(temp22);
@@ -74,6 +75,10 @@ public class MainActivity extends AppCompatActivity{
         getSupportActionBar().hide();
         bottomNavigationHandler = new BottomNavigationHandler(this);
         bottomNavigationHandler.initNavigation(R.id.bottomNav,R.id.home);
+        //AppCompatDelegate.MODE_NIGHT_NO;
+        //AppCompatDelegate.MODE_NIGHT_YES;
+        //AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
 
 
