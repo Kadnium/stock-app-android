@@ -12,6 +12,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class BottomNavigationHandler {
     Context context;
+    BottomNavigationView bottomNavigationView;
     public BottomNavigationHandler(Context ctx) {
         this.context = ctx;
     }
@@ -24,7 +25,7 @@ public class BottomNavigationHandler {
         }
         AppCompatActivity activity = (AppCompatActivity) context;
         activity.getSupportActionBar().hide();
-        BottomNavigationView bottomNavigationView = activity.findViewById(viewId);
+        bottomNavigationView = activity.findViewById(viewId);
         bottomNavigationView.setSelectedItemId(navId);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -49,6 +50,13 @@ public class BottomNavigationHandler {
                 return false;
             }
         });
+
+    }
+
+    public void setSelectedItem(int navId){
+        if(bottomNavigationView != null){
+            bottomNavigationView.setSelectedItemId(navId);
+        }
 
     }
 }
