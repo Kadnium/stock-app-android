@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
@@ -38,33 +40,13 @@ public class MainActivity extends AppCompatActivity{
     RecyclerAdapter mostChangedAdapter;
     BottomNavigationHandler bottomNavigationHandler;
 
-    private Toolbar toolbar;
     public void initBackend(){
-        stockApi = new StockApi(this);
-        appData = AppData.getAppData();
-        StockData temp1 = new StockData("NOK","HKI","NOKIA CORPORATION",5,5.5,true,generateUuid());
-        StockData temp123 = new StockData("GME","NDQ","GAMESTOP CORPORATION",25,259,true,generateUuid());
-        StockData temp124 = new StockData("GME2","NDQ","GAMESTOP CORPORATION",25,259,true,generateUuid());
-        StockData temp125 = new StockData("GME3","NDQ","GAMESTOP CORPORATION",25,259,true,generateUuid());
-        StockData temp1252 = new StockData("GME4","NDQ","GAMESTOP CORPORATION",25,259,true,generateUuid());
-        StockData temp126 = new StockData("GME5","NDQ","GAMESTOP CORPORATION",25,259,true,generateUuid());
-        List<StockData> list = new ArrayList<>();
-        list.add(temp1);
-        list.add(temp123);
-        list.add(temp124);
-        list.add(temp125);
-        list.add(temp1252);
-        list.add(temp126);
-        list.add(temp1);
-        list.add(temp123);
-
-        StockData temp2 = new StockData("AMC","NDQ","AMERICAN MOVIE CORP",-5,6.9,false,null);
-        StockData temp22 = new StockData("TSLA","NDQ","TESLA",20,500,false,null);
-        List<StockData> list2 = new ArrayList<>();
-        list2.add(temp2);
-        list2.add(temp22);
-        appData.setMostChanged(list2);
-        appData.setFavouriteData(list);
+        if(stockApi == null){
+            stockApi = new StockApi(this);
+        }
+        if(appData == null){
+            appData = AppData.getAppData();
+        }
     }
     public void initListViews(){
         // Most changed
@@ -116,56 +98,59 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
+
         bottomNavigationHandler = new BottomNavigationHandler(this);
-        bottomNavigationHandler.initNavigation(R.id.bottomNav,R.id.home);
+        bottomNavigationHandler.initNavigation(R.id.bottomNav, R.id.home);
+        // WILL RERUN ONCREATE IF USED
         //AppCompatDelegate.MODE_NIGHT_NO;
         //AppCompatDelegate.MODE_NIGHT_YES;
         //AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-
+        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
 
         initBackend();
         initListViews();
+        updateDailyMovers();
+        updateFavourites();
 
-        //updateDailyGainers();
-        //updateDailyLosers();
-        //updateFavourites();
+
+
     }
 
 
-    public void updateDailyGainers(){
-        stockApi.getDailyGainers(1,new StockApiCallback() {
-            @Override
-            public void onSuccess(String response, Context context) {
-                Toast.makeText(context,response,Toast.LENGTH_LONG).show();
-            }
+    public void updateDailyMovers(){
+        ProgressBar spinner = (ProgressBar) findViewById(R.id.mostChangedProgress);
+        //spinner.setVisibility(View.VISIBLE);
+        if(appData.getMostChanged().size() <2){
+            stockApi.getDailyMovers(1,new StockApiCallback() {
+                @Override
+                public void onSuccess(List<StockData> response, Context context) {
+                    List<StockData> mostChanged = appData.getMostChanged();
+                    mostChanged.addAll(response);
+                    mostChangedAdapter.notifyDataSetChanged();
+                    spinner.setVisibility(View.INVISIBLE);
+                }
 
-            @Override
-            public void onError(VolleyError error,Context context) {
-                Toast.makeText(context,error.networkResponse.toString(),Toast.LENGTH_LONG).show();
+                @Override
+                public void onError(VolleyError error,Context context) {
+                    Toast.makeText(context,error.networkResponse.toString(),Toast.LENGTH_LONG).show();
+                    spinner.setVisibility(View.INVISIBLE);
 
-            }
-        });
+                }
+            });
+        }else{
+            spinner.setVisibility(View.INVISIBLE);
+        }
+
     }
-    public void updateDailyLosers(){
-        stockApi.getDailyLosers(1,new StockApiCallback() {
-            @Override
-            public void onSuccess(String response, Context context) {
-                Toast.makeText(context,response,Toast.LENGTH_LONG).show();
-            }
 
-            @Override
-            public void onError(VolleyError error,Context context) {
-                Toast.makeText(context,error.networkResponse.toString(),Toast.LENGTH_LONG).show();
-
-            }
-        });
-    }
 
     public void updateFavourites(){
         List<StockData> userFavourites = appData.getFavouriteData();
-        if(!userFavourites.isEmpty()){
+        ProgressBar spinner = (ProgressBar) findViewById(R.id.favouriteProgressBar);
+        spinner.setVisibility(View.INVISIBLE);
+
+       /* if(!userFavourites.isEmpty()){
             List<String> symbolList = new ArrayList<>();
             for(StockData stock : userFavourites) {
                 String symbol = stock.getSymbol();
@@ -173,16 +158,18 @@ public class MainActivity extends AppCompatActivity{
             }
             stockApi.getByTickerNames(symbolList, new StockApiCallback() {
                 @Override
-                public void onSuccess(String response, Context context) {
-
+                public void onSuccess(List<StockData> response, Context context) {
+                    spinner.setVisibility(View.INVISIBLE);
                 }
 
                 @Override
                 public void onError(VolleyError error, Context context) {
-
+                    spinner.setVisibility(View.INVISIBLE);
                 }
             });
-        }
+        }else{
+            spinner.setVisibility(View.INVISIBLE);
+        }*/
 
     }
 

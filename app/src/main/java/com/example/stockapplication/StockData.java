@@ -1,5 +1,7 @@
 package com.example.stockapplication;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.UUID;
 
 /* {
@@ -84,7 +86,6 @@ public class StockData {
     }
 
 
-
     public String getSymbol() {
         return symbol;
     }
@@ -94,19 +95,30 @@ public class StockData {
     }
 
     public String getName() {
-        return name;
+        String tempName = name;
+        if(tempName.length()>25){
+            tempName =  name.substring(0,25);
+            tempName+=".";
+
+        }
+        return tempName;
     }
 
     public double getPercentChange() {
-        return percentChange;
+        return formatDouble(percentChange);
     }
 
     public double getMarketPrice() {
-        return marketPrice;
+        return formatDouble(marketPrice);
     }
 
     public boolean isFavourite() {
         return isFavourite;
+    }
+    private double formatDouble(double value){
+        BigDecimal bd = new BigDecimal(value).setScale(2, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+
     }
 
     public static String generateUuid(){
