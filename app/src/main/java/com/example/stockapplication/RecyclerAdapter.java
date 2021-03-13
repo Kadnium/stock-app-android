@@ -12,17 +12,24 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
+public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder>{
     List<StockData> stockList;
     Context context;
     AppData data;
-    public RecyclerAdapter(Context ctx, List<StockData> stockList,AppData data){
+    int viewId;
+    AdapterRefresh refresh;
+    public RecyclerAdapter(Context ctx, List<StockData> stockList,AppData data,int viewId,AdapterRefresh refresh){
         this.stockList = stockList;
         this.context = ctx;
         this.data = data;
+        this.viewId = viewId;
+        this.refresh = refresh;
     }
+
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -33,10 +40,18 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     }
     public void removeFromList(int position){
         stockList.remove(position);
-        this.notifyDataSetChanged();
-        //this.notifyItemRemoved(position);
+        this.notifyItemRemoved(position);
 
     }
+
+
+    //String symbol, String market, String name, double percentChange, double marketPrice, boolean isFavourite,String uuid
+    public void addToFavourites(int position,StockData stock){
+        data.addToFavourites(stock);
+        refresh.onFavouriteAdded(data.getFavouriteData().size()-1,this.viewId);
+        this.notifyItemChanged(position);
+    }
+
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
@@ -57,23 +72,54 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         holder.favouriteStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               StockData stock = stockList.get(position);
+                int adapterPosition = holder.getAdapterPosition();
+                StockData stock = stockList.get(adapterPosition);
                if(stock.isFavourite()){
-                   removeFromList(position);
-                /*   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                       stockList.removeIf(t->t.getUuid().equals(stock.getUuid()));
-                       data.setFavouriteData(stockList);
-                   }*/
+                   // CLICKED FROM MOST CHANGED
+                   // Uuid is null for non favourites
+                   // remove from favourite list and most changed list
+                   // TODO CHECK FROM WHAT ACTIVITY
+                   if(stock.getUuid() == null){
+                       stock.setFavourite(false);
+                       notifyItemChanged(adapterPosition);
+                       int favouriteIndex = data.removeFromFavourites(stock);
+                       // update favouritelist
+                       refresh.onFavouriteRemoved(viewId,favouriteIndex);
+                   }else{
+                       // CLICKED FROM FAVOURITES LIST
+                       // stock is in favourites and is in most changed list
+                       // update favourites and most changed
+                       data.updateMostChangedFavouriteStatus(stock,false);
+                       // update favourites list
+                       removeFromList(adapterPosition);
+                       // update most changed list
+                       refresh.onFavouriteRemoved(viewId,-1);
+
+                   }
+
+
+               }else{
+                   // stock is not yet favourite so can't be on favourite list
+                   // add to favourite list
+                   stock.setFavourite(true);
+                   addToFavourites(adapterPosition,stock);
                }
 
             }
         });
+
+
     }
 
+    public void setStockList(List<StockData> list){
+        this.stockList = list;
+    }
     @Override
     public int getItemCount() {
         return stockList.size();
     }
+
+
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView priceChange, stockPrice, stockName, stockTicker;

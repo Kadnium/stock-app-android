@@ -1,4 +1,7 @@
 package com.example.stockapplication;
+
+import java.util.UUID;
+
 /* {
          "fullExchangeName": "NasdaqGS",
          "symbol": "ASML",
@@ -104,5 +107,9 @@ public class StockData {
 
     public boolean isFavourite() {
         return isFavourite;
+    }
+
+    public static String generateUuid(){
+        return UUID.randomUUID().toString().replace("-", "");
     }
 }

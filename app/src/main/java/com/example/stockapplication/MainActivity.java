@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.example.stockapplication.StockData.generateUuid;
+
 public class MainActivity extends AppCompatActivity{
     StockApi stockApi;
     AppData appData;
@@ -41,21 +43,23 @@ public class MainActivity extends AppCompatActivity{
         stockApi = new StockApi(this);
         appData = AppData.getAppData();
         StockData temp1 = new StockData("NOK","HKI","NOKIA CORPORATION",5,5.5,true,generateUuid());
-        StockData temp12 = new StockData("GME","NDQ","GAMESTOP CORPORATION",25,259,true,generateUuid());
+        StockData temp123 = new StockData("GME","NDQ","GAMESTOP CORPORATION",25,259,true,generateUuid());
+        StockData temp124 = new StockData("GME2","NDQ","GAMESTOP CORPORATION",25,259,true,generateUuid());
+        StockData temp125 = new StockData("GME3","NDQ","GAMESTOP CORPORATION",25,259,true,generateUuid());
+        StockData temp1252 = new StockData("GME4","NDQ","GAMESTOP CORPORATION",25,259,true,generateUuid());
+        StockData temp126 = new StockData("GME5","NDQ","GAMESTOP CORPORATION",25,259,true,generateUuid());
         List<StockData> list = new ArrayList<>();
         list.add(temp1);
-        list.add(temp12);
-        list.add(temp12);
-        list.add(temp12);
-        list.add(temp12);
-        list.add(temp12);
-        list.add(temp12);
-        list.add(temp12);
-        list.add(temp12);
-        list.add(temp12);
-        list.add(temp12);
-        StockData temp2 = new StockData("AMC","NDQ","AMERICAN MOVIE CORP",-5,6.9,false,generateUuid());
-        StockData temp22 = new StockData("TSLA","NDQ","TESLA",20,500,false,generateUuid());
+        list.add(temp123);
+        list.add(temp124);
+        list.add(temp125);
+        list.add(temp1252);
+        list.add(temp126);
+        list.add(temp1);
+        list.add(temp123);
+
+        StockData temp2 = new StockData("AMC","NDQ","AMERICAN MOVIE CORP",-5,6.9,false,null);
+        StockData temp22 = new StockData("TSLA","NDQ","TESLA",20,500,false,null);
         List<StockData> list2 = new ArrayList<>();
         list2.add(temp2);
         list2.add(temp22);
@@ -64,14 +68,42 @@ public class MainActivity extends AppCompatActivity{
     }
     public void initListViews(){
         // Most changed
-        mostChangedAdapter = new RecyclerAdapter(this,appData.getMostChanged(),appData);
+        mostChangedAdapter = new RecyclerAdapter(this, appData.getMostChanged(), appData, R.id.mostChangedRecyclerView, new AdapterRefresh() {
+            @Override
+            public void onFavouriteAdded(int callerId, int position) {
+                favouriteAdapter.notifyItemInserted(position);
+            }
+
+            @Override
+            public void onFavouriteRemoved(int callerId, int position) {
+                // update favourites list
+                if(position!=-1){
+                    favouriteAdapter.notifyItemRemoved(position);
+                }
+
+            }
+
+        });
         mostChangedRecyclerView = findViewById(R.id.mostChangedRecyclerView);
+        mostChangedRecyclerView.setNestedScrollingEnabled(false);
         mostChangedRecyclerView.setAdapter(mostChangedAdapter);
         mostChangedRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
         // Favourites
-        favouriteAdapter = new RecyclerAdapter(this,appData.getFavouriteData(),appData);
+        favouriteAdapter = new RecyclerAdapter(this, appData.getFavouriteData(), appData, R.id.favouriteRecyclerView, new AdapterRefresh() {
+            @Override
+            public void onFavouriteAdded(int callerId, int position) {
+
+            }
+
+            @Override
+            public void onFavouriteRemoved(int callerId, int position) {
+                // update most changed list
+                mostChangedAdapter.notifyDataSetChanged();
+            }
+
+        });
         favouriteRecyclerView = findViewById(R.id.favouriteRecyclerView);
+        favouriteRecyclerView.setNestedScrollingEnabled(false);
         favouriteRecyclerView.setAdapter(favouriteAdapter);
         favouriteRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -155,9 +187,7 @@ public class MainActivity extends AppCompatActivity{
     }
 
 
-    public static String generateUuid(){
-        return UUID.randomUUID().toString().replace("-", "");
-    }
+
 
 
 
