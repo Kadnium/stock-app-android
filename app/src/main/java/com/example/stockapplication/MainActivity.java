@@ -52,16 +52,23 @@ public class MainActivity extends AppCompatActivity{
         // Most changed
         mostChangedAdapter = new RecyclerAdapter(this, appData.getMostChanged(), appData, R.id.mostChangedRecyclerView, new AdapterRefresh() {
             @Override
-            public void onFavouriteAdded(int callerId, int position) {
-                favouriteAdapter.notifyItemInserted(position);
+            public void onFavouriteAddClicked(int position, StockData stock) {
+                // Add to favourites and update favouriteAdapter
+                appData.addToFavourites(stock);
+                favouriteAdapter.notifyItemInserted(appData.getFavouriteData().size()-1);
+                // update trending list
+                appData.updateFavouriteStatuses(stock.getSymbol(),appData.getTrendingList(),true);
             }
 
             @Override
-            public void onFavouriteRemoved(int callerId, int position) {
-                // update favourites list
-                if(position!=-1){
-                    favouriteAdapter.notifyItemRemoved(position);
+            public void onFavouriteRemoveClicked(int position, StockData stock) {
+                // Remove from favourites and update favouriteAdapter
+                int favouriteIndex = appData.removeFromFavourites(stock);
+                if(favouriteIndex!=-1){
+                    favouriteAdapter.notifyItemRemoved(favouriteIndex);
                 }
+               // update trending list
+                appData.updateFavouriteStatuses(stock.getSymbol(), appData.getTrendingList(),false);
 
             }
 
@@ -73,14 +80,16 @@ public class MainActivity extends AppCompatActivity{
         // Favourites
         favouriteAdapter = new RecyclerAdapter(this, appData.getFavouriteData(), appData, R.id.favouriteRecyclerView, new AdapterRefresh() {
             @Override
-            public void onFavouriteAdded(int callerId, int position) {
-
+            public void onFavouriteAddClicked(int position, StockData stock) {
+                // Not used
             }
 
             @Override
-            public void onFavouriteRemoved(int callerId, int position) {
+            public void onFavouriteRemoveClicked(int position, StockData stock) {
                 // update most changed list
+                appData.updateFavouriteStatuses(stock.getSymbol(),appData.getMostChanged(),false);
                 mostChangedAdapter.notifyDataSetChanged();
+                appData.updateFavouriteStatuses(stock.getSymbol(),appData.getTrendingList(),false);
             }
 
         });

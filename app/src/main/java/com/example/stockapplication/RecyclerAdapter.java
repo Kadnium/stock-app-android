@@ -1,7 +1,6 @@
 package com.example.stockapplication;
 
 import android.content.Context;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,10 +8,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder>{
@@ -45,14 +42,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     }
 
 
-    //String symbol, String market, String name, double percentChange, double marketPrice, boolean isFavourite,String uuid
-    public void addToFavourites(int position,StockData stock){
-        data.addToFavourites(stock);
-        refresh.onFavouriteAdded(data.getFavouriteData().size()-1,this.viewId);
-        this.notifyItemChanged(position);
-    }
-
-
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         // priceChange, stockPrice, stockName, stockTicker;
@@ -68,6 +57,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         holder.stockPrice.setText(String.valueOf(stock.getMarketPrice()));
         holder.stockName.setText(String.valueOf(stock.getName()));
         holder.stockTicker.setText(String.valueOf(stock.getSymbol()));
+        if(this.viewId != R.id.favouriteRecyclerView && !stock.isFavourite()){
+            if(data.isStockInFavouriteList(stock.getSymbol())){
+                stock.setFavourite(true);
+            }
+
+        }
         holder.favouriteStatus.setImageResource(stock.isFavourite()?R.drawable.ic_favourite:R.drawable.ic_not_favourite);
         holder.favouriteStatus.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,34 +70,31 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
                 int adapterPosition = holder.getAdapterPosition();
                 StockData stock = stockList.get(adapterPosition);
                if(stock.isFavourite()){
-                   // CLICKED FROM MOST CHANGED
+                   // CLICKED FROM MOST CHANGED OR SEARCH/TRENDING
                    // Uuid is null for non favourites
-                   // remove from favourite list and most changed list
-                   // TODO CHECK FROM WHAT ACTIVITY
+                   // dont remove from list, only modify
                    if(stock.getUuid() == null){
                        stock.setFavourite(false);
                        notifyItemChanged(adapterPosition);
-                       int favouriteIndex = data.removeFromFavourites(stock);
-                       // update favouritelist
-                       refresh.onFavouriteRemoved(viewId,favouriteIndex);
                    }else{
                        // CLICKED FROM FAVOURITES LIST
-                       // stock is in favourites and is in most changed list
-                       // update favourites and most changed
-                       data.updateMostChangedFavouriteStatus(stock,false);
-                       // update favourites list
-                       removeFromList(adapterPosition);
-                       // update most changed list
-                       refresh.onFavouriteRemoved(viewId,-1);
-
+                       // remove from current list
+                       stockList.remove(adapterPosition);
+                       notifyItemRemoved(adapterPosition);
                    }
+                   // callback to do custom logic
+                   refresh.onFavouriteRemoveClicked(adapterPosition,stock);
 
 
                }else{
                    // stock is not yet favourite so can't be on favourite list
                    // add to favourite list
                    stock.setFavourite(true);
-                   addToFavourites(adapterPosition,stock);
+                   notifyItemChanged(adapterPosition);
+                   // callback to do custom logic
+                   refresh.onFavouriteAddClicked(adapterPosition,stock);
+
+
                }
 
             }

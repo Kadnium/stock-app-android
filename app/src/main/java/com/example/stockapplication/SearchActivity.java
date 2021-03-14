@@ -44,6 +44,7 @@ public class SearchActivity extends AppCompatActivity {
 
         initListViews();
         initSearchField();
+        clearSearchResults();
 
 
 
@@ -52,13 +53,19 @@ public class SearchActivity extends AppCompatActivity {
     public void initListViews(){
         searchResultAdapter = new RecyclerAdapter(this, appData.getSearchResults(), appData, R.id.searchRecyclerView, new AdapterRefresh() {
             @Override
-            public void onFavouriteAdded(int callerId, int position) {
-
+            public void onFavouriteAddClicked(int position, StockData stock) {
+                // search most changed list and set as a favourite
+                appData.updateFavouriteStatuses(stock.getSymbol(),appData.getMostChanged(),true);
+                appData.updateFavouriteStatuses(stock.getSymbol(),appData.getFavouriteData(),true);
+                appData.addToFavourites(stock);
             }
 
             @Override
-            public void onFavouriteRemoved(int callerId, int position) {
-
+            public void onFavouriteRemoveClicked(int position, StockData stock) {
+                // update most changed
+                appData.updateFavouriteStatuses(stock.getSymbol(),appData.getMostChanged(),false);
+                appData.updateFavouriteStatuses(stock.getSymbol(),appData.getFavouriteData(),false);
+                appData.removeFromFavourites(stock);
 
             }
 
@@ -68,7 +75,13 @@ public class SearchActivity extends AppCompatActivity {
         searchRecyclerView.setAdapter(searchResultAdapter);
         searchRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
-
+    private List<StockData> clearSearchResults(){
+        List<StockData> searchResults = appData.getSearchResults();
+        if(searchResults.size()>0){
+            searchResults.clear();
+        }
+        return searchResults;
+    }
     public void initSearchField(){
         searchField = findViewById(R.id.searchInput);
         ProgressBar searchSpinner = (ProgressBar) findViewById(R.id.searchSpinner);
@@ -81,15 +94,14 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Search if user has inputted two characters,
+                // if field is emptied, clear search results
                 if(s.length() >=2){
                     searchSpinner.setVisibility(View.VISIBLE);
                     stockApi.getSearchResults(s.toString(), 5, new StockApiCallback() {
                         @Override
                         public void onSuccess(List<StockData> response, Context context) {
-                            List<StockData> searchResults = appData.getSearchResults();
-                            if(searchResults.size()>0){
-                                searchResults.clear();
-                            }
+                            List<StockData> searchResults = clearSearchResults();
                             searchResults.addAll(response);
 
                             searchResultAdapter.notifyDataSetChanged();
@@ -101,6 +113,9 @@ public class SearchActivity extends AppCompatActivity {
 
                         }
                     });
+                }else if(s.length() == 0){
+                    clearSearchResults();
+                    searchResultAdapter.notifyDataSetChanged();
                 }
 
                 }

@@ -54,8 +54,7 @@ public class AppData {
         this.favouriteData.add(cloned);
     }
     public int removeFromFavourites(StockData stock){
-        // TODO fix
-        // find index
+
         int index = -1;
         for (int i = 0; i <favouriteData.size(); i++) {
             StockData s = favouriteData.get(i);
@@ -69,11 +68,18 @@ public class AppData {
         }
         return index;
     }
-
-    public void updateMostChangedFavouriteStatus(StockData stock,boolean status){
+    public boolean isStockInFavouriteList(String ticker){
+        for(StockData s:favouriteData){
+            if(ticker.equals(s.getSymbol())){
+                return true;
+            }
+        }
+        return false;
+    }
+    public void updateFavouriteStatuses(String ticker,List<StockData> stockList,boolean status){
         // TODO fix
-        for(StockData s:mostChanged){
-            if(s.getSymbol().equals(stock.getSymbol())){
+        for(StockData s:stockList){
+            if(ticker.equals(s.getSymbol())){
                 s.setFavourite(status);
             }
         }
