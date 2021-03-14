@@ -6,10 +6,12 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +25,7 @@ import com.example.stockapplication.StockApi;
 import com.example.stockapplication.StockApiCallback;
 import com.example.stockapplication.StockData;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,21 +36,41 @@ import static com.example.stockapplication.StockData.generateUuid;
 public class MainActivity extends AppCompatActivity{
     StockApi stockApi;
     AppData appData;
+
     RecyclerView favouriteRecyclerView;
     RecyclerView mostChangedRecyclerView;
 
     RecyclerAdapter favouriteAdapter;
     RecyclerAdapter mostChangedAdapter;
+
     BottomNavigationHandler bottomNavigationHandler;
 
-    public void initBackend(){
+    SwipeRefreshLayout swipeRefreshLayout;
+
+
+
+
+
+
+
+    public void initBackend(Bundle savedInstanceState){
         if(stockApi == null){
             stockApi = new StockApi(this);
         }
         if(appData == null){
-            appData = AppData.getAppData();
+            if(savedInstanceState != null){
+                appData = AppData.parseAppDataFromBundle(savedInstanceState);
+            }else{
+                appData = AppData.parseAppData(getIntent());
+            }
+
         }
+
+
     }
+
+
+
     public void initListViews(){
         // Most changed
         mostChangedAdapter = new RecyclerAdapter(this, appData.getMostChanged(), appData, R.id.mostChangedRecyclerView, new AdapterRefresh() {
@@ -107,59 +130,79 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
-
-        bottomNavigationHandler = new BottomNavigationHandler(this);
+        initBackend(savedInstanceState);
+        bottomNavigationHandler = new BottomNavigationHandler(this,appData);
         bottomNavigationHandler.initNavigation(R.id.bottomNav, R.id.home);
+
+        swipeRefreshLayout = findViewById(R.id.swipeContainer);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh(){
+                updateDailyMovers(() -> {
+                    updateFavourites(() -> swipeRefreshLayout.setRefreshing(false));
+                });
+
+
+            }
+        });
         // WILL RERUN ONCREATE IF USED
         //AppCompatDelegate.MODE_NIGHT_NO;
         //AppCompatDelegate.MODE_NIGHT_YES;
         //AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
         //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
-
-        initBackend();
         initListViews();
-        updateDailyMovers();
-        updateFavourites();
+        updateDailyMovers(null);
+        ProgressBar spinner = (ProgressBar) findViewById(R.id.favouriteProgressBar);
+        spinner.setVisibility(View.INVISIBLE);
 
 
 
     }
 
 
-    public void updateDailyMovers(){
+    public void updateDailyMovers(LoadCallback cb){
         ProgressBar spinner = (ProgressBar) findViewById(R.id.mostChangedProgress);
-        //spinner.setVisibility(View.VISIBLE);
-        if(appData.getMostChanged().size() <2){
+        spinner.setVisibility(View.VISIBLE);
+        if(appData.getMostChanged().size() <2 || cb != null){
             stockApi.getDailyMovers(1,new StockApiCallback() {
                 @Override
                 public void onSuccess(List<StockData> response, Context context) {
                     List<StockData> mostChanged = appData.getMostChanged();
+                    mostChanged.clear();
                     mostChanged.addAll(response);
                     mostChangedAdapter.notifyDataSetChanged();
                     spinner.setVisibility(View.INVISIBLE);
+                    finishCallback(cb);
+
                 }
 
                 @Override
                 public void onError(VolleyError error,Context context) {
                     Toast.makeText(context,error.networkResponse.toString(),Toast.LENGTH_LONG).show();
                     spinner.setVisibility(View.INVISIBLE);
+                    finishCallback(cb);
+
 
                 }
             });
         }else{
+            finishCallback(cb);
             spinner.setVisibility(View.INVISIBLE);
         }
 
     }
 
-
-    public void updateFavourites(){
+    private void finishCallback(LoadCallback cb){
+        if(cb != null){
+            cb.onComplete();
+        }
+    }
+    public void updateFavourites(LoadCallback cb){
         List<StockData> userFavourites = appData.getFavouriteData();
         ProgressBar spinner = (ProgressBar) findViewById(R.id.favouriteProgressBar);
-        spinner.setVisibility(View.INVISIBLE);
-
-       /* if(!userFavourites.isEmpty()){
+        spinner.setVisibility(View.VISIBLE);
+        if(!userFavourites.isEmpty()){
             List<String> symbolList = new ArrayList<>();
             for(StockData stock : userFavourites) {
                 String symbol = stock.getSymbol();
@@ -168,19 +211,42 @@ public class MainActivity extends AppCompatActivity{
             stockApi.getByTickerNames(symbolList, new StockApiCallback() {
                 @Override
                 public void onSuccess(List<StockData> response, Context context) {
+                    for(StockData stock:response){
+                        int index = appData.getIndex(stock,userFavourites);
+                        StockData favStock = userFavourites.get(index);
+                        favStock.setMarketPrice(stock.getMarketPrice());
+                        favStock.setPercentChange(stock.getPercentChange());
+                        favouriteAdapter.notifyItemChanged(index);
+
+                    }
+                    finishCallback(cb);
+
                     spinner.setVisibility(View.INVISIBLE);
                 }
 
                 @Override
                 public void onError(VolleyError error, Context context) {
                     spinner.setVisibility(View.INVISIBLE);
+                    finishCallback(cb);
                 }
             });
         }else{
+            finishCallback(cb);
             spinner.setVisibility(View.INVISIBLE);
-        }*/
+        }
 
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        Gson gson = new Gson();
+        String data = gson.toJson(appData);
+        outState.putString("appData",data);
+        super.onSaveInstanceState(outState);
+
+    }
+
+
 
 
 

@@ -3,8 +3,10 @@ package com.example.stockapplication;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -16,6 +18,7 @@ import android.widget.TextView;
 import com.android.volley.VolleyError;
 import com.example.stockapplication.R;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.gson.Gson;
 
 import java.util.List;
 import java.util.function.UnaryOperator;
@@ -26,29 +29,51 @@ public class SearchActivity extends AppCompatActivity {
     StockApi stockApi;
     RecyclerAdapter searchResultAdapter;
     RecyclerView searchRecyclerView;
-
+    SwipeRefreshLayout swipeRefreshLayout;
     RecyclerAdapter trendingRecyclerAdapter;
     RecyclerView trendingRecyclerView;
+
+
+    public void initBackend(Bundle savedInstanceState){
+        if(stockApi == null){
+            stockApi = new StockApi(this);
+        }
+        if(appData == null){
+            if(savedInstanceState != null){
+                appData = AppData.parseAppDataFromBundle(savedInstanceState);
+            }else{
+                appData = AppData.parseAppData(getIntent());
+            }
+
+        }
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-        BottomNavigationHandler bottomNavigationHandler = new BottomNavigationHandler(this);
+
+        initBackend(savedInstanceState);
+        BottomNavigationHandler bottomNavigationHandler = new BottomNavigationHandler(this,appData);
         bottomNavigationHandler.initNavigation(R.id.bottomNav,R.id.search);
 
-        if(appData == null){
-            appData = AppData.getAppData();
-        }
+        swipeRefreshLayout = findViewById(R.id.swipeContainer);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh(){
+                setTrendingData(() -> {
+                   swipeRefreshLayout.setRefreshing(false);
+                });
 
-        if(stockApi == null){
-            stockApi = new StockApi(this);
-        }
+
+            }
+        });
 
         initListViews();
         initSearchField();
         clearSearchResults();
-        setTrendingData();
+        setTrendingData(null);
 
 
 
@@ -167,11 +192,16 @@ public class SearchActivity extends AppCompatActivity {
 
         });
     }
-
-    private void setTrendingData(){
+    private void finishCallback(LoadCallback cb){
+        if(cb != null){
+            cb.onComplete();
+        }
+    }
+    private void setTrendingData(LoadCallback cb){
         ProgressBar trendingSpinner = (ProgressBar) findViewById(R.id.trendingSpinner);
         List<StockData> trendingList = appData.getTrendingList();
-        if(trendingList.size() == 0){
+        trendingSpinner.setVisibility(View.VISIBLE);
+        if(trendingList.size() == 0 || cb != null){
             stockApi.getTrending(5, new StockApiCallback() {
                 @Override
                 public void onSuccess(List<StockData> response, Context context) {
@@ -182,18 +212,33 @@ public class SearchActivity extends AppCompatActivity {
                     trending.addAll(response);
                     trendingRecyclerAdapter.notifyDataSetChanged();
                     trendingSpinner.setVisibility(View.INVISIBLE);
+                    finishCallback(cb);
+
                 }
 
                 @Override
                 public void onError(VolleyError error, Context context) {
                     trendingSpinner.setVisibility(View.INVISIBLE);
+                    finishCallback(cb);
                 }
             });
         }else{
             trendingSpinner.setVisibility(View.INVISIBLE);
+            finishCallback(cb);
         }
 
     }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        Gson gson = new Gson();
+        String data = gson.toJson(appData);
+        outState.putString("appData",data);
+        super.onSaveInstanceState(outState);
+
+    }
+
 
 
 }

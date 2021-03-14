@@ -9,14 +9,21 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.gson.Gson;
 
 public class BottomNavigationHandler {
     Context context;
     BottomNavigationView bottomNavigationView;
-    public BottomNavigationHandler(Context ctx) {
+    AppData appData;
+    public BottomNavigationHandler(Context ctx,AppData appData) {
         this.context = ctx;
+        this.appData = appData;
     }
-
+    public void setIntentData(Intent intent){
+        Gson gson = new Gson();
+        String data = gson.toJson(appData);
+        intent.putExtra("appData",data);
+    }
 
     public void initNavigation(int viewId,int navId){
 
@@ -35,15 +42,21 @@ public class BottomNavigationHandler {
                 if(id == navId) {
                     return true;
                 }else if (id == R.id.home){
-                    context.startActivity(new Intent(context.getApplicationContext(),MainActivity.class));
+                    Intent intent = new Intent(context.getApplicationContext(),MainActivity.class);
+                    setIntentData(intent);
+                    context.startActivity(intent);
                     activity.overridePendingTransition(0,0);
                     return true;
                 }else if(id == R.id.search){
-                    context.startActivity(new Intent(context.getApplicationContext(),SearchActivity.class));
+                    Intent intent = new Intent(context.getApplicationContext(),SearchActivity.class);
+                    setIntentData(intent);
+                    context.startActivity(intent);
                     activity.overridePendingTransition(0,0);
                     return true;
                 }else if (id == R.id.settings){
-                    context.startActivity(new Intent(context.getApplicationContext(),OptionsActivity.class));
+                    Intent intent = new Intent(context.getApplicationContext(),OptionsActivity.class);
+                    setIntentData(intent);
+                    context.startActivity(intent);
                     activity.overridePendingTransition(0,0);
                     return true;
                 }

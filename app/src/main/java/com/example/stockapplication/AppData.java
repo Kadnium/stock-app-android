@@ -1,30 +1,24 @@
 package com.example.stockapplication;
 
+import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
+
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AppData {
-    private static AppData appData;
+    //private static AppData appData;
     private List<StockData> favouriteData = new ArrayList<>();
     private List<StockData> mostChanged = new ArrayList<>();
     private List<StockData> trendingList = new ArrayList<>();
     private List<StockData> searchResults = new ArrayList<>();
-    private AppData() {
-        if(appData != null) {
-            throw new RuntimeException("Use getAppData method to use this class!");
-        }
+    public AppData() {
+
     }
 
-    public static AppData getAppData() {
-       // TODO If threads are used, might need to be modified to be thread safe
-        if (appData == null) {
-            appData = new AppData();
-
-        }
-        return appData;
-    }
 
     public List<StockData> getFavouriteData() {
         return favouriteData;
@@ -100,6 +94,33 @@ public class AppData {
 
     public void setSearchResults(List<StockData> searchResults) {
         this.searchResults = searchResults;
+    }
+
+    public static AppData parseAppData(Intent intent){
+        if(intent == null){
+            return null;
+        }
+        Gson gson = new Gson();
+        String s = intent.getStringExtra("appData");
+        AppData data;
+        if(s!= null){
+            data = gson.fromJson(s, AppData.class);
+        }else{
+            data = new AppData();
+        }
+        return data;
+    }
+
+    public static AppData parseAppDataFromBundle(Bundle savedInstanceState){
+        Gson gson = new Gson();
+        String s = savedInstanceState.getString("appData");
+        AppData data;
+        if(s!= null){
+            data = gson.fromJson(s, AppData.class);
+        }else{
+            data = new AppData();
+        }
+        return data;
     }
 
     //add methods here for insert, delete, search etc......
