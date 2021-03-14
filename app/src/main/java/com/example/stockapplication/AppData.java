@@ -54,17 +54,21 @@ public class AppData {
         this.favouriteData.add(cloned);
     }
     public int removeFromFavourites(StockData stock){
+        int index = getIndex(stock,favouriteData);
+        if(index != -1){
+            favouriteData.remove(index);
+        }
+        return index;
+    }
 
+    public int getIndex(StockData stock, List<StockData> stockList){
         int index = -1;
-        for (int i = 0; i <favouriteData.size(); i++) {
-            StockData s = favouriteData.get(i);
+        for (int i = 0; i <stockList.size(); i++) {
+            StockData s = stockList.get(i);
             if(s.getSymbol().equals(stock.getSymbol())){
                 index = i;
                 break;
             }
-        }
-        if(index != -1){
-            favouriteData.remove(index);
         }
         return index;
     }
@@ -76,13 +80,13 @@ public class AppData {
         }
         return false;
     }
-    public void updateFavouriteStatuses(String ticker,List<StockData> stockList,boolean status){
+    public int updateFavouriteStatuses(StockData stock,List<StockData> stockList,boolean status){
         // TODO fix
-        for(StockData s:stockList){
-            if(ticker.equals(s.getSymbol())){
-                s.setFavourite(status);
-            }
+        int index = getIndex(stock,stockList);
+        if(index != -1){
+            stockList.get(index).setFavourite(status);
         }
+        return index;
     }
 
 

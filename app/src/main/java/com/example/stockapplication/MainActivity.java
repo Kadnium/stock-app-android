@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity{
                 appData.addToFavourites(stock);
                 favouriteAdapter.notifyItemInserted(appData.getFavouriteData().size()-1);
                 // update trending list
-                appData.updateFavouriteStatuses(stock.getSymbol(),appData.getTrendingList(),true);
+                appData.updateFavouriteStatuses(stock,appData.getTrendingList(),true);
             }
 
             @Override
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity{
                     favouriteAdapter.notifyItemRemoved(favouriteIndex);
                 }
                // update trending list
-                appData.updateFavouriteStatuses(stock.getSymbol(), appData.getTrendingList(),false);
+                appData.updateFavouriteStatuses(stock, appData.getTrendingList(),false);
 
             }
 
@@ -87,9 +87,9 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onFavouriteRemoveClicked(int position, StockData stock) {
                 // update most changed list
-                appData.updateFavouriteStatuses(stock.getSymbol(),appData.getMostChanged(),false);
+                appData.updateFavouriteStatuses(stock,appData.getMostChanged(),false);
                 mostChangedAdapter.notifyDataSetChanged();
-                appData.updateFavouriteStatuses(stock.getSymbol(),appData.getTrendingList(),false);
+                appData.updateFavouriteStatuses(stock,appData.getTrendingList(),false);
             }
 
         });

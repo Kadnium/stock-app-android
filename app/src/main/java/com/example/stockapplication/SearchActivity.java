@@ -27,6 +27,9 @@ public class SearchActivity extends AppCompatActivity {
     RecyclerAdapter searchResultAdapter;
     RecyclerView searchRecyclerView;
 
+    RecyclerAdapter trendingRecyclerAdapter;
+    RecyclerView trendingRecyclerView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,35 +48,72 @@ public class SearchActivity extends AppCompatActivity {
         initListViews();
         initSearchField();
         clearSearchResults();
+        setTrendingData();
+
+
 
 
 
     }
 
+    private void setRecyclerSettings(RecyclerView view, int viewId, RecyclerAdapter adapter){
+        view = findViewById(viewId);
+        view.setNestedScrollingEnabled(false);
+        view.setAdapter(adapter);
+        view.setLayoutManager(new LinearLayoutManager(this));
+    }
     public void initListViews(){
         searchResultAdapter = new RecyclerAdapter(this, appData.getSearchResults(), appData, R.id.searchRecyclerView, new AdapterRefresh() {
             @Override
             public void onFavouriteAddClicked(int position, StockData stock) {
                 // search most changed list and set as a favourite
-                appData.updateFavouriteStatuses(stock.getSymbol(),appData.getMostChanged(),true);
-                appData.updateFavouriteStatuses(stock.getSymbol(),appData.getFavouriteData(),true);
+                appData.updateFavouriteStatuses(stock,appData.getMostChanged(),true);
+                int index = appData.updateFavouriteStatuses(stock,appData.getTrendingList(),true);
+                if(index != -1){
+                    trendingRecyclerAdapter.notifyItemChanged(index);
+                }
                 appData.addToFavourites(stock);
             }
 
             @Override
             public void onFavouriteRemoveClicked(int position, StockData stock) {
                 // update most changed
-                appData.updateFavouriteStatuses(stock.getSymbol(),appData.getMostChanged(),false);
-                appData.updateFavouriteStatuses(stock.getSymbol(),appData.getFavouriteData(),false);
+                appData.updateFavouriteStatuses(stock,appData.getMostChanged(),false);
+                int index = appData.updateFavouriteStatuses(stock,appData.getTrendingList(),false);
+                if(index != -1){
+                    trendingRecyclerAdapter.notifyItemChanged(index);
+                }
                 appData.removeFromFavourites(stock);
 
             }
 
         });
-        searchRecyclerView = findViewById(R.id.searchRecyclerView);
-        searchRecyclerView.setNestedScrollingEnabled(false);
-        searchRecyclerView.setAdapter(searchResultAdapter);
-        searchRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        setRecyclerSettings(searchRecyclerView,R.id.searchRecyclerView,searchResultAdapter);
+
+        trendingRecyclerAdapter = new RecyclerAdapter(this, appData.getTrendingList(), appData, R.id.searchRecyclerView, new AdapterRefresh() {
+            @Override
+            public void onFavouriteAddClicked(int position, StockData stock) {
+                appData.updateFavouriteStatuses(stock,appData.getMostChanged(),true);
+                int index = appData.updateFavouriteStatuses(stock,appData.getSearchResults(),true);
+                if(index != -1){
+                    searchResultAdapter.notifyItemChanged(index);
+                }
+                appData.addToFavourites(stock);
+            }
+
+            @Override
+            public void onFavouriteRemoveClicked(int position, StockData stock) {
+                appData.updateFavouriteStatuses(stock,appData.getMostChanged(),false);
+                int index = appData.updateFavouriteStatuses(stock,appData.getSearchResults(),false);
+                if(index != -1){
+                    searchResultAdapter.notifyItemChanged(index);
+                }
+                appData.removeFromFavourites(stock);
+            }
+        });
+        setRecyclerSettings(trendingRecyclerView,R.id.trendingRecyclerView,trendingRecyclerAdapter);
+
+
     }
     private List<StockData> clearSearchResults(){
         List<StockData> searchResults = appData.getSearchResults();
@@ -82,7 +122,7 @@ public class SearchActivity extends AppCompatActivity {
         }
         return searchResults;
     }
-    public void initSearchField(){
+    private void initSearchField(){
         searchField = findViewById(R.id.searchInput);
         ProgressBar searchSpinner = (ProgressBar) findViewById(R.id.searchSpinner);
         searchSpinner.setVisibility(View.INVISIBLE);
@@ -126,7 +166,34 @@ public class SearchActivity extends AppCompatActivity {
             }
 
         });
+    }
 
+    private void setTrendingData(){
+        ProgressBar trendingSpinner = (ProgressBar) findViewById(R.id.trendingSpinner);
+        List<StockData> trendingList = appData.getTrendingList();
+        if(trendingList.size() == 0){
+            stockApi.getTrending(5, new StockApiCallback() {
+                @Override
+                public void onSuccess(List<StockData> response, Context context) {
+                    List<StockData> trending = appData.getTrendingList();
+                    if(trending.size()>0){
+                        trending.clear();
+                    }
+                    trending.addAll(response);
+                    trendingRecyclerAdapter.notifyDataSetChanged();
+                    trendingSpinner.setVisibility(View.INVISIBLE);
+                }
+
+                @Override
+                public void onError(VolleyError error, Context context) {
+                    trendingSpinner.setVisibility(View.INVISIBLE);
+                }
+            });
+        }else{
+            trendingSpinner.setVisibility(View.INVISIBLE);
+        }
 
     }
+
+
 }
