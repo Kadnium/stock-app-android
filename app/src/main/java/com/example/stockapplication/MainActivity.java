@@ -10,8 +10,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -50,20 +52,12 @@ public class MainActivity extends AppCompatActivity{
 
 
 
-
-
-
-    public void initBackend(Bundle savedInstanceState){
+    public void initBackend(){
         if(stockApi == null){
             stockApi = new StockApi(this);
         }
         if(appData == null){
-            if(savedInstanceState != null){
-                appData = AppData.parseAppDataFromBundle(savedInstanceState);
-            }else{
-                appData = AppData.parseAppData(getIntent());
-            }
-
+            appData = AppData.parseAppDataFromSharedPrefs(this);
         }
 
 
@@ -130,7 +124,7 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
-        initBackend(savedInstanceState);
+        initBackend();
         bottomNavigationHandler = new BottomNavigationHandler(this,appData);
         bottomNavigationHandler.initNavigation(R.id.bottomNav, R.id.home);
 
@@ -155,7 +149,7 @@ public class MainActivity extends AppCompatActivity{
         updateDailyMovers(null);
         ProgressBar spinner = (ProgressBar) findViewById(R.id.favouriteProgressBar);
         spinner.setVisibility(View.INVISIBLE);
-
+        //updateFavourites(null);
 
 
     }
@@ -237,12 +231,18 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
+
+
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        Gson gson = new Gson();
-        String data = gson.toJson(appData);
-        outState.putString("appData",data);
-        super.onSaveInstanceState(outState);
+    protected void onDestroy() {
+        super.onDestroy();
+        AppData.saveAppDataToSharedPrefs(this,appData,true);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        AppData.saveAppDataToSharedPrefs(this,appData,false);
 
     }
 

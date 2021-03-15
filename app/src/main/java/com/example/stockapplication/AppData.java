@@ -1,8 +1,11 @@
 package com.example.stockapplication;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 
 import com.google.gson.Gson;
 
@@ -15,6 +18,8 @@ public class AppData {
     private List<StockData> mostChanged = new ArrayList<>();
     private List<StockData> trendingList = new ArrayList<>();
     private List<StockData> searchResults = new ArrayList<>();
+    public static final String APP_DATA = "APP_SHARED_PREFS";
+    public static final String APP_DATA_JSON = "APP_DATA_JSON";
     public AppData() {
 
     }
@@ -101,7 +106,7 @@ public class AppData {
             return null;
         }
         Gson gson = new Gson();
-        String s = intent.getStringExtra("appData");
+        String s = intent.getStringExtra(APP_DATA_JSON);
         AppData data;
         if(s!= null){
             data = gson.fromJson(s, AppData.class);
@@ -113,7 +118,7 @@ public class AppData {
 
     public static AppData parseAppDataFromBundle(Bundle savedInstanceState){
         Gson gson = new Gson();
-        String s = savedInstanceState.getString("appData");
+        String s = savedInstanceState.getString(APP_DATA_JSON);
         AppData data;
         if(s!= null){
             data = gson.fromJson(s, AppData.class);
@@ -123,6 +128,32 @@ public class AppData {
         return data;
     }
 
-    //add methods here for insert, delete, search etc......
+    public static AppData parseAppDataFromSharedPrefs(Context context){
+        SharedPreferences preferences = context.getApplicationContext().getSharedPreferences(APP_DATA, Context.MODE_PRIVATE);
+        String s = preferences.getString(APP_DATA_JSON, "");
+        Gson gson = new Gson();
+        AppData data;
+        if(!s.equalsIgnoreCase("")){
+            data = gson.fromJson(s, AppData.class);
+        }else{
+            data = new AppData();
+        }
+        return data;
+
+    }
+
+    public static void saveAppDataToSharedPrefs(Context context,AppData appData,boolean clearApiData){
+        Gson gson = new Gson();
+        if(clearApiData){
+            appData.setMostChanged(new ArrayList<>());
+            appData.setSearchResults(new ArrayList<>());
+            appData.setTrendingList(new ArrayList<>());
+        }
+        String data = gson.toJson(appData);
+        SharedPreferences preferences = context.getApplicationContext().getSharedPreferences(AppData.APP_DATA,Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(AppData.APP_DATA_JSON,data);
+        editor.apply();
+    }
 }
 

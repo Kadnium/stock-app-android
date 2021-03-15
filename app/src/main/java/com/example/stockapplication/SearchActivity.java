@@ -7,8 +7,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -34,17 +36,12 @@ public class SearchActivity extends AppCompatActivity {
     RecyclerView trendingRecyclerView;
 
 
-    public void initBackend(Bundle savedInstanceState){
+    public void initBackend(){
         if(stockApi == null){
             stockApi = new StockApi(this);
         }
         if(appData == null){
-            if(savedInstanceState != null){
-                appData = AppData.parseAppDataFromBundle(savedInstanceState);
-            }else{
-                appData = AppData.parseAppData(getIntent());
-            }
-
+            appData = AppData.parseAppDataFromSharedPrefs(this);
         }
 
     }
@@ -53,8 +50,7 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-
-        initBackend(savedInstanceState);
+        initBackend();
         BottomNavigationHandler bottomNavigationHandler = new BottomNavigationHandler(this,appData);
         bottomNavigationHandler.initNavigation(R.id.bottomNav,R.id.search);
 
@@ -80,6 +76,8 @@ public class SearchActivity extends AppCompatActivity {
 
 
     }
+
+
 
     private void setRecyclerSettings(RecyclerView view, int viewId, RecyclerAdapter adapter){
         view = findViewById(viewId);
@@ -231,11 +229,15 @@ public class SearchActivity extends AppCompatActivity {
 
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        Gson gson = new Gson();
-        String data = gson.toJson(appData);
-        outState.putString("appData",data);
-        super.onSaveInstanceState(outState);
+    protected void onDestroy() {
+        super.onDestroy();
+        AppData.saveAppDataToSharedPrefs(this,appData,true);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        AppData.saveAppDataToSharedPrefs(this,appData,false);
 
     }
 

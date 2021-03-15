@@ -43,19 +43,19 @@ public class BottomNavigationHandler {
                     return true;
                 }else if (id == R.id.home){
                     Intent intent = new Intent(context.getApplicationContext(),MainActivity.class);
-                    setIntentData(intent);
+                    //setIntentData(intent);
                     context.startActivity(intent);
                     activity.overridePendingTransition(0,0);
                     return true;
                 }else if(id == R.id.search){
                     Intent intent = new Intent(context.getApplicationContext(),SearchActivity.class);
-                    setIntentData(intent);
+                    //setIntentData(intent);
                     context.startActivity(intent);
                     activity.overridePendingTransition(0,0);
                     return true;
                 }else if (id == R.id.settings){
                     Intent intent = new Intent(context.getApplicationContext(),OptionsActivity.class);
-                    setIntentData(intent);
+                    //setIntentData(intent);
                     context.startActivity(intent);
                     activity.overridePendingTransition(0,0);
                     return true;
