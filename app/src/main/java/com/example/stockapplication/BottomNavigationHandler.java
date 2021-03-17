@@ -15,6 +15,7 @@ public class BottomNavigationHandler {
     Context context;
     BottomNavigationView bottomNavigationView;
     AppData appData;
+    int navId;
     public BottomNavigationHandler(Context ctx,AppData appData) {
         this.context = ctx;
         this.appData = appData;
@@ -30,6 +31,7 @@ public class BottomNavigationHandler {
         if (!(context instanceof AppCompatActivity)) {
             return;
         }
+        this.navId = navId;
         AppCompatActivity activity = (AppCompatActivity) context;
         activity.getSupportActionBar().hide();
         bottomNavigationView = activity.findViewById(viewId);
@@ -71,5 +73,11 @@ public class BottomNavigationHandler {
             bottomNavigationView.setSelectedItemId(navId);
         }
 
+    }
+
+    public void refresh(){
+        if(bottomNavigationView != null){
+            bottomNavigationView.setSelectedItemId(this.navId);
+        }
     }
 }

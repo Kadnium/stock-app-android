@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 
 public class OptionsActivity extends AppCompatActivity  {
     AppData appData;
+    BottomNavigationHandler bottomNavigationHandler;
     public void initBackend(){
         if(appData == null){
             appData = AppData.parseAppDataFromSharedPrefs(this);
@@ -42,7 +43,7 @@ public class OptionsActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_options);
         initBackend();
-        BottomNavigationHandler bottomNavigationHandler = new BottomNavigationHandler(this,appData);
+        bottomNavigationHandler = new BottomNavigationHandler(this,appData);
         bottomNavigationHandler.initNavigation(R.id.bottomNav,R.id.settings);
         Spinner spinner = findViewById(R.id.spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,R.array.theme_settings, android.R.layout.simple_spinner_item);
@@ -80,6 +81,18 @@ public class OptionsActivity extends AppCompatActivity  {
     public void onPause() {
         super.onPause();
         AppData.saveAppDataToSharedPrefs(this,appData,false);
+
+    }
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(0,0);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        bottomNavigationHandler.refresh();
 
     }
 

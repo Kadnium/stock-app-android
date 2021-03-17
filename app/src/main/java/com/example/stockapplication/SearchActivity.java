@@ -35,7 +35,7 @@ public class SearchActivity extends AppCompatActivity {
     SwipeRefreshLayout swipeRefreshLayout;
     RecyclerAdapter trendingRecyclerAdapter;
     RecyclerView trendingRecyclerView;
-
+    BottomNavigationHandler bottomNavigationHandler;
 
     public void initBackend(){
         if(stockApi == null){
@@ -43,7 +43,6 @@ public class SearchActivity extends AppCompatActivity {
         }
         if(appData == null){
             appData = AppData.parseAppDataFromSharedPrefs(this);
-
         }
 
     }
@@ -53,7 +52,7 @@ public class SearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         initBackend();
-        BottomNavigationHandler bottomNavigationHandler = new BottomNavigationHandler(this,appData);
+        bottomNavigationHandler = new BottomNavigationHandler(this,appData);
         bottomNavigationHandler.initNavigation(R.id.bottomNav,R.id.search);
 
         swipeRefreshLayout = findViewById(R.id.swipeContainer);
@@ -240,6 +239,18 @@ public class SearchActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         AppData.saveAppDataToSharedPrefs(this,appData,false);
+
+    }
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(0,0);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        bottomNavigationHandler.refresh();
 
     }
 

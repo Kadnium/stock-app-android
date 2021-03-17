@@ -261,18 +261,17 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(0,0);
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        bottomNavigationHandler.refresh();
 
-
-
-
-
-
-
-
-
-
-
-
+    }
 
 }
