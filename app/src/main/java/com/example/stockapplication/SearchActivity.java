@@ -1,6 +1,7 @@
 package com.example.stockapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -42,6 +43,7 @@ public class SearchActivity extends AppCompatActivity {
         }
         if(appData == null){
             appData = AppData.parseAppDataFromSharedPrefs(this);
+
         }
 
     }

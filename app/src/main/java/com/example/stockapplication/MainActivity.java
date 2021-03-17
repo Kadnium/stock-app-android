@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
@@ -29,7 +30,11 @@ import com.example.stockapplication.StockData;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.Gson;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -58,8 +63,14 @@ public class MainActivity extends AppCompatActivity{
         }
         if(appData == null){
             appData = AppData.parseAppDataFromSharedPrefs(this);
+            //int themeSetting =  appData.getThemeSetting(appData.getSelectedThemeOption());
+            //int temp = AppCompatDelegate.getDefaultNightMode();
+            int theme = appData.getThemeSetting(AppData.getThemeFromPrefs(this));
+            //AppCompatDelegate.setDefaultNightMode(theme);
+            if(AppCompatDelegate.getDefaultNightMode() != theme){
+                AppCompatDelegate.setDefaultNightMode(theme);
+            }
         }
-
 
     }
 
@@ -139,11 +150,6 @@ public class MainActivity extends AppCompatActivity{
 
             }
         });
-        // WILL RERUN ONCREATE IF USED
-        //AppCompatDelegate.MODE_NIGHT_NO;
-        //AppCompatDelegate.MODE_NIGHT_YES;
-        //AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
-        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
         initListViews();
         updateDailyMovers(null);
@@ -205,6 +211,15 @@ public class MainActivity extends AppCompatActivity{
             stockApi.getByTickerNames(symbolList, new StockApiCallback() {
                 @Override
                 public void onSuccess(List<StockData> response, Context context) {
+                    //Calendar calendar = Calendar.getInstance();
+                    //Date currentTime = Calendar.getInstance().getTime();
+                    //SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+                    //String currentDateandTime = sdf.format(new Date());
+
+
+                    //TextView t = findViewById(R.id.favUpdated);
+                    //t.setText(currentDateandTime);
+                    //calendar.getTime();
                     for(StockData stock:response){
                         int index = appData.getIndex(stock,userFavourites);
                         StockData favStock = userFavourites.get(index);

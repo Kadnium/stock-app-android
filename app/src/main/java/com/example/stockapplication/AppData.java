@@ -7,6 +7,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
+import androidx.appcompat.app.AppCompatDelegate;
+
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -20,6 +22,8 @@ public class AppData {
     private List<StockData> searchResults = new ArrayList<>();
     public static final String APP_DATA = "APP_SHARED_PREFS";
     public static final String APP_DATA_JSON = "APP_DATA_JSON";
+    public static final String SELECTED_THEME = "SELECTED_THEME";
+
     public AppData() {
 
     }
@@ -101,6 +105,18 @@ public class AppData {
         this.searchResults = searchResults;
     }
 
+    public int getThemeSetting(int position){
+        if(position == 0){
+            return AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+        }else if(position == 1){
+            return AppCompatDelegate.MODE_NIGHT_YES;
+        }else{
+            return AppCompatDelegate.MODE_NIGHT_NO;
+        }
+
+    }
+
+
     public static AppData parseAppData(Intent intent){
         if(intent == null){
             return null;
@@ -127,9 +143,12 @@ public class AppData {
         }
         return data;
     }
-
+    public static int getThemeFromPrefs(Context context){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(AppData.APP_DATA, Context.MODE_PRIVATE);
+        return sharedPreferences.getInt(AppData.SELECTED_THEME, 0);
+    }
     public static AppData parseAppDataFromSharedPrefs(Context context){
-        SharedPreferences preferences = context.getApplicationContext().getSharedPreferences(APP_DATA, Context.MODE_PRIVATE);
+        SharedPreferences preferences = context.getSharedPreferences(APP_DATA, Context.MODE_PRIVATE);
         String s = preferences.getString(APP_DATA_JSON, "");
         Gson gson = new Gson();
         AppData data;
@@ -150,10 +169,11 @@ public class AppData {
             appData.setTrendingList(new ArrayList<>());
         }
         String data = gson.toJson(appData);
-        SharedPreferences preferences = context.getApplicationContext().getSharedPreferences(AppData.APP_DATA,Context.MODE_PRIVATE);
+        SharedPreferences preferences = context.getSharedPreferences(AppData.APP_DATA,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(AppData.APP_DATA_JSON,data);
         editor.apply();
     }
+
 }
 
