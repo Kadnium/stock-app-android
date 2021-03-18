@@ -30,20 +30,14 @@ public class SearchActivity extends AppCompatActivity {
     SensorHandler sensorHandler;
 
     public void initBackend(){
-        if(stockApi == null){
-            stockApi = new StockApi(this);
-        }
-        if(appData == null){
-            appData = AppData.parseAppDataFromSharedPrefs(this);
-        }
-        if(sensorHandler ==null){
-            sensorHandler = new SensorHandler(this, new HelperCallback() {
+        stockApi = new StockApi(this);
+        appData = AppData.parseAppDataFromSharedPrefs(this);
+        sensorHandler = new SensorHandler(this, new HelperCallback() {
                 @Override
                 public void onComplete() {
-
                 }
-            });
-        }
+        });
+
 
 
 
@@ -53,7 +47,6 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-        initBackend();
         bottomNavigationHandler = new BottomNavigationHandler(this,appData);
         bottomNavigationHandler.initNavigation(R.id.bottomNav,R.id.search);
 
@@ -68,14 +61,17 @@ public class SearchActivity extends AppCompatActivity {
 
             }
         });
-
-        initListViews();
         initSearchField();
-        clearSearchResults();
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        initBackend();
+        bottomNavigationHandler.refresh();
+        initListViews();
         setTrendingData(null);
-
-
-
+        clearSearchResults();
 
 
     }
@@ -251,23 +247,10 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     public void finish() {
         super.finish();
+      //  AppData.saveAppDataToSharedPrefs(this,appData,false);
         // override back button default animation
         overridePendingTransition(0,0);
     }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if(bottomNavigationHandler != null){
-            bottomNavigationHandler.refresh();
-        }
-        if(sensorHandler != null){
-            sensorHandler.unRegisterSensors();
-            sensorHandler.updateSensors();
-        }
-
-    }
-
 
 
 }

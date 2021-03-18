@@ -32,28 +32,23 @@ public class MainActivity extends AppCompatActivity{
     SwipeRefreshLayout swipeRefreshLayout;
 
     SensorHandler sensorHandler;
-
+    boolean themeChanged = false;
 
     public void initBackend(){
-        if(stockApi == null){
-            stockApi = new StockApi(this);
-        }
-        if(appData == null){
-            appData = AppData.parseAppDataFromSharedPrefs(this);
-            int theme = appData.getThemeSetting(AppData.getSettingFromPrefs(this,AppData.SELECTED_THEME));
-            if(AppCompatDelegate.getDefaultNightMode() != theme){
-                AppCompatDelegate.setDefaultNightMode(theme);
+
+        stockApi = new StockApi(this);
+
+        appData = AppData.parseAppDataFromSharedPrefs(this);
+
+
+        sensorHandler = new SensorHandler(this, new HelperCallback() {
+            @Override
+            public void onComplete() {
+
             }
-        }
-        if(sensorHandler == null){
-            sensorHandler = new SensorHandler(this, new HelperCallback() {
-                @Override
-                public void onComplete() {
+        });
 
-                }
-            });
 
-        }
 
     }
 
@@ -116,12 +111,18 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Do theme checking first because will destroy activity if changed
+        int theme = AppData.getThemeSetting(AppData.getSettingFromPrefs(this,AppData.SELECTED_THEME));
+        if(AppCompatDelegate.getDefaultNightMode() != theme){
+            AppCompatDelegate.setDefaultNightMode(theme);
+            recreate();
+            themeChanged = true;
+            return;
+        }
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
-        initBackend();
         bottomNavigationHandler = new BottomNavigationHandler(this,appData);
         bottomNavigationHandler.initNavigation(R.id.bottomNav, R.id.home);
-
         swipeRefreshLayout = findViewById(R.id.swipeContainer);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -134,14 +135,23 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        initListViews();
-        updateDailyMovers(null);
-        ProgressBar spinner = (ProgressBar) findViewById(R.id.favouriteProgressBar);
-        spinner.setVisibility(View.INVISIBLE);
-        //updateFavourites(null);
+
+    }
+    @Override
+    public void onStart(){
+        super.onStart();
+        if(!themeChanged){
+            initBackend();
+            bottomNavigationHandler.refresh();
+            initListViews();
+            updateDailyMovers(null);
+            ProgressBar spinner = (ProgressBar) findViewById(R.id.favouriteProgressBar);
+            spinner.setVisibility(View.INVISIBLE);
+        }
 
 
     }
+
 
 
     public void updateDailyMovers(HelperCallback cb){
@@ -234,13 +244,18 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        AppData.saveAppDataToSharedPrefs(this,appData,true);
+        if(appData != null){
+            AppData.saveAppDataToSharedPrefs(this,appData,true);
+        }
+
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        AppData.saveAppDataToSharedPrefs(this,appData,false);
+        if(appData != null){
+            AppData.saveAppDataToSharedPrefs(this,appData,false);
+        }
         if(sensorHandler != null){
             sensorHandler.unRegisterSensors();
         }
@@ -251,21 +266,11 @@ public class MainActivity extends AppCompatActivity{
     public void finish() {
         super.finish();
         // override back button default animation
+        //AppData.saveAppDataToSharedPrefs(this,appData,false);
         overridePendingTransition(0,0);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if(bottomNavigationHandler != null){
-            bottomNavigationHandler.refresh();
-        }
-        if(sensorHandler != null){
-            sensorHandler.unRegisterSensors();
-            sensorHandler.updateSensors();
-        }
 
 
-    }
 
 }

@@ -19,14 +19,9 @@ public class BottomNavigationHandler {
     int navId;
     public BottomNavigationHandler(Context ctx,AppData appData) {
         this.context = ctx;
-        this.appData = appData;
 
     }
-    public void setIntentData(Intent intent){
-        Gson gson = new Gson();
-        String data = gson.toJson(appData);
-        intent.putExtra("appData",data);
-    }
+
 
     public void initNavigation(int viewId,int navId){
 

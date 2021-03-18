@@ -107,7 +107,7 @@ public class AppData {
         this.searchResults = searchResults;
     }
 
-    public int getThemeSetting(int position){
+    public static int getThemeSetting(int position){
         if(position == 0){
             return AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
         }else if(position == 1){
@@ -147,18 +147,19 @@ public class AppData {
     }
 
     public static int getSettingFromPrefs(Context context,String setting){
-        SharedPreferences sharedPreferences = context.getSharedPreferences(AppData.APP_DATA, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getApplicationContext().getSharedPreferences(AppData.APP_DATA, Context.MODE_PRIVATE);
         return sharedPreferences.getInt(setting, 0);
-
     }
+
     public static void setSettingToPrefs(Context context,String setting,int value){
-        SharedPreferences sharedPreferences = context.getSharedPreferences(AppData.APP_DATA, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getApplicationContext().getSharedPreferences(AppData.APP_DATA, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt(setting, value);
         editor.apply();
     }
+
     public static AppData parseAppDataFromSharedPrefs(Context context){
-        SharedPreferences preferences = context.getSharedPreferences(APP_DATA, Context.MODE_PRIVATE);
+        SharedPreferences preferences = context.getApplicationContext().getSharedPreferences(APP_DATA, Context.MODE_PRIVATE);
         String s = preferences.getString(APP_DATA_JSON, "");
         Gson gson = new Gson();
         AppData data;
@@ -179,7 +180,7 @@ public class AppData {
             appData.setTrendingList(new ArrayList<>());
         }
         String data = gson.toJson(appData);
-        SharedPreferences preferences = context.getSharedPreferences(AppData.APP_DATA,Context.MODE_PRIVATE);
+        SharedPreferences preferences = context.getApplicationContext().getSharedPreferences(AppData.APP_DATA,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(AppData.APP_DATA_JSON,data);
         editor.apply();

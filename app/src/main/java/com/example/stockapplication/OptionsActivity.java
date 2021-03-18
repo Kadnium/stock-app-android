@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -29,12 +30,9 @@ public class OptionsActivity extends AppCompatActivity  {
     Spinner spinner;
     boolean spinnerClicked = false;
     public void initBackend(){
-        if(appData == null){
-            appData = AppData.parseAppDataFromSharedPrefs(this);
-        }
-        if(sensorHandler == null){
-            sensorHandler = new SensorHandler(this, null);
-        }
+        appData = AppData.parseAppDataFromSharedPrefs(this);
+        sensorHandler = new SensorHandler(this, null);
+
     }
 
 
@@ -47,6 +45,14 @@ public class OptionsActivity extends AppCompatActivity  {
         bottomNavigationHandler.initNavigation(R.id.bottomNav,R.id.settings);
         initThemeSpinner();
         initSettingSwitches();
+
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        initBackend();
+
 
     }
 
@@ -135,22 +141,12 @@ public class OptionsActivity extends AppCompatActivity  {
     @Override
     public void finish() {
         super.finish();
+        //AppData.saveAppDataToSharedPrefs(this,appData,false);
         // override back button default animation
         overridePendingTransition(0,0);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if(bottomNavigationHandler != null){
-            bottomNavigationHandler.refresh();
-        }
-        if(sensorHandler != null){
-            sensorHandler.unRegisterSensors();
-            sensorHandler.updateSensors();
-        }
 
-    }
 
 
 }

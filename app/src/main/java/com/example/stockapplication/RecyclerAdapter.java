@@ -35,11 +35,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         View view = inflater.inflate(R.layout.stock_row,parent,false);
         return new ViewHolder(view);
     }
-    public void removeFromList(int position){
-        stockList.remove(position);
-        this.notifyItemRemoved(position);
-
-    }
 
 
     @Override
