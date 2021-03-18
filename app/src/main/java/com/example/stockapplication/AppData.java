@@ -23,6 +23,8 @@ public class AppData {
     public static final String APP_DATA = "APP_SHARED_PREFS";
     public static final String APP_DATA_JSON = "APP_DATA_JSON";
     public static final String SELECTED_THEME = "SELECTED_THEME";
+    public static final String ACCELOMETER_ENABLED = "ACCELOMETER_ENABLED";
+    public static final String LIGHT_SENSOR_ENABLED = "LIGHT_SENSOR_ENABLED";
 
     public AppData() {
 
@@ -143,9 +145,17 @@ public class AppData {
         }
         return data;
     }
-    public static int getThemeFromPrefs(Context context){
+
+    public static int getSettingFromPrefs(Context context,String setting){
         SharedPreferences sharedPreferences = context.getSharedPreferences(AppData.APP_DATA, Context.MODE_PRIVATE);
-        return sharedPreferences.getInt(AppData.SELECTED_THEME, 0);
+        return sharedPreferences.getInt(setting, 0);
+
+    }
+    public static void setSettingToPrefs(Context context,String setting,int value){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(AppData.APP_DATA, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(setting, value);
+        editor.apply();
     }
     public static AppData parseAppDataFromSharedPrefs(Context context){
         SharedPreferences preferences = context.getSharedPreferences(APP_DATA, Context.MODE_PRIVATE);

@@ -1,30 +1,21 @@
 package com.example.stockapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.android.volley.VolleyError;
-import com.example.stockapplication.R;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.gson.Gson;
 
 import java.util.List;
-import java.util.function.UnaryOperator;
 
 public class SearchActivity extends AppCompatActivity {
     TextInputEditText searchField;
@@ -36,6 +27,7 @@ public class SearchActivity extends AppCompatActivity {
     RecyclerAdapter trendingRecyclerAdapter;
     RecyclerView trendingRecyclerView;
     BottomNavigationHandler bottomNavigationHandler;
+    SensorHandler sensorHandler;
 
     public void initBackend(){
         if(stockApi == null){
@@ -44,6 +36,16 @@ public class SearchActivity extends AppCompatActivity {
         if(appData == null){
             appData = AppData.parseAppDataFromSharedPrefs(this);
         }
+        if(sensorHandler ==null){
+            sensorHandler = new SensorHandler(this, new HelperCallback() {
+                @Override
+                public void onComplete() {
+
+                }
+            });
+        }
+
+
 
     }
 
@@ -146,6 +148,7 @@ public class SearchActivity extends AppCompatActivity {
         }
         return searchResults;
     }
+
     private void initSearchField(){
         searchField = findViewById(R.id.searchInput);
         ProgressBar searchSpinner = (ProgressBar) findViewById(R.id.searchSpinner);
@@ -191,12 +194,12 @@ public class SearchActivity extends AppCompatActivity {
 
         });
     }
-    private void finishCallback(LoadCallback cb){
+    private void finishCallback(HelperCallback cb){
         if(cb != null){
             cb.onComplete();
         }
     }
-    private void setTrendingData(LoadCallback cb){
+    private void setTrendingData(HelperCallback cb){
         ProgressBar trendingSpinner = (ProgressBar) findViewById(R.id.trendingSpinner);
         List<StockData> trendingList = appData.getTrendingList();
         trendingSpinner.setVisibility(View.VISIBLE);
@@ -239,18 +242,29 @@ public class SearchActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         AppData.saveAppDataToSharedPrefs(this,appData,false);
+        if(sensorHandler != null){
+            sensorHandler.unRegisterSensors();
+        }
+
 
     }
     @Override
     public void finish() {
         super.finish();
+        // override back button default animation
         overridePendingTransition(0,0);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        bottomNavigationHandler.refresh();
+        if(bottomNavigationHandler != null){
+            bottomNavigationHandler.refresh();
+        }
+        if(sensorHandler != null){
+            sensorHandler.unRegisterSensors();
+            sensorHandler.updateSensors();
+        }
 
     }
 

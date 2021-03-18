@@ -1,44 +1,21 @@
 package com.example.stockapplication;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
-import android.preference.PreferenceManager;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
-import com.example.stockapplication.AppData;
-import com.example.stockapplication.R;
-import com.example.stockapplication.StockApi;
-import com.example.stockapplication.StockApiCallback;
-import com.example.stockapplication.StockData;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.gson.Gson;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.UUID;
-
-import static com.example.stockapplication.StockData.generateUuid;
 
 public class MainActivity extends AppCompatActivity{
     StockApi stockApi;
@@ -54,7 +31,7 @@ public class MainActivity extends AppCompatActivity{
 
     SwipeRefreshLayout swipeRefreshLayout;
 
-
+    SensorHandler sensorHandler;
 
 
     public void initBackend(){
@@ -63,13 +40,19 @@ public class MainActivity extends AppCompatActivity{
         }
         if(appData == null){
             appData = AppData.parseAppDataFromSharedPrefs(this);
-            //int themeSetting =  appData.getThemeSetting(appData.getSelectedThemeOption());
-            //int temp = AppCompatDelegate.getDefaultNightMode();
-            int theme = appData.getThemeSetting(AppData.getThemeFromPrefs(this));
-            //AppCompatDelegate.setDefaultNightMode(theme);
+            int theme = appData.getThemeSetting(AppData.getSettingFromPrefs(this,AppData.SELECTED_THEME));
             if(AppCompatDelegate.getDefaultNightMode() != theme){
                 AppCompatDelegate.setDefaultNightMode(theme);
             }
+        }
+        if(sensorHandler == null){
+            sensorHandler = new SensorHandler(this, new HelperCallback() {
+                @Override
+                public void onComplete() {
+
+                }
+            });
+
         }
 
     }
@@ -161,7 +144,7 @@ public class MainActivity extends AppCompatActivity{
     }
 
 
-    public void updateDailyMovers(LoadCallback cb){
+    public void updateDailyMovers(HelperCallback cb){
         ProgressBar spinner = (ProgressBar) findViewById(R.id.mostChangedProgress);
         spinner.setVisibility(View.VISIBLE);
         if(appData.getMostChanged().size() <2 || cb != null){
@@ -193,12 +176,12 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
-    private void finishCallback(LoadCallback cb){
+    private void finishCallback(HelperCallback cb){
         if(cb != null){
             cb.onComplete();
         }
     }
-    public void updateFavourites(LoadCallback cb){
+    public void updateFavourites(HelperCallback cb){
         List<StockData> userFavourites = appData.getFavouriteData();
         ProgressBar spinner = (ProgressBar) findViewById(R.id.favouriteProgressBar);
         spinner.setVisibility(View.VISIBLE);
@@ -258,19 +241,30 @@ public class MainActivity extends AppCompatActivity{
     public void onPause() {
         super.onPause();
         AppData.saveAppDataToSharedPrefs(this,appData,false);
+        if(sensorHandler != null){
+            sensorHandler.unRegisterSensors();
+        }
 
     }
 
     @Override
     public void finish() {
         super.finish();
+        // override back button default animation
         overridePendingTransition(0,0);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        bottomNavigationHandler.refresh();
+        if(bottomNavigationHandler != null){
+            bottomNavigationHandler.refresh();
+        }
+        if(sensorHandler != null){
+            sensorHandler.unRegisterSensors();
+            sensorHandler.updateSensors();
+        }
+
 
     }
 

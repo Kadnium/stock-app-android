@@ -1,6 +1,6 @@
 package com.example.stockapplication;
 
-public interface LoadCallback {
+public interface HelperCallback {
 
     void onComplete();
 }

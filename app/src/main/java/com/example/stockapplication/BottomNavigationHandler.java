@@ -3,6 +3,7 @@ package com.example.stockapplication;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.SensorManager;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -19,6 +20,7 @@ public class BottomNavigationHandler {
     public BottomNavigationHandler(Context ctx,AppData appData) {
         this.context = ctx;
         this.appData = appData;
+
     }
     public void setIntentData(Intent intent){
         Gson gson = new Gson();
@@ -67,7 +69,6 @@ public class BottomNavigationHandler {
         });
 
     }
-
     public void setSelectedItem(int navId){
         if(bottomNavigationView != null){
             bottomNavigationView.setSelectedItemId(navId);
@@ -78,6 +79,9 @@ public class BottomNavigationHandler {
     public void refresh(){
         if(bottomNavigationView != null){
             bottomNavigationView.setSelectedItemId(this.navId);
+
         }
     }
+
+
 }
