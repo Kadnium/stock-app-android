@@ -29,9 +29,12 @@ public class OptionsActivity extends AppCompatActivity  {
     SensorHandler sensorHandler;
     Spinner spinner;
     boolean spinnerClicked = false;
+    OptionsHelper optionsHelper;
     public void initBackend(){
         appData = AppData.parseAppDataFromSharedPrefs(this);
         sensorHandler = new SensorHandler(this, null);
+        optionsHelper = new OptionsHelper(this);
+        optionsHelper.initAveragePriceFields();
 
     }
 
@@ -54,11 +57,12 @@ public class OptionsActivity extends AppCompatActivity  {
         initBackend();
 
 
+
     }
 
 
     private void setAppTheme(int selected){
-        int theme = appData.getThemeSetting(selected);
+        int theme = AppData.getThemeSetting(selected);
         AppData.setSettingToPrefs(this,AppData.SELECTED_THEME,selected);
         AppCompatDelegate.setDefaultNightMode(theme);
         recreate();

@@ -78,11 +78,12 @@ public class SearchActivity extends AppCompatActivity {
 
 
 
-    private void setRecyclerSettings(RecyclerView view, int viewId, RecyclerAdapter adapter){
-        view = findViewById(viewId);
+    private RecyclerView setRecyclerSettings( int viewId, RecyclerAdapter adapter){
+        RecyclerView view = findViewById(viewId);
         view.setNestedScrollingEnabled(false);
         view.setAdapter(adapter);
         view.setLayoutManager(new LinearLayoutManager(this));
+        return view;
     }
     public void initListViews(){
         searchResultAdapter = new RecyclerAdapter(this, appData.getSearchResults(), appData, R.id.searchRecyclerView, new AdapterRefresh() {
@@ -110,7 +111,7 @@ public class SearchActivity extends AppCompatActivity {
             }
 
         });
-        setRecyclerSettings(searchRecyclerView,R.id.searchRecyclerView,searchResultAdapter);
+        searchRecyclerView = setRecyclerSettings(R.id.searchRecyclerView,searchResultAdapter);
 
         trendingRecyclerAdapter = new RecyclerAdapter(this, appData.getTrendingList(), appData, R.id.searchRecyclerView, new AdapterRefresh() {
             @Override
@@ -133,7 +134,7 @@ public class SearchActivity extends AppCompatActivity {
                 appData.removeFromFavourites(stock);
             }
         });
-        setRecyclerSettings(trendingRecyclerView,R.id.trendingRecyclerView,trendingRecyclerAdapter);
+        trendingRecyclerView = setRecyclerSettings(R.id.trendingRecyclerView,trendingRecyclerAdapter);
 
 
     }

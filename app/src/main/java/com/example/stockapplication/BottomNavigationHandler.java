@@ -24,7 +24,6 @@ public class BottomNavigationHandler {
 
 
     public void initNavigation(int viewId,int navId){
-
         if (!(context instanceof AppCompatActivity)) {
             return;
         }

@@ -84,6 +84,243 @@
                     app:layout_constraintTop_toBottomOf="@+id/accelometerSwitch" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="25dp"
+                android:background="?attr/colorPrimary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/optionsContainer">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/stockPriceLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="50dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="?attr/colorPrimaryVariant"
+                    android:elevation="5dp"
+                    android:textColorHint="?attr/colorOnPrimary"
+                    android:textCursorDrawable="?attr/colorOnPrimary"
+                    app:boxStrokeColor="?attr/colorOnPrimary"
+                    app:hintTextColor="?attr/colorOnPrimary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.66"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/stockPriceInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="?attr/colorPrimary"
+                        android:hint="Osakkeen hinta nyt"
+                        android:inputType="number|numberDecimal"
+                        android:textColor="?attr/colorOnPrimary"
+                        android:textColorHighlight="?attr/colorOnPrimary"
+                        android:textColorHint="?attr/colorOnPrimary"
+                        android:textCursorDrawable="@drawable/black_cursor" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/textView6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="5dp"
+                    android:text="Keskikurssilaskuri"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/stockAmountLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="?attr/colorPrimaryVariant"
+                    android:elevation="5dp"
+                    android:textColorHint="?attr/colorOnPrimary"
+                    android:textCursorDrawable="?attr/colorOnPrimary"
+                    app:boxStrokeColor="?attr/colorOnPrimary"
+                    app:hintTextColor="?attr/colorOnPrimary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.66"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/stockPriceLayout">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/stockAmountInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="?attr/colorPrimary"
+                        android:hint="Omistuksen määrä"
+                        android:inputType="number"
+                        android:textColor="?attr/colorOnPrimary"
+                        android:textColorHighlight="?attr/colorOnPrimary"
+                        android:textColorHint="?attr/colorOnPrimary"
+                        android:textCursorDrawable="@drawable/black_cursor" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/averagePriceLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="?attr/colorPrimaryVariant"
+                    android:elevation="5dp"
+                    android:textColorHint="?attr/colorOnPrimary"
+                    android:textCursorDrawable="?attr/colorOnPrimary"
+                    app:boxStrokeColor="?attr/colorOnPrimary"
+                    app:hintTextColor="?attr/colorOnPrimary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.66"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/stockAmountLayout">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/averagePriceInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="?attr/colorPrimary"
+                        android:hint="Omistuksen keskikurssi"
+                        android:inputType="number|numberDecimal"
+                        android:textColor="?attr/colorOnPrimary"
+                        android:textColorHighlight="?attr/colorOnPrimary"
+                        android:textColorHint="?attr/colorOnPrimary"
+                        android:textCursorDrawable="@drawable/black_cursor" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/infoText1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="30dp"
+                    android:text="Mikä olisi keskikurssi osakkeiden oston jälkeen?"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/averagePriceLayout" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/calculateNewAverageLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="?attr/colorPrimaryVariant"
+                    android:elevation="5dp"
+                    android:textColorHint="?attr/colorOnPrimary"
+                    android:textCursorDrawable="?attr/colorOnPrimary"
+                    app:boxStrokeColor="?attr/colorOnPrimary"
+                    app:hintTextColor="?attr/colorOnPrimary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.66"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/infoText1">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/calculateNewAverageInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="?attr/colorPrimary"
+                        android:hint="Anna rahamäärä, jolla ostat osakkeita"
+                        android:inputType="number|numberDecimal"
+                        android:textColor="?attr/colorOnPrimary"
+                        android:textColorHighlight="?attr/colorOnPrimary"
+                        android:textColorHint="?attr/colorOnPrimary"
+                        android:textCursorDrawable="@drawable/black_cursor" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/calculateNewAverageButton"
+                    android:layout_width="60dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="10dp"
+                    android:background="?attr/colorSecondary"
+                    android:scaleX="1"
+                    android:scaleY="1"
+                    android:text="Laske"
+                    android:textScaleX="1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/calculateNewAverageLayout" />
+
+                <TextView
+                    android:id="@+id/infoText2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginEnd="15dp"
+                    android:text="Laske paljonko tarvitsee käyttää rahaa saadakseen tietyn keskikurssin "
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.21"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/calculateNewAverageButton" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/calculateWantedAverageLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="?attr/colorPrimaryVariant"
+                    android:elevation="5dp"
+                    android:textColorHint="?attr/colorOnPrimary"
+                    android:textCursorDrawable="?attr/colorOnPrimary"
+                    app:boxStrokeColor="?attr/colorOnPrimary"
+                    app:hintTextColor="?attr/colorOnPrimary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.66"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/infoText2">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/calculateWantedAverageInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="?attr/colorPrimary"
+                        android:hint="Anna haluttu keskikurssi"
+                        android:inputType="number|numberDecimal"
+                        android:textColor="?attr/colorOnPrimary"
+                        android:textColorHighlight="?attr/colorOnPrimary"
+                        android:textColorHint="?attr/colorOnPrimary"
+                        android:textCursorDrawable="@drawable/black_cursor" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/calculateWantedAverageButton"
+                    android:layout_width="60dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="?attr/colorSecondary"
+                    android:scaleX="1"
+                    android:scaleY="1"
+                    android:text="Laske"
+                    android:textScaleX="1"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/calculateWantedAverageLayout" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

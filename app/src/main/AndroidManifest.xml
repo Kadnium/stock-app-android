@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.StockApplication">
 
-        <activity android:windowSoftInputMode="adjustNothing" android:name=".OptionsActivity" />
+        <activity android:windowSoftInputMode="stateVisible|adjustResize" android:name=".OptionsActivity" />
         <activity android:windowSoftInputMode="adjustNothing" android:name=".SearchActivity" />
         <activity android:windowSoftInputMode="adjustNothing" android:name=".MainActivity">
             <intent-filter>

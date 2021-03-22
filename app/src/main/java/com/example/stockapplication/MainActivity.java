@@ -32,27 +32,27 @@ public class MainActivity extends AppCompatActivity{
     SwipeRefreshLayout swipeRefreshLayout;
 
     SensorHandler sensorHandler;
+
     boolean themeChanged = false;
 
     public void initBackend(){
-
         stockApi = new StockApi(this);
-
         appData = AppData.parseAppDataFromSharedPrefs(this);
+        sensorHandler = new SensorHandler(this, () -> {
 
-
-        sensorHandler = new SensorHandler(this, new HelperCallback() {
-            @Override
-            public void onComplete() {
-
-            }
         });
 
 
 
     }
 
-
+    private RecyclerView setRecyclerSettings(int viewId, RecyclerAdapter adapter){
+        RecyclerView view = findViewById(viewId);
+        view.setNestedScrollingEnabled(false);
+        view.setAdapter(adapter);
+        view.setLayoutManager(new LinearLayoutManager(this));
+        return view;
+    }
 
     public void initListViews(){
         // Most changed
@@ -79,10 +79,8 @@ public class MainActivity extends AppCompatActivity{
             }
 
         });
-        mostChangedRecyclerView = findViewById(R.id.mostChangedRecyclerView);
-        mostChangedRecyclerView.setNestedScrollingEnabled(false);
-        mostChangedRecyclerView.setAdapter(mostChangedAdapter);
-        mostChangedRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mostChangedRecyclerView = setRecyclerSettings(R.id.mostChangedRecyclerView,mostChangedAdapter);
+
         // Favourites
         favouriteAdapter = new RecyclerAdapter(this, appData.getFavouriteData(), appData, R.id.favouriteRecyclerView, new AdapterRefresh() {
             @Override
@@ -99,10 +97,7 @@ public class MainActivity extends AppCompatActivity{
             }
 
         });
-        favouriteRecyclerView = findViewById(R.id.favouriteRecyclerView);
-        favouriteRecyclerView.setNestedScrollingEnabled(false);
-        favouriteRecyclerView.setAdapter(favouriteAdapter);
-        favouriteRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        favouriteRecyclerView = setRecyclerSettings(R.id.favouriteRecyclerView,favouriteAdapter);
 
 
     }
@@ -124,16 +119,9 @@ public class MainActivity extends AppCompatActivity{
         bottomNavigationHandler = new BottomNavigationHandler(this,appData);
         bottomNavigationHandler.initNavigation(R.id.bottomNav, R.id.home);
         swipeRefreshLayout = findViewById(R.id.swipeContainer);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh(){
-                updateDailyMovers(() -> {
-                    updateFavourites(() -> swipeRefreshLayout.setRefreshing(false));
-                });
-
-
-            }
-        });
+        swipeRefreshLayout.setOnRefreshListener(() -> updateDailyMovers(() -> {
+            updateFavourites(() -> swipeRefreshLayout.setRefreshing(false));
+        }));
 
 
     }
@@ -145,7 +133,7 @@ public class MainActivity extends AppCompatActivity{
             bottomNavigationHandler.refresh();
             initListViews();
             updateDailyMovers(null);
-            ProgressBar spinner = (ProgressBar) findViewById(R.id.favouriteProgressBar);
+            ProgressBar spinner = findViewById(R.id.favouriteProgressBar);
             spinner.setVisibility(View.INVISIBLE);
         }
 
@@ -155,7 +143,7 @@ public class MainActivity extends AppCompatActivity{
 
 
     public void updateDailyMovers(HelperCallback cb){
-        ProgressBar spinner = (ProgressBar) findViewById(R.id.mostChangedProgress);
+        ProgressBar spinner = findViewById(R.id.mostChangedProgress);
         spinner.setVisibility(View.VISIBLE);
         if(appData.getMostChanged().size() <2 || cb != null){
             stockApi.getDailyMovers(1,new StockApiCallback() {
@@ -167,9 +155,7 @@ public class MainActivity extends AppCompatActivity{
                     mostChangedAdapter.notifyDataSetChanged();
                     spinner.setVisibility(View.INVISIBLE);
                     finishCallback(cb);
-
                 }
-
                 @Override
                 public void onError(VolleyError error,Context context) {
                     Toast.makeText(context,error.networkResponse.toString(),Toast.LENGTH_LONG).show();
@@ -193,7 +179,7 @@ public class MainActivity extends AppCompatActivity{
     }
     public void updateFavourites(HelperCallback cb){
         List<StockData> userFavourites = appData.getFavouriteData();
-        ProgressBar spinner = (ProgressBar) findViewById(R.id.favouriteProgressBar);
+        ProgressBar spinner = findViewById(R.id.favouriteProgressBar);
         spinner.setVisibility(View.VISIBLE);
         if(!userFavourites.isEmpty()){
             List<String> symbolList = new ArrayList<>();
@@ -204,15 +190,6 @@ public class MainActivity extends AppCompatActivity{
             stockApi.getByTickerNames(symbolList, new StockApiCallback() {
                 @Override
                 public void onSuccess(List<StockData> response, Context context) {
-                    //Calendar calendar = Calendar.getInstance();
-                    //Date currentTime = Calendar.getInstance().getTime();
-                    //SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm");
-                    //String currentDateandTime = sdf.format(new Date());
-
-
-                    //TextView t = findViewById(R.id.favUpdated);
-                    //t.setText(currentDateandTime);
-                    //calendar.getTime();
                     for(StockData stock:response){
                         int index = appData.getIndex(stock,userFavourites);
                         StockData favStock = userFavourites.get(index);
@@ -244,6 +221,7 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        // When app is closed
         if(appData != null){
             AppData.saveAppDataToSharedPrefs(this,appData,true);
         }
@@ -253,6 +231,7 @@ public class MainActivity extends AppCompatActivity{
     @Override
     public void onPause() {
         super.onPause();
+        // Activity change
         if(appData != null){
             AppData.saveAppDataToSharedPrefs(this,appData,false);
         }
@@ -265,8 +244,7 @@ public class MainActivity extends AppCompatActivity{
     @Override
     public void finish() {
         super.finish();
-        // override back button default animation
-        //AppData.saveAppDataToSharedPrefs(this,appData,false);
+        // Override back button default animation
         overridePendingTransition(0,0);
     }
 
