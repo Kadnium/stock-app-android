@@ -10,6 +10,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
@@ -30,7 +31,6 @@ public class MainActivity extends AppCompatActivity{
     BottomNavigationHandler bottomNavigationHandler;
 
     SwipeRefreshLayout swipeRefreshLayout;
-
     SensorHandler sensorHandler;
 
     boolean themeChanged = false;
@@ -39,8 +39,11 @@ public class MainActivity extends AppCompatActivity{
         stockApi = new StockApi(this);
         appData = AppData.parseAppDataFromSharedPrefs(this);
         sensorHandler = new SensorHandler(this, () -> {
-
+            updateDailyMovers(()->{
+                updateFavourites(null);
+            });
         });
+
 
 
 
@@ -252,3 +255,4 @@ public class MainActivity extends AppCompatActivity{
 
 
 }
+

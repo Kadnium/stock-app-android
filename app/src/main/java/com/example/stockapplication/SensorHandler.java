@@ -61,6 +61,7 @@ public class SensorHandler {
         // Else do nothing
         if(AppData.getSettingFromPrefs(context,AppData.ACCELOMETER_ENABLED) == 1){
             Sensor accelometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            AppCompatActivity act = (AppCompatActivity) context;
             accelometerListener = new SensorEventListener() {
                 @Override
                 public void onSensorChanged(SensorEvent event) {
@@ -79,15 +80,18 @@ public class SensorHandler {
                             firstRun = false;
                             // Prevent calling this multiple times by timer because it enters here
                             // Multiple times if shaking
+                            // Run on ui thread because will crash app otherwise
                             new Timer().schedule(new TimerTask() {
                                 @Override
                                 public void run() {
-                                    if(onShakeCallback != null){
-                                        onShakeCallback.onComplete();
-                                    }
-                                    firstRun = true;
+                                    act.runOnUiThread(() -> {
+                                        if(onShakeCallback != null){
+                                            onShakeCallback.onComplete();
+                                        }
+                                        firstRun = true;
+                                    });
                                 }
-                            }, 2000);
+                            }, 1500);
                         }
                         lastX = x;
                         lastY = y;

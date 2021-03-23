@@ -1,6 +1,7 @@
 package com.example.stockapplication;
 
 import android.content.Context;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;
 
@@ -34,14 +35,12 @@ public class OptionsHelper {
             calculateWantedAverageButton = act.findViewById(R.id.calculateWantedAverageButton);
 
             calculateWantedAverageButton.setOnClickListener(v -> {
-                //calculateWantedAveragePrice();
-                Toast.makeText(((AppCompatActivity) context).getApplicationContext(), "TEST", Toast.LENGTH_SHORT).show();
+                calculateWantedAveragePrice();
 
             });
 
             calculateNewAverageButton.setOnClickListener(v->{
-                Toast.makeText(((AppCompatActivity) context).getApplicationContext(), "TEST", Toast.LENGTH_SHORT).show();
-               // calculateNewAveragePrice();
+                calculateNewAveragePrice();
             });
 
 
@@ -54,49 +53,69 @@ public class OptionsHelper {
                 calculateWantedAverageButton != null;
     }
 
-    private double getInputValue(TextInputEditText input){
+    private Double getInputValue(TextInputEditText input){
+        String value = input.getText().toString();
+        if(value.isEmpty()){
+            return null;
+
+        }
         return Double.parseDouble(input.getText().toString());
 
     }
     public void calculateNewAveragePrice(){
         if(checkViews()){
-            double stockPrice = getInputValue(stockPriceInput);
-            double stockAmount = getInputValue(stockAmountInput);
-            double averagePrice = getInputValue(averagePriceInput);
+            Double stockPrice = getInputValue(stockPriceInput);
+            Double stockAmount = getInputValue(stockAmountInput);
+            Double averagePrice = getInputValue(averagePriceInput);
 
-            double moneyAmount = getInputValue(calculateNewAverageInput);
+            Double moneyAmount = getInputValue(calculateNewAverageInput);
+            if(stockPrice == null || stockAmount==null||averagePrice==null || moneyAmount == null){
+                setToast("Vaaditusta kentästä puuttuu arvo!", Toast.LENGTH_SHORT);
+                return;
+            }
 
             double stockAmountToGet = moneyAmount / stockPrice;
             double bottomDivider = stockAmountToGet + stockAmount;
             double topDivider = averagePrice * stockAmount + stockAmountToGet * stockPrice;
 
             BigDecimal bd = new BigDecimal(topDivider/bottomDivider).setScale(2, RoundingMode.HALF_UP);
+            setToast("Uusi keskikurssi olisi: "+bd.toString(), Toast.LENGTH_LONG);
 
-
-            Toast toast = Toast.makeText(context, "Uusi keskikurssi olisi: "+bd.toString(), Toast.LENGTH_SHORT);
-            toast.show();
 
         }
     }
 
-
+    private void setToast(String text,int length){
+        Toast toast = Toast.makeText(context, text, length);
+        toast.setGravity(Gravity.CENTER|Gravity.CENTER_HORIZONTAL, 0, 0);
+        toast.show();
+    }
     public void calculateWantedAveragePrice(){
         if(checkViews()){
-            double stockPrice = getInputValue(stockPriceInput);
-            double stockAmount = getInputValue(stockAmountInput);
-            double averagePrice = getInputValue(averagePriceInput);
+            Double stockPrice = getInputValue(stockPriceInput);
+            Double stockAmount = getInputValue(stockAmountInput);
+            Double averagePrice = getInputValue(averagePriceInput);
 
-            double newAveragePrice = getInputValue(calculateWantedAverageInput);
+            Double newAveragePrice = getInputValue(calculateWantedAverageInput);
+            if(stockPrice == null || stockAmount==null||averagePrice==null || newAveragePrice == null){
+                setToast("Vaaditusta kentästä puuttuu arvo!",Toast.LENGTH_SHORT);
+                return;
+            }
 
+            if(newAveragePrice.equals(stockPrice)){
+                setToast("Ei mahdollista",Toast.LENGTH_LONG);
+                return;
+            }
             double bottomDivider = newAveragePrice - stockPrice;
             double topDivider = (-1 * stockAmount) * (newAveragePrice - averagePrice);
 
-            BigDecimal bd = new BigDecimal(topDivider/bottomDivider).setScale(2, RoundingMode.HALF_UP);
-
-
-            Toast toast = Toast.makeText(context, "Osakkeita pitäis ostaa: "+bd.toString()+" kpl", Toast.LENGTH_SHORT);
-            toast.show();
-
+            BigDecimal amount = new BigDecimal(topDivider/bottomDivider).setScale(2, RoundingMode.HALF_UP);
+            BigDecimal moneyAmount = new BigDecimal(amount.doubleValue()*stockPrice).setScale(2, RoundingMode.HALF_UP);
+            if(amount.doubleValue()<0){
+                setToast("Ei mahdollista",Toast.LENGTH_LONG);
+                return;
+            }
+            setToast("Osakkeita pitäisi ostaa: "+amount.toString()+" kpl / "+moneyAmount.toString()+"€", Toast.LENGTH_LONG);
 
         }
     }

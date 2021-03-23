@@ -32,11 +32,10 @@ public class SearchActivity extends AppCompatActivity {
     public void initBackend(){
         stockApi = new StockApi(this);
         appData = AppData.parseAppDataFromSharedPrefs(this);
-        sensorHandler = new SensorHandler(this, new HelperCallback() {
-                @Override
-                public void onComplete() {
-                }
+        sensorHandler = new SensorHandler(this, ()->{
+            setTrendingData(()->{ });
         });
+
 
 
 
