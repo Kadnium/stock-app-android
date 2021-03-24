@@ -32,8 +32,10 @@ public class SearchActivity extends AppCompatActivity {
     public void initBackend(){
         stockApi = new StockApi(this);
         appData = AppData.parseAppDataFromSharedPrefs(this);
+
         sensorHandler = new SensorHandler(this, ()->{
-            setTrendingData(()->{ });
+            appData.setRefreshing(true);
+            setTrendingData(()->appData.setRefreshing(false));
         });
 
 
@@ -50,15 +52,14 @@ public class SearchActivity extends AppCompatActivity {
         bottomNavigationHandler.initNavigation(R.id.bottomNav,R.id.search);
 
         swipeRefreshLayout = findViewById(R.id.swipeContainer);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh(){
-                setTrendingData(() -> {
-                   swipeRefreshLayout.setRefreshing(false);
-                });
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            appData.setRefreshing(true);
+            setTrendingData(() -> {
+               swipeRefreshLayout.setRefreshing(false);
+               appData.setRefreshing(false);
+            });
 
 
-            }
         });
         initSearchField();
     }
@@ -232,6 +233,9 @@ public class SearchActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         AppData.saveAppDataToSharedPrefs(this,appData,true);
+        if(sensorHandler != null){
+            sensorHandler.unRegisterSensors();
+        }
     }
 
     @Override
@@ -249,6 +253,7 @@ public class SearchActivity extends AppCompatActivity {
         super.finish();
       //  AppData.saveAppDataToSharedPrefs(this,appData,false);
         // override back button default animation
+
         overridePendingTransition(0,0);
     }
 

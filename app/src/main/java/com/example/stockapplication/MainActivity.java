@@ -39,8 +39,9 @@ public class MainActivity extends AppCompatActivity{
         stockApi = new StockApi(this);
         appData = AppData.parseAppDataFromSharedPrefs(this);
         sensorHandler = new SensorHandler(this, () -> {
+            appData.setRefreshing(true);
             updateDailyMovers(()->{
-                updateFavourites(null);
+                updateFavourites(()->appData.setRefreshing(false));
             });
         });
 
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity{
         RecyclerView view = findViewById(viewId);
         view.setNestedScrollingEnabled(false);
         view.setAdapter(adapter);
+        //view.suppressLayout(true);
         view.setLayoutManager(new LinearLayoutManager(this));
         return view;
     }
@@ -64,8 +66,8 @@ public class MainActivity extends AppCompatActivity{
             public void onFavouriteAddClicked(int position, StockData stock) {
                 // Add to favourites and update favouriteAdapter
                 appData.addToFavourites(stock);
-                favouriteAdapter.notifyItemInserted(appData.getFavouriteData().size()-1);
-                // update trending list
+                favouriteAdapter.notifyItemInserted(0);
+                // In other activity - no need to update adapter
                 appData.updateFavouriteStatuses(stock,appData.getTrendingList(),true);
             }
 
@@ -76,7 +78,7 @@ public class MainActivity extends AppCompatActivity{
                 if(favouriteIndex!=-1){
                     favouriteAdapter.notifyItemRemoved(favouriteIndex);
                 }
-               // update trending list
+                // In other activity - no need to update adapter
                 appData.updateFavouriteStatuses(stock, appData.getTrendingList(),false);
 
             }
@@ -94,8 +96,11 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onFavouriteRemoveClicked(int position, StockData stock) {
                 // update most changed list
-                appData.updateFavouriteStatuses(stock,appData.getMostChanged(),false);
-                mostChangedAdapter.notifyDataSetChanged();
+                int favouriteIndex = appData.updateFavouriteStatuses(stock,appData.getMostChanged(),false);
+                if(favouriteIndex != -1){
+                    mostChangedAdapter.notifyItemRemoved(favouriteIndex);
+                }
+                // In other activity - no need to update adapter
                 appData.updateFavouriteStatuses(stock,appData.getTrendingList(),false);
             }
 
@@ -122,9 +127,15 @@ public class MainActivity extends AppCompatActivity{
         bottomNavigationHandler = new BottomNavigationHandler(this,appData);
         bottomNavigationHandler.initNavigation(R.id.bottomNav, R.id.home);
         swipeRefreshLayout = findViewById(R.id.swipeContainer);
-        swipeRefreshLayout.setOnRefreshListener(() -> updateDailyMovers(() -> {
-            updateFavourites(() -> swipeRefreshLayout.setRefreshing(false));
-        }));
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            appData.setRefreshing(true);
+            updateDailyMovers(() -> {
+                updateFavourites(() ->{
+                    swipeRefreshLayout.setRefreshing(false);
+                    appData.setRefreshing(false);
+                });
+            });
+        });
 
 
     }
@@ -227,6 +238,9 @@ public class MainActivity extends AppCompatActivity{
         // When app is closed
         if(appData != null){
             AppData.saveAppDataToSharedPrefs(this,appData,true);
+        }
+        if(sensorHandler != null){
+            sensorHandler.unRegisterSensors();
         }
 
     }

@@ -20,8 +20,8 @@ import java.util.TimerTask;
 public class SensorHandler {
     Context context;
     SensorManager sensorManager;
-    SensorEventListener accelometerListener;
-    SensorEventListener lightSensorListener;
+    private SensorEventListener accelometerListener;
+    private SensorEventListener lightSensorListener;
 
     private final int LIGHT_THRESHOLD = 25;
     private final int SHAKE_THRESHOLD = 400;
@@ -36,7 +36,7 @@ public class SensorHandler {
         this.context = context;
         this.onShakeCallback = cb;
         if(context instanceof AppCompatActivity){
-            sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+            sensorManager = (SensorManager) context.getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
             setAccelometer();
             setLightSensor();
 
@@ -59,7 +59,7 @@ public class SensorHandler {
         // If accelometer sensor is enabled from settings, create EventListener for accelometer
         // If it's not enabled check if there are old instances of EventListener -> delete
         // Else do nothing
-        if(AppData.getSettingFromPrefs(context,AppData.ACCELOMETER_ENABLED) == 1){
+        if(AppData.getSettingFromPrefs(context,AppData.ACCELOMETER_ENABLED) == 1&& accelometerListener == null){
             Sensor accelometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             AppCompatActivity act = (AppCompatActivity) context;
             accelometerListener = new SensorEventListener() {
@@ -125,7 +125,7 @@ public class SensorHandler {
         // If light sensor is enabled from settings, create EventListener for light sensor
         // If it's not enabled check if there are old instances of EventListener -> delete
         // Else do nothing
-        if(AppData.getSettingFromPrefs(context,AppData.LIGHT_SENSOR_ENABLED) == 1){
+        if(AppData.getSettingFromPrefs(context,AppData.LIGHT_SENSOR_ENABLED) == 1 && lightSensorListener == null){
             Sensor lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
             lightSensorListener = new SensorEventListener() {
                 @Override

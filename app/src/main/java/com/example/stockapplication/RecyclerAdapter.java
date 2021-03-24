@@ -60,34 +60,37 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         }
         holder.favouriteStatus.setImageResource(stock.isFavourite()?R.drawable.ic_favourite:R.drawable.ic_not_favourite);
         holder.favouriteStatus.setOnClickListener(v -> {
-            int adapterPosition = holder.getAdapterPosition();
-            StockData selectedStock = stockList.get(adapterPosition);
-            if(selectedStock.isFavourite()){
-               // CLICKED FROM MOST CHANGED OR SEARCH/TRENDING
-               // Uuid is null for non favourites
-               // dont remove from list, only modify
-               if(selectedStock.getUuid() == null){
-                   selectedStock.setFavourite(false);
-                   notifyItemChanged(adapterPosition);
-               }else{
-                   // CLICKED FROM FAVOURITES LIST
-                   // remove from current list
-                   stockList.remove(adapterPosition);
-                   notifyItemRemoved(adapterPosition);
-               }
-               // Callback to do custom logic
-               refresh.onFavouriteRemoveClicked(adapterPosition, selectedStock);
+            if(!data.isRefreshing()){
+                int adapterPosition = holder.getAdapterPosition();
+                StockData selectedStock = stockList.get(adapterPosition);
+                if(selectedStock.isFavourite()){
+                    // CLICKED FROM MOST CHANGED OR SEARCH/TRENDING
+                    // Uuid is null for non favourites
+                    // dont remove from list, only modify
+                    if(selectedStock.getUuid() == null){
+                        selectedStock.setFavourite(false);
+                        notifyItemChanged(adapterPosition);
+                    }else{
+                        // CLICKED FROM FAVOURITES LIST
+                        // remove from current list
+                        stockList.remove(adapterPosition);
+                        notifyItemRemoved(adapterPosition);
+                    }
+                    // Callback to do custom logic
+                    refresh.onFavouriteRemoveClicked(adapterPosition, selectedStock);
 
-           }else{
-               // Stock is not yet favourite so can't be on favourite list
-               // Add to favourite list
-               selectedStock.setFavourite(true);
-               notifyItemChanged(adapterPosition);
-               // Callback to do custom logic
-               refresh.onFavouriteAddClicked(adapterPosition, selectedStock);
+                }else{
+                    // Stock is not yet favourite so can't be on favourite list
+                    // Add to favourite list
+                    selectedStock.setFavourite(true);
+                    notifyItemChanged(adapterPosition);
+                    // Callback to do custom logic
+                    refresh.onFavouriteAddClicked(adapterPosition, selectedStock);
 
 
-           }
+                }
+            }
+
 
         });
 

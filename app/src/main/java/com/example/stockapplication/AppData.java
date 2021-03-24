@@ -25,11 +25,18 @@ public class AppData {
     public static final String SELECTED_THEME = "SELECTED_THEME";
     public static final String ACCELOMETER_ENABLED = "ACCELOMETER_ENABLED";
     public static final String LIGHT_SENSOR_ENABLED = "LIGHT_SENSOR_ENABLED";
-
+    private boolean refreshing = false;
     public AppData() {
 
     }
 
+    public boolean isRefreshing() {
+        return refreshing;
+    }
+
+    public void setRefreshing(boolean refreshing) {
+        this.refreshing = refreshing;
+    }
 
     public List<StockData> getFavouriteData() {
         return favouriteData;
@@ -56,7 +63,7 @@ public class AppData {
     public void addToFavourites(StockData stock){
         //clone and add uuid
         StockData cloned = new StockData(stock.getSymbol(),stock.getMarket(),stock.getName(),stock.getPercentChange(),stock.getMarketPrice(),stock.isFavourite(),StockData.generateUuid());
-        this.favouriteData.add(cloned);
+        this.favouriteData.add(0,cloned);
     }
     public int removeFromFavourites(StockData stock){
         int index = getIndex(stock,favouriteData);
@@ -86,7 +93,7 @@ public class AppData {
         return false;
     }
     public int updateFavouriteStatuses(StockData stock,List<StockData> stockList,boolean status){
-        // TODO fix
+
         int index = getIndex(stock,stockList);
         if(index != -1){
             stockList.get(index).setFavourite(status);

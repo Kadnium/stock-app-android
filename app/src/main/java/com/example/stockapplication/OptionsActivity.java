@@ -43,11 +43,8 @@ public class OptionsActivity extends AppCompatActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_options);
-        initBackend();
         bottomNavigationHandler = new BottomNavigationHandler(this,appData);
         bottomNavigationHandler.initNavigation(R.id.bottomNav,R.id.settings);
-        initThemeSpinner();
-        initSettingSwitches();
 
     }
 
@@ -55,6 +52,9 @@ public class OptionsActivity extends AppCompatActivity  {
     public void onStart(){
         super.onStart();
         initBackend();
+        initThemeSpinner();
+        initSettingSwitches();
+        bottomNavigationHandler.refresh();
 
 
 
@@ -131,6 +131,9 @@ public class OptionsActivity extends AppCompatActivity  {
     protected void onDestroy() {
         super.onDestroy();
         AppData.saveAppDataToSharedPrefs(this,appData,true);
+        if(sensorHandler != null){
+            sensorHandler.unRegisterSensors();
+        }
     }
 
     @Override
