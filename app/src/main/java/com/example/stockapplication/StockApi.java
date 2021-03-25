@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StockApi {
-    private Context context;
+    private final Context context;
     private RequestQueue requestQueue;
     static final String STOCK_DATA_API = "STOCK_DATA";
     static final String TRENDING_API = "TRENDING";

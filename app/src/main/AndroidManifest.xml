@@ -11,10 +11,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.StockApplication">
-
-        <activity android:windowSoftInputMode="stateVisible|adjustResize" android:name=".OptionsActivity" />
-        <activity android:windowSoftInputMode="adjustNothing" android:name=".SearchActivity" />
-        <activity android:windowSoftInputMode="adjustNothing" android:name=".MainActivity">
+        <activity android:name=".ChartActivity"></activity>
+        <activity
+            android:name=".OptionsActivity"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name=".SearchActivity"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".MainActivity"
+            android:windowSoftInputMode="adjustNothing">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

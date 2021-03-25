@@ -71,7 +71,7 @@
                     android:layout_marginStart="5dp"
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="15dp"
-                    android:text="Trending"
+                    android:text="@string/trending"
                     android:textColor="?attr/colorOnPrimary"
                     app:layout_constraintBottom_toTopOf="@+id/trendingRecyclerView"
                     app:layout_constraintStart_toStartOf="parent"
@@ -130,7 +130,7 @@
                     android:layout_marginStart="5dp"
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="15dp"
-                    android:text="Search results"
+                    android:text="@string/search_results"
                     android:textColor="?attr/colorOnPrimary"
                     app:layout_constraintBottom_toTopOf="@+id/searchRecyclerView"
                     app:layout_constraintStart_toStartOf="parent"
@@ -147,25 +147,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <!--<com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="TESTI"
-            app:hintTextColor="?attr/colorOnPrimary"
-            app:boxStrokeColor="?attr/colorSecondary"
-            android:textColorHint="?attr/colorOnPrimary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" >
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-        </com.google.android.material.textfield.TextInputLayout>-->
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textInputLayout2"
@@ -189,7 +170,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="?attr/colorPrimary"
-                        android:hint="Haku"
+                        android:hint="@string/search"
                         android:textColor="?attr/colorOnPrimary"
                         android:textColorHighlight="?attr/colorOnPrimary"
                         android:textColorHint="?attr/colorOnPrimary"
@@ -199,6 +180,7 @@
                 <ImageView
                     android:id="@+id/imageView2"
                     android:layout_width="42dp"
+                    android:contentDescription="@string/search_icon"
                     android:layout_height="51dp"
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="8dp"

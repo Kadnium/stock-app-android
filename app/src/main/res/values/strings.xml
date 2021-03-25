@@ -1,8 +1,31 @@
 <resources>
     <string name="app_name">StockApplication</string>
-    <string name="default_theme">System default</string>
-    <string name="dark_theme">Dark theme</string>
-    <string name="light_theme">Light theme</string>
+    <string name="default_theme">Oletus</string>
+    <string name="dark_theme">Tumma teema</string>
+    <string name="light_theme">Vaalea teema</string>
+    <string name="most_changed">Suurimmat muuttujat</string>
+    <string name="favourites">Suosikit</string>
+    <string name="average_price_calculator">Keskikurssilaskuri</string>
+    <string name="position_size">Omistuksen määrä</string>
+    <string name="position_average">Omistuksen keskikurssi</string>
+    <string name="what_would_be_avg">Mikä olisi keskikurssi osakkeiden oston jälkeen?</string>
+    <string name="amount_to_buy_with">Anna rahamäärä, jolla ostat osakkeita</string>
+    <string name="calculate">Laske</string>
+    <string name="how_much_to_get_avg">Laske paljonko tarvitsee käyttää rahaa saadakseen tietyn keskikurssin</string>
+    <string name="give_wanted_avg">Anna haluttu keskikurssi</string>
+    <string name="trending">Trendaavat</string>
+    <string name="search_results">Hakutulokset</string>
+    <string name="search">Haku</string>
+    <string name="search_icon">Hakuikoni</string>
+    <string name="missing_value">Vaaditusta kentästä puuttuu arvo!</string>
+    <string name="not_possible">Ei mahdollista</string>
+    <string name="should_buy_info">Osakkeita pitäisi ostaa: </string>
+    <string name="kpl"> kpl / </string>
+    <string name="new_avg_would_be">Uusi keskikurssi olisi: </string>
+    <string name="price_now">Osakkeen hinta nyt</string>
+    <string name="theme_by_lightness">Teeman vaihto valoisuuden mukaan</string>
+    <string name="update_when_shaking">Päivitä osakkeet puhelinta ravistamalla</string>
+    <string name="settings">Asetukset</string>
 
     <string-array name="theme_settings">
         <item>@string/default_theme</item>

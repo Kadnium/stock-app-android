@@ -70,7 +70,7 @@ public class OptionsHelper {
 
             Double moneyAmount = getInputValue(calculateNewAverageInput);
             if(stockPrice == null || stockAmount==null||averagePrice==null || moneyAmount == null){
-                setToast("Vaaditusta kentästä puuttuu arvo!", Toast.LENGTH_SHORT);
+                setToast(context.getString(R.string.missing_value), Toast.LENGTH_SHORT);
                 return;
             }
 
@@ -79,7 +79,7 @@ public class OptionsHelper {
             double topDivider = averagePrice * stockAmount + stockAmountToGet * stockPrice;
 
             BigDecimal bd = new BigDecimal(topDivider/bottomDivider).setScale(2, RoundingMode.HALF_UP);
-            setToast("Uusi keskikurssi olisi: "+bd.toString(), Toast.LENGTH_LONG);
+            setToast(context.getString(R.string.new_avg_would_be)+" "+ bd.toString(), Toast.LENGTH_LONG);
 
 
         }
@@ -98,12 +98,12 @@ public class OptionsHelper {
 
             Double newAveragePrice = getInputValue(calculateWantedAverageInput);
             if(stockPrice == null || stockAmount==null||averagePrice==null || newAveragePrice == null){
-                setToast("Vaaditusta kentästä puuttuu arvo!",Toast.LENGTH_SHORT);
+                setToast(context.getString(R.string.missing_value),Toast.LENGTH_SHORT);
                 return;
             }
 
             if(newAveragePrice.equals(stockPrice)){
-                setToast("Ei mahdollista",Toast.LENGTH_LONG);
+                setToast(context.getString(R.string.not_possible),Toast.LENGTH_LONG);
                 return;
             }
             double bottomDivider = newAveragePrice - stockPrice;
@@ -112,10 +112,10 @@ public class OptionsHelper {
             BigDecimal amount = new BigDecimal(topDivider/bottomDivider).setScale(2, RoundingMode.HALF_UP);
             BigDecimal moneyAmount = new BigDecimal(amount.doubleValue()*stockPrice).setScale(2, RoundingMode.HALF_UP);
             if(amount.doubleValue()<0){
-                setToast("Ei mahdollista",Toast.LENGTH_LONG);
+                setToast(context.getString(R.string.not_possible),Toast.LENGTH_LONG);
                 return;
             }
-            setToast("Osakkeita pitäisi ostaa: "+amount.toString()+" kpl / "+moneyAmount.toString()+"€", Toast.LENGTH_LONG);
+            setToast(context.getString(R.string.should_buy_info)+" "+amount.toString()+" "+context.getString(R.string.kpl)+" "+moneyAmount.toString()+"€", Toast.LENGTH_LONG);
 
         }
     }
