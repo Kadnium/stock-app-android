@@ -2,6 +2,8 @@ package com.example.stockapplication;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 public class StockData {
@@ -12,7 +14,8 @@ public class StockData {
     private double percentChange;
     private double marketPrice;
     private boolean isFavourite;
-
+    private List<Integer> chartTimes;
+    private List<Double> dataPoints;
     public StockData(String symbol, String market, String name, double percentChange, double marketPrice, boolean isFavourite,String uuid) {
         this.symbol = symbol;
         this.market = market;
@@ -43,6 +46,21 @@ public class StockData {
         isFavourite = favourite;
     }
 
+    public List<Integer> getChartTimes() {
+        return chartTimes;
+    }
+
+    public void setChartTimes(List<Integer> chartTimes) {
+        this.chartTimes = chartTimes;
+    }
+
+    public List<Double> getDataPoints() {
+        return dataPoints;
+    }
+
+    public void setDataPoints(List<Double> dataPoints) {
+        this.dataPoints = dataPoints;
+    }
 
     public String getSymbol() {
         return symbol;

@@ -31,8 +31,9 @@ public class BottomNavigationHandler {
         AppCompatActivity activity = (AppCompatActivity) context;
         activity.getSupportActionBar().hide();
         bottomNavigationView = activity.findViewById(viewId);
-        bottomNavigationView.setSelectedItemId(navId);
-
+        if(navId !=-1){
+            bottomNavigationView.setSelectedItemId(navId);
+        }
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {

@@ -18,19 +18,40 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class StockApi {
     private final Context context;
     private RequestQueue requestQueue;
-    static final String STOCK_DATA_API = "STOCK_DATA";
-    static final String TRENDING_API = "TRENDING";
-    static final String SEARCH_API = "SEARCH";
-    static final String DAILY_GAINER_API = "DAILY_GAINER";
-    static final String DAILY_LOSER_API = "DAILY_LOSER";
+    public static final String STOCK_DATA_API = "STOCK_DATA";
+    public static final String TRENDING_API = "TRENDING";
+    public static final String SEARCH_API = "SEARCH";
+    public static final String DAILY_GAINER_API = "DAILY_GAINER";
+    public static final String DAILY_LOSER_API = "DAILY_LOSER";
+    public static final String CHART_API = "CHART_API";
+    // CHART RANGES
+    public static final String DAILY_RANGE = "DAILY_RANGE";
+    public static final String FIVE_DAY_RANGE = "FIVE_DAY_RANGE";
+    public static final String ONE_MONTH_RANGE = "ONE_MONTH_RANGE";
+    public static final String TWO_MONTH_RANGE = "TWO_MONTH_RANGE";
+    public static final String YTD_RANGE = "YTD_RANGE";
+    public static final String YEAR_RANGE = "YEAR_RANGE";
+    public static final String FIVE_YEAR_RANGE = "FIVE_YEAR_RANGE";
+    public static final String ALL_TIME_RANGE = "ALL_TIME_RANGE";
+    private HashMap<String, Pair<String,String>> chartApiHelper = new HashMap<>();
     public StockApi(Context context) {
         this.context = context;
         this.requestQueue = Volley.newRequestQueue(context);
+        chartApiHelper.put(DAILY_RANGE,new Pair<>("2m","1d"));
+        chartApiHelper.put(FIVE_DAY_RANGE,new Pair<>("2m","1d"));
+        chartApiHelper.put(ONE_MONTH_RANGE,new Pair<>("1h","1m"));
+        chartApiHelper.put(TWO_MONTH_RANGE,new Pair<>("1d","6m"));
+        chartApiHelper.put(YTD_RANGE,new Pair<>("1d","ytd"));
+        chartApiHelper.put(YEAR_RANGE,new Pair<>("1wk","1y"));
+        chartApiHelper.put(FIVE_YEAR_RANGE,new Pair<>("1mo","5y"));
+        chartApiHelper.put(ALL_TIME_RANGE,new Pair<>("1mo","max"));
+
     }
 
     private Pair<String,String> stockDataApi(String symbol){
@@ -45,7 +66,9 @@ public class StockApi {
                 TRENDING_API
         );
     }
-
+    private Pair<String,String> chartApi(String ticker, Pair<String,String> rangePair){
+        return new Pair<>("https://query1.finance.yahoo.com/v8/finance/chart/"+ticker+"?region=US&lang=en-US&includePrePost=false&interval="+rangePair.first+"&useYfid=true&range="+rangePair.second,CHART_API);
+    }
     private Pair<String,String> searchApi(String args,int queryCount){
         return new Pair<>("https://query2.finance.yahoo.com/v1/finance/search?newsCount=0&enableFuzzyQuery=false&enableEnhancedTrivialQuery=true&region=US&lang=en-US&q="+args+"&quotesCount="+queryCount,
                 SEARCH_API
@@ -102,6 +125,13 @@ public class StockApi {
 
             }
         });
+
+    }
+    public void getChart(String ticker,String type, StockApiCallback cb){
+        Pair<String,String> rangePair = chartApiHelper.get(type);
+        Pair<String,String> API = chartApi(ticker,rangePair);
+        fetchData(API,cb);
+
 
     }
     public void getDailyGainers(int count, StockApiCallback cb){
@@ -165,8 +195,12 @@ public class StockApi {
                         case DAILY_LOSER_API:
                             responseArr = dailyMoverApiParse(response);
                             break;
+                        case CHART_API:
+                            responseArr = chartApiParse(response);
+                            break;
                         default:
                             responseArr = new ArrayList<>();
+                            break;
 
                     }
                     callback.onSuccess(responseArr,context);
@@ -180,6 +214,35 @@ public class StockApi {
         requestQueue.add(stringRequest);
     }
 
+    private List<StockData> chartApiParse(String json){
+        List<StockData> stockList = new ArrayList<>();
+        try {
+            JSONObject mainObject = new JSONObject(json);
+            mainObject = mainObject.getJSONObject("chart");
+            JSONArray dataArr = mainObject.getJSONArray("result");
+            JSONObject dataObject = dataArr.getJSONObject(0);
+            JSONArray timestamp =  dataObject.getJSONArray("timestamp");
+            JSONObject ind =  dataObject.getJSONObject("indicators");
+            JSONObject quote = ind.getJSONArray("quote").getJSONObject(0);
+            JSONArray dataPoints = quote.getJSONArray("close");
+
+            StockData stock = new StockData(null,null,null,0,0,false,null);
+            List<Integer> timestamps = new ArrayList<>();
+            List<Double> dPoints = new ArrayList<>();
+            for (int i = 0; i <timestamp.length(); i++) {
+                timestamps.add(timestamp.getInt(i));
+            }
+            for (int i = 0; i <dataPoints.length(); i++) {
+                dPoints.add(dataPoints.getDouble(i));
+            }
+            stock.setChartTimes(timestamps);
+            stock.setDataPoints(dPoints);
+            stockList.add(stock);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return stockList;
+    }
 
     private List<StockData> stockDataApiParse(String json){
         List<StockData> stockList = new ArrayList<>();

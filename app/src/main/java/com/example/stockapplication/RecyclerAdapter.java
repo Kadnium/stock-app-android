@@ -1,6 +1,7 @@
 package com.example.stockapplication;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -58,6 +61,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             }
 
         }
+        holder.mainLayout.setOnClickListener(v->{
+            Intent intent = new Intent(context.getApplicationContext(),ChartActivity.class);
+            //setIntentData(intent);
+            intent.putExtra("Ticker",stock.getSymbol());
+            context.startActivity(intent);
+            AppCompatActivity activity = (AppCompatActivity) context;
+            activity.overridePendingTransition(0,0);
+        });
         holder.favouriteStatus.setImageResource(stock.isFavourite()?R.drawable.ic_favourite:R.drawable.ic_not_favourite);
         holder.favouriteStatus.setOnClickListener(v -> {
             if(!data.isRefreshing()){
@@ -110,6 +121,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView priceChange, stockPrice, stockName, stockTicker;
         ImageView favouriteStatus;
+        ConstraintLayout mainLayout;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             priceChange = itemView.findViewById(R.id.priceChange);
@@ -117,6 +129,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             stockName = itemView.findViewById(R.id.stockName);
             stockTicker = itemView.findViewById(R.id.stockTicker);
             favouriteStatus = itemView.findViewById(R.id.favouriteStatus);
+            mainLayout = itemView.findViewById(R.id.stockCardLayout);
 
         }
     }
