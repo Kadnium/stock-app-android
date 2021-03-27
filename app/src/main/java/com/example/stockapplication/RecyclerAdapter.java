@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
+
 import java.util.List;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder>{
@@ -21,12 +23,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     AppData data;
     int viewId;
     AdapterRefresh refresh;
+    Gson gson;
     public RecyclerAdapter(Context ctx, List<StockData> stockList,AppData data,int viewId,AdapterRefresh refresh){
         this.stockList = stockList;
         this.context = ctx;
         this.data = data;
         this.viewId = viewId;
         this.refresh = refresh;
+        this.gson = new Gson();
     }
 
 
@@ -61,10 +65,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             }
 
         }
+
         holder.mainLayout.setOnClickListener(v->{
             Intent intent = new Intent(context.getApplicationContext(),ChartActivity.class);
             //setIntentData(intent);
-            intent.putExtra("Ticker",stock.getSymbol());
+            String stockString = gson.toJson(stock);
+            intent.putExtra("Stock",stockString);
             context.startActivity(intent);
             AppCompatActivity activity = (AppCompatActivity) context;
             activity.overridePendingTransition(0,0);

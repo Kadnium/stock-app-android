@@ -3,6 +3,8 @@ package com.example.stockapplication;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,8 +16,9 @@ public class StockData {
     private double percentChange;
     private double marketPrice;
     private boolean isFavourite;
-    private List<Integer> chartTimes;
-    private List<Double> dataPoints;
+    private double previousClose;
+    private LinkedHashMap<Long,Float> chartData;
+
     public StockData(String symbol, String market, String name, double percentChange, double marketPrice, boolean isFavourite,String uuid) {
         this.symbol = symbol;
         this.market = market;
@@ -28,6 +31,14 @@ public class StockData {
 
     public String getUuid() {
         return uuid;
+    }
+
+    public double getPreviousClose() {
+        return previousClose;
+    }
+
+    public void setPreviousClose(double previousClose) {
+        this.previousClose = previousClose;
     }
 
     public void setUuid(String uuid) {
@@ -46,20 +57,12 @@ public class StockData {
         isFavourite = favourite;
     }
 
-    public List<Integer> getChartTimes() {
-        return chartTimes;
+    public LinkedHashMap<Long, Float> getChartData() {
+        return chartData;
     }
 
-    public void setChartTimes(List<Integer> chartTimes) {
-        this.chartTimes = chartTimes;
-    }
-
-    public List<Double> getDataPoints() {
-        return dataPoints;
-    }
-
-    public void setDataPoints(List<Double> dataPoints) {
-        this.dataPoints = dataPoints;
+    public void setChartData(LinkedHashMap<Long, Float> chartData) {
+        this.chartData = chartData;
     }
 
     public String getSymbol() {
@@ -91,7 +94,7 @@ public class StockData {
     public boolean isFavourite() {
         return isFavourite;
     }
-    private double formatDouble(double value){
+    public double formatDouble(double value){
         BigDecimal bd = new BigDecimal(value).setScale(2, RoundingMode.HALF_UP);
         return bd.doubleValue();
 

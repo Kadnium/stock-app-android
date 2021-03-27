@@ -8,8 +8,8 @@
     android:layout_alignParentBottom="true"
     app:itemBackground="?attr/colorPrimary"
     app:itemIconSize="45dp"
-    app:itemIconTint="@drawable/selector"
-    app:itemTextColor="@drawable/selector"
+    app:itemIconTint="@drawable/navigation_selector"
+    app:itemTextColor="@drawable/navigation_selector"
 
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"

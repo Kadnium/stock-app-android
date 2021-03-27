@@ -2,6 +2,7 @@ package com.example.stockapplication;
 
 import android.content.Context;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.util.Pair;
@@ -19,6 +20,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class StockApi {
@@ -34,7 +36,7 @@ public class StockApi {
     public static final String DAILY_RANGE = "DAILY_RANGE";
     public static final String FIVE_DAY_RANGE = "FIVE_DAY_RANGE";
     public static final String ONE_MONTH_RANGE = "ONE_MONTH_RANGE";
-    public static final String TWO_MONTH_RANGE = "TWO_MONTH_RANGE";
+    public static final String SIX_MONTH_RANGE = "SIX_MONTH_RANGE";
     public static final String YTD_RANGE = "YTD_RANGE";
     public static final String YEAR_RANGE = "YEAR_RANGE";
     public static final String FIVE_YEAR_RANGE = "FIVE_YEAR_RANGE";
@@ -44,9 +46,9 @@ public class StockApi {
         this.context = context;
         this.requestQueue = Volley.newRequestQueue(context);
         chartApiHelper.put(DAILY_RANGE,new Pair<>("2m","1d"));
-        chartApiHelper.put(FIVE_DAY_RANGE,new Pair<>("2m","1d"));
-        chartApiHelper.put(ONE_MONTH_RANGE,new Pair<>("1h","1m"));
-        chartApiHelper.put(TWO_MONTH_RANGE,new Pair<>("1d","6m"));
+        chartApiHelper.put(FIVE_DAY_RANGE,new Pair<>("15m","5d"));
+        chartApiHelper.put(ONE_MONTH_RANGE,new Pair<>("1h","1mo"));
+        chartApiHelper.put(SIX_MONTH_RANGE,new Pair<>("1d","6mo"));
         chartApiHelper.put(YTD_RANGE,new Pair<>("1d","ytd"));
         chartApiHelper.put(YEAR_RANGE,new Pair<>("1wk","1y"));
         chartApiHelper.put(FIVE_YEAR_RANGE,new Pair<>("1mo","5y"));
@@ -221,22 +223,28 @@ public class StockApi {
             mainObject = mainObject.getJSONObject("chart");
             JSONArray dataArr = mainObject.getJSONArray("result");
             JSONObject dataObject = dataArr.getJSONObject(0);
+            JSONObject meta = dataObject.getJSONObject("meta");
             JSONArray timestamp =  dataObject.getJSONArray("timestamp");
             JSONObject ind =  dataObject.getJSONObject("indicators");
             JSONObject quote = ind.getJSONArray("quote").getJSONObject(0);
             JSONArray dataPoints = quote.getJSONArray("close");
-
+            double previousClose = meta.getDouble("chartPreviousClose");
             StockData stock = new StockData(null,null,null,0,0,false,null);
-            List<Integer> timestamps = new ArrayList<>();
-            List<Double> dPoints = new ArrayList<>();
+            stock.setPreviousClose(previousClose);
+            LinkedHashMap<Long,Float> datasetMap = new LinkedHashMap<>();
             for (int i = 0; i <timestamp.length(); i++) {
-                timestamps.add(timestamp.getInt(i));
+                if(i<timestamp.length() && i<dataPoints.length()){
+                    String longValue = timestamp.getString(i);
+                    String doubleValue = dataPoints.getString(i);
+                    // Some tickers' JSON arrays have null values
+                    if(!longValue.equalsIgnoreCase("null") && !doubleValue.equalsIgnoreCase("null")){
+                        datasetMap.put(Long.valueOf(longValue),Float.valueOf(doubleValue));
+                    }
+
+                }
             }
-            for (int i = 0; i <dataPoints.length(); i++) {
-                dPoints.add(dataPoints.getDouble(i));
-            }
-            stock.setChartTimes(timestamps);
-            stock.setDataPoints(dPoints);
+
+            stock.setChartData(datasetMap);
             stockList.add(stock);
         } catch (JSONException e) {
             e.printStackTrace();
