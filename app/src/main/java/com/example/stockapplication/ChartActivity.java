@@ -25,8 +25,11 @@ import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.listener.ChartTouchListener;
+import com.github.mikephil.charting.listener.OnChartGestureListener;
 import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
@@ -48,11 +51,30 @@ public class ChartActivity extends AppCompatActivity {
     Gson gson = new Gson();
     StockData intentStock;
     List<Long> longList = new ArrayList<>();
+    Object[] floatArray;
+    String timeFrame =StockApi.DAILY_RANGE;
+    TextView priceText,dateText;
+
     private void initBackend() {
         appData = AppData.parseAppDataFromSharedPrefs(this);
         sensorHandler = new SensorHandler(this, null);
         stockApi = new StockApi(this);
+        priceText=findViewById(R.id.chartPriceInfo);
+        dateText=findViewById(R.id.chartDateInfo);
 
+    }
+
+    private void setChartInfoTexts(int index){
+        Log.d("INDEKSI",index+"");
+        if(index<floatArray.length && index<longList.size()){
+            if(floatArray[index] != null){
+                priceText.setText(floatArray[index]+"");
+            }
+            if(longList.get(index) != null){
+                dateText.setText(longList.get(index)+"");
+            }
+
+        }
     }
     private void initChart(){
         SwipeRefreshLayout sv = findViewById(R.id.swipeContainer);
@@ -79,6 +101,15 @@ public class ChartActivity extends AppCompatActivity {
         chart.getAxisLeft().setTextColor(color);
         chart.getXAxis().setTextColor(color);
         chart.setNoDataText("");
+        chart.setDrawMarkers(true);
+        chart.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                //int index=(int)event.getX();
+                //setChartInfoTexts(index);
+                return false;
+            }
+        });
 
 
     }
@@ -106,20 +137,38 @@ public class ChartActivity extends AppCompatActivity {
         double formattedPercentChange = stock.formatDouble((lastValue/firstValue)*100-100);
         tPercent.setText(sign+""+formattedPercentChange+"%");
         favouriteStatus = findViewById(R.id.favouriteStatus);
-        boolean isFavourite= stock.isFavourite();
+        boolean isFavourite = stock.isFavourite();
         favouriteStatus.setImageResource(isFavourite?R.drawable.ic_favourite:R.drawable.ic_not_favourite);
         favouriteStatus.setOnClickListener(v -> {
             if(isFavourite){
-                appData.removeFromFavourites(stock);
                 stock.setFavourite(false);
+                appData.removeFromFavourites(stock);
             }else{
-                appData.addToFavourites(stock);
                 stock.setFavourite(true);
+                appData.addToFavourites(stock);
             }
             setStockRow(stock,firstValue,lastValue);
         });
         return sign.equals("+")?getColor(R.color.green):getColor(R.color.red);
 
+
+    }
+    private String getTimeFormat(String args){
+        switch (args){
+            case StockApi.DAILY_RANGE:
+                return "hh:mm";
+            case StockApi.FIVE_DAY_RANGE:
+            case StockApi.ONE_MONTH_RANGE:
+                return "dd-MM";
+            case StockApi.SIX_MONTH_RANGE:
+            case StockApi.YTD_RANGE:
+            case StockApi.FIVE_YEAR_RANGE:
+            case StockApi.ALL_TIME_RANGE:
+                return "MM-yyyy";
+            default:
+                return "yyyy";
+
+        }
 
     }
     private void initChartData(String range){
@@ -131,62 +180,67 @@ public class ChartActivity extends AppCompatActivity {
         }
         ProgressBar spinner = findViewById(R.id.progressBar);
         spinner.setVisibility(View.VISIBLE);
+
         stockApi.getChart(intentStock.getSymbol(), range, new StockApiCallback() {
             @Override
             public void onSuccess(List<StockData> response, Context context) {
-                if(response.size()>0){
+                if(response.size()>0) {
 
                     StockData stock = response.get(0);
                     List<Entry> yValues = new ArrayList<>();
-                    LinkedHashMap<Long,Float> chartData = stock.getChartData();
+                    LinkedHashMap<Long, Float> chartData = stock.getChartData();
                     int index = 0;
                     longList.clear();
-                    Object[] floatData = chartData.values().toArray();
-                    float lastValue = (float) floatData[chartData.size() -1];
-                    int chartColor = setStockRow(intentStock, (float) stock.getPreviousClose(),lastValue);
-                    for(Map.Entry<Long,Float> point:chartData.entrySet()){
+                    floatArray = chartData.values().toArray();
+                    float lastValue = (float) floatArray[chartData.size() - 1];
+                    int chartColor = setStockRow(intentStock, (float) stock.getPreviousClose(), lastValue);
+                    for (Map.Entry<Long, Float> point : chartData.entrySet()) {
                         longList.add(point.getKey());
-                        yValues.add(new Entry(index,point.getValue()));
+                        yValues.add(new Entry(index, point.getValue()));
                         index++;
                     }
-                    LineDataSet set1 = new LineDataSet(yValues,"");
-                    set1.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-                    set1.setDrawFilled(true);
-                    set1.setFillColor(chartColor);
-                    set1.setFillAlpha(80);
-                    set1.setCubicIntensity(0.2f);
-                    set1.setFillAlpha(110);
-                    set1.setColor(chartColor);
-                    set1.setDrawCircles(false);
-                    set1.setLineWidth(1f);
-                    set1.setDrawValues(true);
+                    LineDataSet set1;
+                    if (chart.getData() != null && chart.getData().getDataSetCount() > 0) {
+                        set1 = (LineDataSet) chart.getData().getDataSetByIndex(0);
+                        set1.setValues(yValues);
+                        set1.setColor(chartColor);
+                        set1.setFillColor(chartColor);
+                        chart.getData().notifyDataChanged();
+                        chart.notifyDataSetChanged();
+                        chart.invalidate();
+                    } else {
+                        set1 = new LineDataSet(yValues, "");
+                        set1.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+                        set1.setDrawFilled(true);
+                        set1.setFillColor(chartColor);
+                        set1.setFillAlpha(80);
+                        set1.setCubicIntensity(0.2f);
+                        set1.setFillAlpha(110);
+                        set1.setColor(chartColor);
+                        set1.setDrawCircles(false);
+                        set1.setLineWidth(1f);
+                        set1.setDrawValues(false);
 
-                    List<ILineDataSet> dataSet = new ArrayList<>();
-                    dataSet.add(set1);
-                    LineData data = new LineData(dataSet);
-                    chart.setData(data);
-                    //chart.getAxisLeft().setAxisMinimum(0);
-
-
-                    chart.getXAxis().setValueFormatter(new ValueFormatter() {
-                        @Override
-                        public String getFormattedValue(float value) {
-                            int index = (int) value;
-                            if(index>longList.size()-1){
-                                return "-";
+                        LineData data = new LineData(set1);
+                        ValueFormatter formatter = new ValueFormatter() {
+                            @Override
+                            public String getFormattedValue(float value) {
+                                if(value>longList.size()-1){
+                                    return "";
+                                }
+                                int index = (int) value;
+                                String pattern = getTimeFormat(timeFrame);
+                                return new SimpleDateFormat(pattern).format(new Date(longList.get(index) * 1000));
                             }
-                            return new SimpleDateFormat("dd.MM").format(new Date(longList.get(index)*1000));
-
-
-
-                        }
-                    });
-
-
-                    chart.notifyDataSetChanged();
-                    chart.invalidate();
-                    spinner.setVisibility(View.INVISIBLE);
+                        };
+                        chart.getXAxis().setValueFormatter(formatter);
+                        chart.setData(data);
+                        chart.invalidate();
                 }
+
+
+                }
+                spinner.setVisibility(View.INVISIBLE);
 
 
             }
@@ -206,9 +260,11 @@ public class ChartActivity extends AppCompatActivity {
         buttonMap.put(R.id.ytdButton,StockApi.YTD_RANGE);
         buttonMap.put(R.id.oneYearButton,StockApi.YEAR_RANGE);
         buttonMap.put(R.id.fiveYearButton,StockApi.FIVE_YEAR_RANGE);
+        buttonMap.put(R.id.maxButton,StockApi.ALL_TIME_RANGE);
         for(Map.Entry<Integer,String> buttonEntry:buttonMap.entrySet()){
             Button b = findViewById(buttonEntry.getKey());
             b.setOnClickListener(v -> {
+                timeFrame = buttonEntry.getValue();
                 initChartData(buttonEntry.getValue());
             });
            /* b.setOnTouchListener(new View.OnTouchListener() {
@@ -225,16 +281,7 @@ public class ChartActivity extends AppCompatActivity {
 
 
     }
-    private void unPressOtherButtons(int current,HashMap<Integer,String> buttonMap) {
-        for(Map.Entry<Integer,String> buttonEntry:buttonMap.entrySet()){
-            if(buttonEntry.getKey() != current){
-            Button b = findViewById(buttonEntry.getKey());
-                b.setBackgroundColor(getColor(R.color.red));
-            //b.setPressed(false);
-        }
-    }
 
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

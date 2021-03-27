@@ -162,6 +162,22 @@
                 app:layout_constraintStart_toEndOf="@+id/oneYearButton"
                 app:layout_constraintTop_toBottomOf="@+id/stockRow" />
 
+            <Button
+                android:id="@+id/maxButton"
+                android:layout_width="33dp"
+                android:layout_height="29dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="10dp"
+                android:padding="0dp"
+                android:paddingLeft="0dp"
+                android:paddingTop="0dp"
+                android:paddingRight="0dp"
+                android:paddingBottom="0dp"
+                android:text="MAX"
+                android:textSize="12sp"
+                app:layout_constraintStart_toEndOf="@+id/fiveYearButton"
+                app:layout_constraintTop_toBottomOf="@+id/stockRow" />
+
             <ProgressBar
                 android:id="@+id/progressBar"
                 style="?android:attr/progressBarStyle"
@@ -172,6 +188,24 @@
                 app:layout_constraintHorizontal_bias="0.498"
                 app:layout_constraintStart_toStartOf="@+id/stockChart"
                 app:layout_constraintTop_toTopOf="@+id/stockChart" />
+
+            <TextView
+                android:id="@+id/chartDateInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="12dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/stockChart" />
+
+            <TextView
+                android:id="@+id/chartPriceInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="5dp"
+                app:layout_constraintStart_toStartOf="@+id/stockChart"
+                app:layout_constraintTop_toBottomOf="@+id/chartDateInfo" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
