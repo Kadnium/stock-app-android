@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.android.volley.VolleyError;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -30,6 +31,8 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.ChartTouchListener;
 import com.github.mikephil.charting.listener.OnChartGestureListener;
+import com.github.mikephil.charting.listener.OnDrawListener;
+import com.github.mikephil.charting.utils.MPPointD;
 import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
@@ -39,8 +42,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.SimpleTimeZone;
+import java.util.TimeZone;
 
 public class ChartActivity extends AppCompatActivity {
     BottomNavigationHandler bottomNavigationHandler;
@@ -65,13 +70,12 @@ public class ChartActivity extends AppCompatActivity {
     }
 
     private void setChartInfoTexts(int index){
-        Log.d("INDEKSI",index+"");
-        if(index<floatArray.length && index<longList.size()){
+        if(index<floatArray.length && index<longList.size() && index>0){
             if(floatArray[index] != null){
                 priceText.setText(floatArray[index]+"");
             }
             if(longList.get(index) != null){
-                dateText.setText(longList.get(index)+"");
+                dateText.setText(formatTimestamp(longList.get(index),"FORMAT_ALL"));
             }
 
         }
@@ -101,12 +105,11 @@ public class ChartActivity extends AppCompatActivity {
         chart.getAxisLeft().setTextColor(color);
         chart.getXAxis().setTextColor(color);
         chart.setNoDataText("");
-        chart.setDrawMarkers(true);
         chart.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                //int index=(int)event.getX();
-                //setChartInfoTexts(index);
+                MPPointD point = chart.getTransformer(YAxis.AxisDependency.LEFT).getValuesByTouchPoint(event.getX(),event.getY());
+                setChartInfoTexts((int)point.x);
                 return false;
             }
         });
@@ -134,7 +137,7 @@ public class ChartActivity extends AppCompatActivity {
         }else{
             tPercent.setTextColor(getColor(R.color.green));
         }
-        double formattedPercentChange = stock.formatDouble((lastValue/firstValue)*100-100);
+        double formattedPercentChange =lastValue==0.0 || firstValue==0.0? 0:stock.formatDouble((lastValue/firstValue)*100-100);
         tPercent.setText(sign+""+formattedPercentChange+"%");
         favouriteStatus = findViewById(R.id.favouriteStatus);
         boolean isFavourite = stock.isFavourite();
@@ -143,9 +146,13 @@ public class ChartActivity extends AppCompatActivity {
             if(isFavourite){
                 stock.setFavourite(false);
                 appData.removeFromFavourites(stock);
+                appData.updateFavouriteStatuses(stock,appData.getTrendingList(),false);
+                appData.updateFavouriteStatuses(stock,appData.getMostChanged(),false);
             }else{
                 stock.setFavourite(true);
                 appData.addToFavourites(stock);
+                appData.updateFavouriteStatuses(stock,appData.getTrendingList(),true);
+                appData.updateFavouriteStatuses(stock,appData.getMostChanged(),true);
             }
             setStockRow(stock,firstValue,lastValue);
         });
@@ -156,19 +163,33 @@ public class ChartActivity extends AppCompatActivity {
     private String getTimeFormat(String args){
         switch (args){
             case StockApi.DAILY_RANGE:
-                return "hh:mm";
+                return "HH:mm";
             case StockApi.FIVE_DAY_RANGE:
             case StockApi.ONE_MONTH_RANGE:
-                return "dd-MM";
+                return "dd/MM";
             case StockApi.SIX_MONTH_RANGE:
             case StockApi.YTD_RANGE:
             case StockApi.FIVE_YEAR_RANGE:
             case StockApi.ALL_TIME_RANGE:
-                return "MM-yyyy";
+                return "MM/yyyy";
+            case "FORMAT_ALL":
+                return "dd/MM/yyyy HH:mm:ss";
             default:
                 return "yyyy";
 
         }
+
+    }
+    private String formatTimestamp(long timestamp,String customTimeFrame){
+        String pattern;
+        if(customTimeFrame!= null){
+            pattern = getTimeFormat(customTimeFrame);
+        }else{
+            pattern = getTimeFormat(timeFrame);
+        }
+        SimpleDateFormat simpleDateFormat =  new SimpleDateFormat(pattern, Locale.getDefault());//;.format(new Date(timestamp * 1000));
+        simpleDateFormat.setTimeZone(TimeZone.getDefault());
+        return simpleDateFormat.format(new Date(timestamp * 1000));
 
     }
     private void initChartData(String range){
@@ -229,8 +250,7 @@ public class ChartActivity extends AppCompatActivity {
                                     return "";
                                 }
                                 int index = (int) value;
-                                String pattern = getTimeFormat(timeFrame);
-                                return new SimpleDateFormat(pattern).format(new Date(longList.get(index) * 1000));
+                                return formatTimestamp(longList.get(index),null);
                             }
                         };
                         chart.getXAxis().setValueFormatter(formatter);
