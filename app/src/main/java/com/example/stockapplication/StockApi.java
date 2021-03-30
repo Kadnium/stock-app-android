@@ -44,7 +44,7 @@ public class StockApi {
     private HashMap<String, Pair<String,String>> chartApiHelper = new HashMap<>();
     public StockApi(Context context) {
         this.context = context;
-        this.requestQueue = Volley.newRequestQueue(context);
+        this.requestQueue = Volley.newRequestQueue(context.getApplicationContext());
         chartApiHelper.put(DAILY_RANGE,new Pair<>("2m","1d"));
         chartApiHelper.put(FIVE_DAY_RANGE,new Pair<>("15m","5d"));
         chartApiHelper.put(ONE_MONTH_RANGE,new Pair<>("1h","1mo"));

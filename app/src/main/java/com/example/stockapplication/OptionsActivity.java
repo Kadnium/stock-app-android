@@ -30,13 +30,15 @@ public class OptionsActivity extends AppCompatActivity  {
     Spinner spinner;
     boolean spinnerClicked = false;
     OptionsHelper optionsHelper;
+
     public void initBackend(){
-        appData = AppData.parseAppDataFromSharedPrefs(this);
-        sensorHandler = new SensorHandler(this, null);
+        appData = AppData.getInstance(this);
+        sensorHandler =appData.getSensorHandler(this);
         optionsHelper = new OptionsHelper(this);
         optionsHelper.initAveragePriceFields();
 
     }
+
 
 
     @Override
@@ -104,21 +106,23 @@ public class OptionsActivity extends AppCompatActivity  {
     private void initSettingSwitches(){
         SwitchCompat accelometerSwitch = findViewById(R.id.accelometerSwitch);
         SwitchCompat lightSwitch = findViewById(R.id.lightSwitch);
-        int accelometerEnabled = AppData.getSettingFromPrefs(this,AppData.ACCELOMETER_ENABLED);
-        int ligthSensorEnabled = AppData.getSettingFromPrefs(this,AppData.LIGHT_SENSOR_ENABLED);
+        boolean accelometerEnabled = appData.isAccelometerEnabled();//;AppData.getSettingFromPrefs(this,AppData.ACCELOMETER_ENABLED);
+        boolean ligthSensorEnabled = appData.isLightSensorEnabled();AppData.getSettingFromPrefs(this,AppData.LIGHT_SENSOR_ENABLED);
 
-        accelometerSwitch.setChecked(accelometerEnabled == 1);
-        lightSwitch.setChecked(ligthSensorEnabled == 1);
-        setSpinnerEnabled(ligthSensorEnabled == 0);
+        accelometerSwitch.setChecked(accelometerEnabled);
+        lightSwitch.setChecked(ligthSensorEnabled);
+        setSpinnerEnabled(!ligthSensorEnabled);
         accelometerSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            AppData.setSettingToPrefs(this,AppData.ACCELOMETER_ENABLED,isChecked?1:0);
-            sensorHandler.updateSensors();
+            appData.setAccelometerEnabled(isChecked);
+            //AppData.setSettingToPrefs(this,AppData.ACCELOMETER_ENABLED,isChecked?1:0);
+            sensorHandler.updateSensors(isChecked,ligthSensorEnabled);
 
         });
         lightSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            AppData.setSettingToPrefs(this,AppData.LIGHT_SENSOR_ENABLED,isChecked?1:0);
+            appData.setLightSensorEnabled(isChecked);
+            //AppData.setSettingToPrefs(this,AppData.LIGHT_SENSOR_ENABLED,isChecked?1:0);
             setSpinnerEnabled(!isChecked);
-            sensorHandler.updateSensors();
+            sensorHandler.updateSensors(accelometerEnabled,isChecked);
 
         });
     }
@@ -130,7 +134,10 @@ public class OptionsActivity extends AppCompatActivity  {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        AppData.saveAppDataToSharedPrefs(this,appData,true);
+        if(appData != null){
+            AppData.saveAppDataToSharedPrefs(this,appData,true);
+        }
+
         if(sensorHandler != null){
             sensorHandler.unRegisterSensors();
         }
@@ -139,7 +146,10 @@ public class OptionsActivity extends AppCompatActivity  {
     @Override
     public void onPause() {
         super.onPause();
-        AppData.saveAppDataToSharedPrefs(this,appData,false);
+        if(appData != null){
+            AppData.saveAppDataToSharedPrefs(this,appData,false);
+        }
+
         if(sensorHandler != null){
             sensorHandler.unRegisterSensors();
         }

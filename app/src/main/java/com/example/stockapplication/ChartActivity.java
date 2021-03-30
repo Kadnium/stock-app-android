@@ -61,9 +61,10 @@ public class ChartActivity extends AppCompatActivity {
     TextView priceText,dateText;
 
     private void initBackend() {
-        appData = AppData.parseAppDataFromSharedPrefs(this);
-        sensorHandler = new SensorHandler(this, null);
-        stockApi = new StockApi(this);
+        appData = AppData.getInstance(this);
+        sensorHandler = appData.getSensorHandler(this);
+        stockApi = appData.getStockApi(this);
+
         priceText=findViewById(R.id.chartPriceInfo);
         dateText=findViewById(R.id.chartDateInfo);
 
@@ -332,6 +333,9 @@ public class ChartActivity extends AppCompatActivity {
         if(appData != null){
             AppData.saveAppDataToSharedPrefs(this,appData,true);
         }
+        if(sensorHandler != null){
+            sensorHandler.unRegisterSensors();
+        }
 
 
     }
@@ -342,6 +346,9 @@ public class ChartActivity extends AppCompatActivity {
         // Activity change
         if(appData != null){
             AppData.saveAppDataToSharedPrefs(this,appData,false);
+        }
+        if(sensorHandler != null){
+            sensorHandler.unRegisterSensors();
         }
 
 

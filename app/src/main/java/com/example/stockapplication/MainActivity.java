@@ -36,17 +36,15 @@ public class MainActivity extends AppCompatActivity{
     boolean themeChanged = false;
 
     public void initBackend(){
-        stockApi = new StockApi(this);
-        appData = AppData.parseAppDataFromSharedPrefs(this);
-        sensorHandler = new SensorHandler(this, () -> {
+        appData = AppData.getInstance(this);
+        stockApi = appData.getStockApi(this);
+        sensorHandler = appData.getSensorHandler(this);// new SensorHandler(this);
+        sensorHandler.setOnShakeCallback(() -> {
             appData.setRefreshing(true);
             updateDailyMovers(()->{
                 updateFavourites(()->appData.setRefreshing(false));
             });
         });
-
-
-
 
     }
 

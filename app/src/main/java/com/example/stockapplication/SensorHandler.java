@@ -31,35 +31,39 @@ public class SensorHandler {
     private long lastAccelometerUpdate = 0;
     private long lastLightUpdate = 0;
     private final ArrayList<Boolean> ligthList = new ArrayList<>();
-    HelperCallback onShakeCallback;
-    public SensorHandler(Context context, HelperCallback cb) {
+
+    private HelperCallback onShakeCallback;
+    public SensorHandler(Context context,boolean accelometerEnabled,boolean lightSensorEnabled) {
         this.context = context;
-        this.onShakeCallback = cb;
         if(context instanceof AppCompatActivity){
             sensorManager = (SensorManager) context.getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
-            setAccelometer();
-            setLightSensor();
+            setAccelometer(accelometerEnabled);
+            setLightSensor(lightSensorEnabled);
 
         }
 
     }
+
+    public void setOnShakeCallback(HelperCallback onShakeCallback) {
+        this.onShakeCallback = onShakeCallback;
+    }
     /**
      * Helper function for refreshing sensors
      */
-    public void updateSensors(){
+    public void updateSensors(boolean accelometerEnabled,boolean lightSensorEnabled){
         if(sensorManager != null){
-            setAccelometer();
-            setLightSensor();
+            setAccelometer(accelometerEnabled);
+            setLightSensor(lightSensorEnabled);
         }
     }
     /**
      * Register / unregister accelometer sensor
      */
-    private void setAccelometer(){
+    private void setAccelometer(boolean accelometerEnabled){
         // If accelometer sensor is enabled from settings, create EventListener for accelometer
         // If it's not enabled check if there are old instances of EventListener -> delete
         // Else do nothing
-        if(AppData.getSettingFromPrefs(context,AppData.ACCELOMETER_ENABLED) == 1&& accelometerListener == null){
+        if(accelometerEnabled && accelometerListener == null){
             Sensor accelometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             AppCompatActivity act = (AppCompatActivity) context;
             accelometerListener = new SensorEventListener() {
@@ -121,11 +125,11 @@ public class SensorHandler {
     /**
      * Register / unregister lightsensor
      */
-    private void setLightSensor(){
+    private void setLightSensor(boolean lightSensorEnabled){
         // If light sensor is enabled from settings, create EventListener for light sensor
         // If it's not enabled check if there are old instances of EventListener -> delete
         // Else do nothing
-        if(AppData.getSettingFromPrefs(context,AppData.LIGHT_SENSOR_ENABLED) == 1 && lightSensorListener == null){
+        if(lightSensorEnabled && lightSensorListener == null){
             Sensor lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
             lightSensorListener = new SensorEventListener() {
                 @Override

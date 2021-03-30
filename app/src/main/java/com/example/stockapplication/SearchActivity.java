@@ -30,19 +30,19 @@ public class SearchActivity extends AppCompatActivity {
     SensorHandler sensorHandler;
 
     public void initBackend(){
-        stockApi = new StockApi(this);
-        appData = AppData.parseAppDataFromSharedPrefs(this);
+        appData = AppData.getInstance(this);
+        stockApi = appData.getStockApi(this);
+        sensorHandler = appData.getSensorHandler(this);// new SensorHandler(this);
 
-        sensorHandler = new SensorHandler(this, ()->{
+        sensorHandler.setOnShakeCallback(()->{
             appData.setRefreshing(true);
             setTrendingData(()->appData.setRefreshing(false));
         });
 
-
-
-
-
     }
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -232,7 +232,10 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        AppData.saveAppDataToSharedPrefs(this,appData,true);
+        if(appData != null){
+            AppData.saveAppDataToSharedPrefs(this,appData,true);
+        }
+
         if(sensorHandler != null){
             sensorHandler.unRegisterSensors();
         }
@@ -241,7 +244,10 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        AppData.saveAppDataToSharedPrefs(this,appData,false);
+        if(appData != null){
+            AppData.saveAppDataToSharedPrefs(this,appData,false);
+        }
+
         if(sensorHandler != null){
             sensorHandler.unRegisterSensors();
         }

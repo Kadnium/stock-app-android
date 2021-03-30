@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatDelegate;
 
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AppData {
-    //private static AppData appData;
+    private static AppData appData;
     private List<StockData> favouriteData = new ArrayList<>();
     private List<StockData> mostChanged = new ArrayList<>();
     private List<StockData> trendingList = new ArrayList<>();
@@ -25,9 +26,40 @@ public class AppData {
     public static final String SELECTED_THEME = "SELECTED_THEME";
     public static final String ACCELOMETER_ENABLED = "ACCELOMETER_ENABLED";
     public static final String LIGHT_SENSOR_ENABLED = "LIGHT_SENSOR_ENABLED";
-    private boolean refreshing = false;
-    public AppData() {
+    private transient StockApi stockApi;
+    private transient SensorHandler sensorHandler;
+    private transient boolean refreshing = false;
+    private boolean lightSensorEnabled = false;
+    private boolean accelometerEnabled = false;
+    private AppData() {
 
+    }
+
+    public static AppData getInstance(Context context) {
+        // TODO If threads are used, might need to be modified to be thread safe
+        if (appData == null) {
+            appData = AppData.parseAppDataFromSharedPrefs(context);
+        }
+        return appData;
+    }
+
+    public StockApi getStockApi(Context context){
+        if(stockApi == null){
+            Log.d("STOCKAPI","add");
+            stockApi = new StockApi(context);
+        }
+        return stockApi;
+    }
+    public SensorHandler getSensorHandler(Context context){
+        if(sensorHandler == null){
+            Log.d("SENSORHA","add");
+            sensorHandler = new SensorHandler(context,accelometerEnabled,lightSensorEnabled);
+        }else{
+            sensorHandler.updateSensors(accelometerEnabled,lightSensorEnabled);
+        }
+
+
+        return sensorHandler;
     }
 
     public boolean isRefreshing() {
@@ -54,6 +86,21 @@ public class AppData {
         return searchResults;
     }
 
+    public boolean isLightSensorEnabled() {
+        return lightSensorEnabled;
+    }
+
+    public void setLightSensorEnabled(boolean lightSensorEnabled) {
+        this.lightSensorEnabled = lightSensorEnabled;
+    }
+
+    public boolean isAccelometerEnabled() {
+        return accelometerEnabled;
+    }
+
+    public void setAccelometerEnabled(boolean accelometerEnabled) {
+        this.accelometerEnabled = accelometerEnabled;
+    }
 
     public void setFavouriteData(List<StockData> favouriteData) {
         this.favouriteData = favouriteData;
