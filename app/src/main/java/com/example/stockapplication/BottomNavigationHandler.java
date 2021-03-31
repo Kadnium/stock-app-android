@@ -44,19 +44,19 @@ public class BottomNavigationHandler {
                     Intent intent = new Intent(context.getApplicationContext(),MainActivity.class);
                     //setIntentData(intent);
                     context.startActivity(intent);
-                    activity.overridePendingTransition(0,0);
+                    activity.overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                     return true;
                 }else if(id == R.id.search){
                     Intent intent = new Intent(context.getApplicationContext(),SearchActivity.class);
                     //setIntentData(intent);
                     context.startActivity(intent);
-                    activity.overridePendingTransition(0,0);
+                    activity.overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                     return true;
                 }else if (id == R.id.settings){
                     Intent intent = new Intent(context.getApplicationContext(),OptionsActivity.class);
                     //setIntentData(intent);
                     context.startActivity(intent);
-                    activity.overridePendingTransition(0,0);
+                    activity.overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                     return true;
                 }
                 return false;

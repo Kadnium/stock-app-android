@@ -257,7 +257,7 @@ public class SearchActivity extends AppCompatActivity {
       //  AppData.saveAppDataToSharedPrefs(this,appData,false);
         // override back button default animation
 
-        overridePendingTransition(0,0);
+        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
     }
 
 

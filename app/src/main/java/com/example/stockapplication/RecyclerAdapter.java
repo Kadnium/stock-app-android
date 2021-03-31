@@ -73,7 +73,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             intent.putExtra("Stock",stockString);
             context.startActivity(intent);
             AppCompatActivity activity = (AppCompatActivity) context;
-            activity.overridePendingTransition(0,0);
+            activity.overridePendingTransition(R.anim.slide_in_right,android.R.anim.fade_out);
         });
         holder.favouriteStatus.setImageResource(stock.isFavourite()?R.drawable.ic_favourite:R.drawable.ic_not_favourite);
         holder.favouriteStatus.setOnClickListener(v -> {

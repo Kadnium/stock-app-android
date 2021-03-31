@@ -258,7 +258,7 @@ public class MainActivity extends AppCompatActivity{
     public void finish() {
         super.finish();
         // Override back button default animation
-        overridePendingTransition(0,0);
+        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
     }
 
 
