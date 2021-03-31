@@ -160,8 +160,7 @@ public class SensorHandler {
                                 // position 1 DARK MODE
                                 AppData.setSettingToPrefs(context,AppData.SELECTED_THEME,1);
                                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                                AppCompatActivity act = (AppCompatActivity) context;
-                                act.recreate();
+
                             }
                         }else{
                             // If over threshold  -> check if last element in ligthList is also over threshold
@@ -177,8 +176,7 @@ public class SensorHandler {
                                 // position 2 LIGHT MODE
                                 AppData.setSettingToPrefs(context,AppData.SELECTED_THEME,2);
                                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                                AppCompatActivity act = (AppCompatActivity) context;
-                                act.recreate();
+
                             }
                         }
 

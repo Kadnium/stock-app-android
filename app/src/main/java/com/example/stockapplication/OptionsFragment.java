@@ -1,54 +1,55 @@
 package com.example.stockapplication;
 
-import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.fragment.app.Fragment;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.hardware.SensorManager;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
-import android.widget.Switch;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.gson.Gson;
 
-public class OptionsActivity extends AppCompatActivity  {
+public class OptionsFragment extends Fragment {
+
     AppData appData;
     BottomNavigationHandler bottomNavigationHandler;
     SensorHandler sensorHandler;
     Spinner spinner;
     boolean spinnerClicked = false;
     OptionsHelper optionsHelper;
-
+    View fragmentView;
     public void initBackend(){
-        appData = AppData.getInstance(this);
-        sensorHandler =appData.getSensorHandler(this);
-        optionsHelper = new OptionsHelper(this);
+        appData = AppData.getInstance(getContext());
+        sensorHandler =appData.getSensorHandler(getContext());
+        optionsHelper = new OptionsHelper(getContext());
         optionsHelper.initAveragePriceFields();
 
     }
 
+    public OptionsFragment() {
+    }
+
+    public static OptionsFragment newInstance() {
+        return new OptionsFragment();
+    }
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_options);
-        bottomNavigationHandler = new BottomNavigationHandler(this);
-        bottomNavigationHandler.initNavigation(R.id.bottomNav,R.id.settings);
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        fragmentView = inflater.inflate(R.layout.fragment_options, container, false);
+        //bottomNavigationHandler = new BottomNavigationHandler(getContext(),appData);
+      //  bottomNavigationHandler.initNavigation(R.id.bottomNav,R.id.settings);
+        // Inflate the layout for this fragment
+        return fragmentView;
     }
+
 
     @Override
     public void onStart(){
@@ -56,7 +57,6 @@ public class OptionsActivity extends AppCompatActivity  {
         initBackend();
         initThemeSpinner();
         initSettingSwitches();
-        bottomNavigationHandler.refresh();
 
 
 
@@ -65,18 +65,18 @@ public class OptionsActivity extends AppCompatActivity  {
 
     private void setAppTheme(int selected){
         int theme = AppData.getThemeSetting(selected);
-        AppData.setSettingToPrefs(this,AppData.SELECTED_THEME,selected);
+        AppData.setSettingToPrefs(getContext(),AppData.SELECTED_THEME,selected);
         AppCompatDelegate.setDefaultNightMode(theme);
-        recreate();
+        //getActivity().recreate();
     }
     private void initThemeSpinner(){
-        spinner = findViewById(R.id.spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,R.array.theme_settings, android.R.layout.simple_spinner_item);
+        spinner = fragmentView.findViewById(R.id.spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),R.array.theme_settings, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
 
-        spinner.setSelection(AppData.getSettingFromPrefs(this,AppData.SELECTED_THEME),false);
+        spinner.setSelection(AppData.getSettingFromPrefs(getContext(),AppData.SELECTED_THEME),false);
         // Prevent onItemSelected getting called when auto theme switch is enabled
         spinner.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -104,8 +104,8 @@ public class OptionsActivity extends AppCompatActivity  {
         });
     }
     private void initSettingSwitches(){
-        SwitchCompat accelometerSwitch = findViewById(R.id.accelometerSwitch);
-        SwitchCompat lightSwitch = findViewById(R.id.lightSwitch);
+        SwitchCompat accelometerSwitch = fragmentView.findViewById(R.id.accelometerSwitch);
+        SwitchCompat lightSwitch = fragmentView.findViewById(R.id.lightSwitch);
         boolean accelometerEnabled = appData.isAccelometerEnabled();//;AppData.getSettingFromPrefs(this,AppData.ACCELOMETER_ENABLED);
         boolean ligthSensorEnabled = appData.isLightSensorEnabled();//AppData.getSettingFromPrefs(this,AppData.LIGHT_SENSOR_ENABLED);
 
@@ -132,33 +132,16 @@ public class OptionsActivity extends AppCompatActivity  {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        if(sensorHandler != null){
-            sensorHandler.unRegisterSensors();
-        }
-    }
-
-    @Override
     public void onPause() {
         super.onPause();
-        if(appData != null){
-            AppData.saveAppDataToSharedPrefs(this,appData,false);
-        }
-
         if(sensorHandler != null){
             sensorHandler.unRegisterSensors();
         }
 
     }
-    @Override
-    public void finish() {
-        super.finish();
-        //AppData.saveAppDataToSharedPrefs(this,appData,false);
-        // override back button default animation
-        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
-    }
+
+
+
 
 
 

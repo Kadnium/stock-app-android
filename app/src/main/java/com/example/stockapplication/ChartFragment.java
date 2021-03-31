@@ -1,23 +1,22 @@
 package com.example.stockapplication;
 
-import androidx.annotation.ColorInt;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
+
+import androidx.annotation.ColorInt;
+import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import android.util.TypedValue;
-import android.view.DragEvent;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
@@ -26,28 +25,22 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.github.mikephil.charting.listener.ChartTouchListener;
-import com.github.mikephil.charting.listener.OnChartGestureListener;
-import com.github.mikephil.charting.listener.OnDrawListener;
 import com.github.mikephil.charting.utils.MPPointD;
 import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
-public class ChartActivity extends AppCompatActivity {
+
+public class ChartFragment extends Fragment {
     BottomNavigationHandler bottomNavigationHandler;
     AppData appData;
     SensorHandler sensorHandler;
@@ -59,15 +52,15 @@ public class ChartActivity extends AppCompatActivity {
     String timeFrame =StockApi.DAILY_RANGE;
     TextView priceText,dateText;
     SwipeRefreshLayout swipeRefreshLayout;
+    View fragmentView;
     private void initBackend() {
-        appData = AppData.getInstance(this);
-        sensorHandler = appData.getSensorHandler(this);
+        appData = AppData.getInstance(getContext());
+        sensorHandler = appData.getSensorHandler(getContext());
         sensorHandler.setOnShakeCallback(()->initChartData(timeFrame,null));
-        stockApi = appData.getStockApi(this);
-
-        priceText=findViewById(R.id.chartPriceInfo);
-        dateText=findViewById(R.id.chartDateInfo);
-        swipeRefreshLayout = findViewById(R.id.swipeContainer);
+        stockApi = appData.getStockApi(getContext());
+        priceText=fragmentView.findViewById(R.id.chartPriceInfo);
+        dateText=fragmentView.findViewById(R.id.chartDateInfo);
+        swipeRefreshLayout = getActivity().findViewById(R.id.swipeContainer);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             appData.setRefreshing(true);
             initChartData(timeFrame,()->{
@@ -93,10 +86,9 @@ public class ChartActivity extends AppCompatActivity {
         }
     }
     private void initChart(){
-        SwipeRefreshLayout sv = findViewById(R.id.swipeContainer);
-        chart = findViewById(R.id.stockChart);
+        chart = fragmentView.findViewById(R.id.stockChart);
         TypedValue typedValue = new TypedValue();
-        Resources.Theme theme = getTheme();
+        Resources.Theme theme = getContext().getTheme();
         theme.resolveAttribute(R.attr.colorOnPrimary, typedValue, true);
         @ColorInt int color = typedValue.data;
         // disable description text
@@ -132,10 +124,10 @@ public class ChartActivity extends AppCompatActivity {
     private int setStockRow(StockData stock, float firstValue, float lastValue){
         TextView tSymbol, tFullName, tPercent, tStockPrice;
         ImageView favouriteStatus;
-        tPercent = findViewById(R.id.priceChange);
-        tStockPrice = findViewById(R.id.stockPrice);
-        tFullName = findViewById(R.id.stockName);
-        tSymbol = findViewById(R.id.stockTicker);
+        tPercent = fragmentView.findViewById(R.id.priceChange);
+        tStockPrice = fragmentView.findViewById(R.id.stockPrice);
+        tFullName = fragmentView.findViewById(R.id.stockName);
+        tSymbol = fragmentView.findViewById(R.id.stockTicker);
 
         tSymbol.setText(stock.getSymbol());
         String name = stock.getName();
@@ -144,14 +136,14 @@ public class ChartActivity extends AppCompatActivity {
 
         String sign = "+";
         if(lastValue-firstValue<0){
-            tPercent.setTextColor(getColor(R.color.red));
+            tPercent.setTextColor(getContext().getColor(R.color.red));
             sign = "-";
         }else{
-            tPercent.setTextColor(getColor(R.color.green));
+            tPercent.setTextColor(getContext().getColor(R.color.green));
         }
         double formattedPercentChange =lastValue==0.0 || firstValue==0.0? 0:stock.formatDouble((lastValue/firstValue)*100-100);
         tPercent.setText(sign+""+formattedPercentChange+"%");
-        favouriteStatus = findViewById(R.id.favouriteStatus);
+        favouriteStatus = fragmentView.findViewById(R.id.favouriteStatus);
         boolean isFavourite = stock.isFavourite();
         favouriteStatus.setImageResource(isFavourite?R.drawable.ic_favourite:R.drawable.ic_not_favourite);
         favouriteStatus.setOnClickListener(v -> {
@@ -170,7 +162,7 @@ public class ChartActivity extends AppCompatActivity {
             }
             setStockRow(stock,firstValue,lastValue);
         });
-        return sign.equals("+")?getColor(R.color.green):getColor(R.color.red);
+        return sign.equals("+")?getContext().getColor(R.color.green):getContext().getColor(R.color.red);
 
 
     }
@@ -208,12 +200,15 @@ public class ChartActivity extends AppCompatActivity {
     }
     private void initChartData(String range, HelperCallback callback){
         if(intentStock == null){
-            Intent intent = getIntent();
-            Gson gson = new Gson();
-            String stockJson = intent.getStringExtra("Stock");
-            intentStock = gson.fromJson(stockJson, StockData.class);
+            Bundle bundle = getArguments();
+            if(bundle != null){
+                Gson gson = new Gson();
+                String stockJson = bundle.getString("Stock");
+                intentStock = gson.fromJson(stockJson, StockData.class);
+            }
+
         }
-        ProgressBar spinner = findViewById(R.id.progressBar);
+        ProgressBar spinner = fragmentView.findViewById(R.id.progressBar);
         spinner.setVisibility(View.VISIBLE);
 
         stockApi.getChart(intentStock.getSymbol(), range, new StockApiCallback() {
@@ -270,7 +265,7 @@ public class ChartActivity extends AppCompatActivity {
                         chart.getXAxis().setValueFormatter(formatter);
                         chart.setData(data);
                         chart.invalidate();
-                }
+                    }
 
 
                 }
@@ -302,7 +297,7 @@ public class ChartActivity extends AppCompatActivity {
         buttonMap.put(R.id.fiveYearButton,StockApi.FIVE_YEAR_RANGE);
         buttonMap.put(R.id.maxButton,StockApi.ALL_TIME_RANGE);
         for(Map.Entry<Integer,String> buttonEntry:buttonMap.entrySet()){
-            Button b = findViewById(buttonEntry.getKey());
+            Button b = fragmentView.findViewById(buttonEntry.getKey());
             b.setOnClickListener(v -> {
                 timeFrame = buttonEntry.getValue();
                 initChartData(buttonEntry.getValue(),null);
@@ -323,14 +318,13 @@ public class ChartActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chart);
-        getSupportActionBar().hide();
-        bottomNavigationHandler = new BottomNavigationHandler(this);
-        bottomNavigationHandler.initNavigation(R.id.bottomNav, -1);
-
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        fragmentView = inflater.inflate(R.layout.fragment_chart, container, false);
+      //  bottomNavigationHandler = new BottomNavigationHandler(getContext(),appData);
+        //bottomNavigationHandler.initNavigation(R.id.bottomNav, -1);
+        // Inflate the layout for this fragment
+        return fragmentView;
     }
 
     @Override
@@ -346,35 +340,22 @@ public class ChartActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // When app is closed
-        if(sensorHandler != null){
-            sensorHandler.unRegisterSensors();
-        }
-
-
-    }
-
-    @Override
     public void onPause() {
         super.onPause();
-        // Activity change
-        if(appData != null){
-            AppData.saveAppDataToSharedPrefs(this,appData,false);
-        }
         if(sensorHandler != null){
             sensorHandler.unRegisterSensors();
         }
 
-
     }
 
-    @Override
-    public void finish() {
-        super.finish();
-        // Override back button default animation
-        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+
+
+
+    public ChartFragment() {
+    }
+
+    public static ChartFragment newInstance() {
+        return new ChartFragment();
     }
 
 

@@ -2,12 +2,16 @@ package com.example.stockapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
@@ -21,93 +25,18 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity{
     StockApi stockApi;
     AppData appData;
-
-    RecyclerView favouriteRecyclerView;
-    RecyclerView mostChangedRecyclerView;
-
-    RecyclerAdapter favouriteAdapter;
-    RecyclerAdapter mostChangedAdapter;
-
     BottomNavigationHandler bottomNavigationHandler;
-
-    SwipeRefreshLayout swipeRefreshLayout;
     SensorHandler sensorHandler;
-
     boolean themeChanged = false;
 
     public void initBackend(){
         appData = AppData.getInstance(this);
         stockApi = appData.getStockApi(this);
         sensorHandler = appData.getSensorHandler(this);// new SensorHandler(this);
-        sensorHandler.setOnShakeCallback(() -> {
-            appData.setRefreshing(true);
-            updateDailyMovers(()->{
-                updateFavourites(()->appData.setRefreshing(false));
-            });
-        });
+        bottomNavigationHandler = new BottomNavigationHandler(this);//appData.getBottomNavigationHandler(this,R.id.home);
 
     }
 
-    private RecyclerView setRecyclerSettings(int viewId, RecyclerAdapter adapter){
-        RecyclerView view = findViewById(viewId);
-        view.setNestedScrollingEnabled(false);
-        view.setAdapter(adapter);
-        //view.suppressLayout(true);
-        view.setLayoutManager(new LinearLayoutManager(this));
-        return view;
-    }
-
-    public void initListViews(){
-        // Most changed
-        mostChangedAdapter = new RecyclerAdapter(this, appData.getMostChanged(), appData, R.id.mostChangedRecyclerView, new AdapterRefresh() {
-            @Override
-            public void onFavouriteAddClicked(int position, StockData stock) {
-                // Add to favourites and update favouriteAdapter
-                appData.addToFavourites(stock);
-                favouriteAdapter.notifyItemInserted(0);
-                // In other activity - no need to update adapter
-                appData.updateFavouriteStatuses(stock,appData.getTrendingList(),true);
-            }
-
-            @Override
-            public void onFavouriteRemoveClicked(int position, StockData stock) {
-                // Remove from favourites and update favouriteAdapter
-                int favouriteIndex = appData.removeFromFavourites(stock);
-                if(favouriteIndex!=-1){
-                    favouriteAdapter.notifyItemRemoved(favouriteIndex);
-                }
-                // In other activity - no need to update adapter
-                appData.updateFavouriteStatuses(stock, appData.getTrendingList(),false);
-
-            }
-
-        });
-        mostChangedRecyclerView = setRecyclerSettings(R.id.mostChangedRecyclerView,mostChangedAdapter);
-
-        // Favourites
-        favouriteAdapter = new RecyclerAdapter(this, appData.getFavouriteData(), appData, R.id.favouriteRecyclerView, new AdapterRefresh() {
-            @Override
-            public void onFavouriteAddClicked(int position, StockData stock) {
-                // Not used
-            }
-
-            @Override
-            public void onFavouriteRemoveClicked(int position, StockData stock) {
-                // update most changed list
-                List<StockData> tempMostCHanged = appData.getMostChanged();
-                int favouriteIndex = appData.updateFavouriteStatuses(stock,tempMostCHanged,false);
-                if(favouriteIndex != -1){
-                    mostChangedAdapter.notifyItemChanged(favouriteIndex);
-                }
-                // In other activity - no need to update adapter
-                appData.updateFavouriteStatuses(stock,appData.getTrendingList(),false);
-            }
-
-        });
-        favouriteRecyclerView = setRecyclerSettings(R.id.favouriteRecyclerView,favouriteAdapter);
-
-
-    }
 
 
     @Override
@@ -123,110 +52,64 @@ public class MainActivity extends AppCompatActivity{
         }
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
-        bottomNavigationHandler = new BottomNavigationHandler(this,appData);
-        bottomNavigationHandler.initNavigation(R.id.bottomNav, R.id.home);
-        swipeRefreshLayout = findViewById(R.id.swipeContainer);
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            appData.setRefreshing(true);
-            updateDailyMovers(() -> {
-                updateFavourites(() ->{
-                    swipeRefreshLayout.setRefreshing(false);
-                    appData.setRefreshing(false);
-                });
-            });
-        });
 
+    }
+    private void setBottomNavigationItemSelected(){
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+        if(currentFragment instanceof MainFragment || currentFragment instanceof ChartFragment) {
+            bottomNavigationHandler.setSelectedItem(R.id.home);
+        }else if (currentFragment instanceof SearchFragment) {
+            bottomNavigationHandler.setSelectedItem(R.id.search);
+        }else if (currentFragment instanceof OptionsFragment) {
+            bottomNavigationHandler.setSelectedItem(R.id.settings);
+        }
+    }
 
+    private int getCurrentFragmentsNavId(){
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+        if(currentFragment instanceof MainFragment) {
+            return R.id.home;
+        }else if (currentFragment instanceof SearchFragment) {
+            return R.id.search;
+        }else if (currentFragment instanceof OptionsFragment) {
+            return R.id.settings;
+        }
+        return -1;
     }
     @Override
-    public void onStart(){
+    public void onBackPressed() {
+        super.onBackPressed();
+        setBottomNavigationItemSelected();
+
+        }
+
+
+
+    @Override
+    public void onStart() {
         super.onStart();
-        if(!themeChanged){
+        if (!themeChanged) {
             initBackend();
-            bottomNavigationHandler.refresh();
-            initListViews();
-            updateDailyMovers(null);
-            ProgressBar spinner = findViewById(R.id.favouriteProgressBar);
-            spinner.setVisibility(View.INVISIBLE);
-        }
-
-
-    }
-
-
-
-    public void updateDailyMovers(HelperCallback cb){
-        ProgressBar spinner = findViewById(R.id.mostChangedProgress);
-        spinner.setVisibility(View.VISIBLE);
-        if(appData.getMostChanged().size() <2 || cb != null){
-            stockApi.getDailyMovers(1,new StockApiCallback() {
-                @Override
-                public void onSuccess(List<StockData> response, Context context) {
-                    List<StockData> mostChanged = appData.getMostChanged();
-                    mostChanged.clear();
-                    mostChanged.addAll(response);
-                    mostChangedAdapter.notifyDataSetChanged();
-                    spinner.setVisibility(View.INVISIBLE);
-                    finishCallback(cb);
-                }
-                @Override
-                public void onError(VolleyError error,Context context) {
-                    Toast.makeText(context,error.networkResponse.toString(),Toast.LENGTH_LONG).show();
-                    spinner.setVisibility(View.INVISIBLE);
-                    finishCallback(cb);
-
-
-                }
-            });
-        }else{
-            finishCallback(cb);
-            spinner.setVisibility(View.INVISIBLE);
-        }
-
-    }
-
-    private void finishCallback(HelperCallback cb){
-        if(cb != null){
-            cb.onComplete();
-        }
-    }
-    public void updateFavourites(HelperCallback cb){
-        List<StockData> userFavourites = appData.getFavouriteData();
-        ProgressBar spinner = findViewById(R.id.favouriteProgressBar);
-        spinner.setVisibility(View.VISIBLE);
-        if(!userFavourites.isEmpty()){
-            List<String> symbolList = new ArrayList<>();
-            for(StockData stock : userFavourites) {
-                String symbol = stock.getSymbol();
-                symbolList.add(symbol);
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            // If theme is changed from settings or returned from desktop
+            // Without this, app will not redirect back to old fragment
+            int id = R.id.home;
+            if (fragmentManager.getBackStackEntryCount() == 0) {
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.fragmentContainer, MainFragment.newInstance()).commit();
+               /* // Get the current backstack entry (settings fragment in this case)
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                Fragment fragment = fragmentManager.getFragments().get(0);
+                // get latest fragment and redirect
+                fragmentTransaction.replace(R.id.fragmentContainer, fragment).commit();
+                setBottomNavigationItemSelected();*/
+            }else{
+                id = getCurrentFragmentsNavId();
             }
-            stockApi.getByTickerNames(symbolList, new StockApiCallback() {
-                @Override
-                public void onSuccess(List<StockData> response, Context context) {
-                    for(StockData stock:response){
-                        int index = appData.getIndex(stock,userFavourites);
-                        StockData favStock = userFavourites.get(index);
-                        favStock.setMarketPrice(stock.getMarketPrice());
-                        favStock.setPercentChange(stock.getPercentChange());
-                        favouriteAdapter.notifyItemChanged(index);
+            bottomNavigationHandler.initNavigation(R.id.bottomNav, id);
 
-                    }
-                    finishCallback(cb);
 
-                    spinner.setVisibility(View.INVISIBLE);
-                }
-
-                @Override
-                public void onError(VolleyError error, Context context) {
-                    spinner.setVisibility(View.INVISIBLE);
-                    finishCallback(cb);
-                }
-            });
-        }else{
-            finishCallback(cb);
-            spinner.setVisibility(View.INVISIBLE);
         }
-
     }
 
 
@@ -258,6 +141,7 @@ public class MainActivity extends AppCompatActivity{
     public void finish() {
         super.finish();
         // Override back button default animation
+
         overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
     }
 

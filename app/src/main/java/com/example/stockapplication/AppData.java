@@ -26,8 +26,13 @@ public class AppData {
     public static final String SELECTED_THEME = "SELECTED_THEME";
     public static final String ACCELOMETER_ENABLED = "ACCELOMETER_ENABLED";
     public static final String LIGHT_SENSOR_ENABLED = "LIGHT_SENSOR_ENABLED";
+    public static final String MAIN_FRAGMENT = "MAIN_FRAGMENT";
+    public static final String SEARCH_FRAGMENT = "SEARCH_FRAGMENT";
+    public static final String OPTIONS_FRAGMENT = "OPTIONS_FRAGMENT";
+    public static final String CHART_FRAGMENT = "CHART_FRAGMENT";
     private transient StockApi stockApi;
     private transient SensorHandler sensorHandler;
+    private transient BottomNavigationHandler bottomNavigationHandler;
     private transient boolean refreshing = false;
     private boolean lightSensorEnabled = false;
     private boolean accelometerEnabled = false;
@@ -60,6 +65,16 @@ public class AppData {
 
         return sensorHandler;
     }
+    public BottomNavigationHandler getBottomNavigationHandler(Context context,int navId){
+        if(bottomNavigationHandler == null){
+            bottomNavigationHandler = new BottomNavigationHandler(context);
+        }
+        bottomNavigationHandler.setNavId(navId);
+
+
+        return bottomNavigationHandler;
+    }
+
 
     public boolean isRefreshing() {
         return refreshing;

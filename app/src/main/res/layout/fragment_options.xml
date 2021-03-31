@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorPrimaryVariant"
+    tools:context=".OptionsActivity">
+
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/optionsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="33dp"
+                android:layout_marginEnd="12dp"
+                android:background="?attr/colorPrimary"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <Spinner
+                    android:id="@+id/spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="8dp"
+                    android:elevation="5dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="15dp"
+                    android:text="@string/settings"
+                    app:layout_constraintBottom_toTopOf="@+id/spinner"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/accelometerSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="15dp"
+                    android:text="@string/update_when_shaking"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/spinner" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/lightSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="15dp"
+                    android:text="@string/theme_by_lightness"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/accelometerSwitch" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="25dp"
+                android:background="?attr/colorPrimary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/optionsContainer">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/stockPriceLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="50dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="?attr/colorPrimaryVariant"
+                    android:elevation="1dp"
+                    android:textColorHint="?attr/colorOnPrimary"
+                    android:textCursorDrawable="?attr/colorOnPrimary"
+                    app:boxStrokeColor="?attr/colorOnPrimary"
+                    app:hintTextColor="?attr/colorOnPrimary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.66"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/stockPriceInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="?attr/colorPrimary"
+                        android:hint="@string/price_now"
+                        android:inputType="number|numberDecimal"
+                        android:textColor="?attr/colorOnPrimary"
+                        android:textColorHighlight="?attr/colorOnPrimary"
+                        android:textColorHint="?attr/colorOnPrimary"
+                        android:textCursorDrawable="@drawable/black_cursor" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/textView6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/average_price_calculator"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/stockAmountLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="?attr/colorPrimaryVariant"
+                    android:elevation="1dp"
+                    android:textColorHint="?attr/colorOnPrimary"
+                    android:textCursorDrawable="?attr/colorOnPrimary"
+                    app:boxStrokeColor="?attr/colorOnPrimary"
+                    app:hintTextColor="?attr/colorOnPrimary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.66"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/stockPriceLayout">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/stockAmountInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="?attr/colorPrimary"
+                        android:hint="@string/position_size"
+                        android:inputType="number"
+                        android:textColor="?attr/colorOnPrimary"
+                        android:textColorHighlight="?attr/colorOnPrimary"
+                        android:textColorHint="?attr/colorOnPrimary"
+                        android:textCursorDrawable="@drawable/black_cursor" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/averagePriceLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="?attr/colorPrimaryVariant"
+                    android:elevation="1dp"
+                    android:textColorHint="?attr/colorOnPrimary"
+                    android:textCursorDrawable="?attr/colorOnPrimary"
+                    app:boxStrokeColor="?attr/colorOnPrimary"
+                    app:hintTextColor="?attr/colorOnPrimary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.66"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/stockAmountLayout">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/averagePriceInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="?attr/colorPrimary"
+                        android:hint="@string/position_average"
+                        android:inputType="number|numberDecimal"
+                        android:textColor="?attr/colorOnPrimary"
+                        android:textColorHighlight="?attr/colorOnPrimary"
+                        android:textColorHint="?attr/colorOnPrimary"
+                        android:textCursorDrawable="@drawable/black_cursor" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/infoText1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="30dp"
+                    android:text="@string/what_would_be_avg"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/averagePriceLayout" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/calculateNewAverageLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="?attr/colorPrimaryVariant"
+                    android:elevation="1dp"
+                    android:textColorHint="?attr/colorOnPrimary"
+                    android:textCursorDrawable="?attr/colorOnPrimary"
+                    app:boxStrokeColor="?attr/colorOnPrimary"
+                    app:hintTextColor="?attr/colorOnPrimary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.66"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/infoText1">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/calculateNewAverageInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="?attr/colorPrimary"
+                        android:hint="@string/amount_to_buy_with"
+                        android:inputType="number|numberDecimal"
+                        android:textColor="?attr/colorOnPrimary"
+                        android:textColorHighlight="?attr/colorOnPrimary"
+                        android:textColorHint="?attr/colorOnPrimary"
+                        android:textCursorDrawable="@drawable/black_cursor" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/calculateNewAverageButton"
+                    android:layout_width="60dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="10dp"
+                    android:background="?attr/colorSecondary"
+                    android:scaleX="1"
+                    android:scaleY="1"
+                    android:text="@string/calculate"
+                    android:textScaleX="1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/calculateNewAverageLayout" />
+
+                <TextView
+                    android:id="@+id/infoText2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginEnd="15dp"
+                    android:text="@string/how_much_to_get_avg"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.21"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/calculateNewAverageButton" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/calculateWantedAverageLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="?attr/colorPrimaryVariant"
+                    android:elevation="1dp"
+                    android:textColorHint="?attr/colorOnPrimary"
+                    android:textCursorDrawable="?attr/colorOnPrimary"
+                    app:boxStrokeColor="?attr/colorOnPrimary"
+                    app:hintTextColor="?attr/colorOnPrimary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.66"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/infoText2">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/calculateWantedAverageInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="?attr/colorPrimary"
+                        android:hint="@string/give_wanted_avg"
+                        android:inputType="number|numberDecimal"
+                        android:textColor="?attr/colorOnPrimary"
+                        android:textColorHighlight="?attr/colorOnPrimary"
+                        android:textColorHint="?attr/colorOnPrimary"
+                        android:textCursorDrawable="@drawable/black_cursor" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/calculateWantedAverageButton"
+                    android:layout_width="60dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="?attr/colorSecondary"
+                    android:scaleX="1"
+                    android:scaleY="1"
+                    android:text="@string/calculate"
+                    android:textScaleX="1"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/calculateWantedAverageLayout" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

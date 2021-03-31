@@ -2,6 +2,7 @@ package com.example.stockapplication;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
@@ -67,13 +69,19 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         }
 
         holder.mainLayout.setOnClickListener(v->{
-            Intent intent = new Intent(context.getApplicationContext(),ChartActivity.class);
+            //Intent intent = new Intent(context.getApplicationContext(),ChartActivity.class);
             //setIntentData(intent);
             String stockString = gson.toJson(stock);
-            intent.putExtra("Stock",stockString);
-            context.startActivity(intent);
-            AppCompatActivity activity = (AppCompatActivity) context;
-            activity.overridePendingTransition(R.anim.slide_in_right,android.R.anim.fade_out);
+            FragmentTransaction fragmentTransaction=((AppCompatActivity) context).getSupportFragmentManager().beginTransaction();
+           // fragmentTransaction.setCustomAnimations(R.anim.slide_in_right,android.R.anim.fade_out,android.R.anim.fade_in,android.R.anim.fade_out);
+            ChartFragment chartFragment = ChartFragment.newInstance();
+            Bundle bundle = new Bundle();
+            bundle.putString("Stock",stockString);
+            chartFragment.setArguments(bundle);
+            fragmentTransaction.replace(R.id.fragmentContainer,chartFragment);
+            fragmentTransaction.addToBackStack(AppData.CHART_FRAGMENT);
+            fragmentTransaction.commit();
+           // activity.overridePendingTransition(R.anim.slide_in_right,android.R.anim.fade_out);
         });
         holder.favouriteStatus.setImageResource(stock.isFavourite()?R.drawable.ic_favourite:R.drawable.ic_not_favourite);
         holder.favouriteStatus.setOnClickListener(v -> {

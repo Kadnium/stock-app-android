@@ -1,15 +1,18 @@
 package com.example.stockapplication;
 
-import androidx.appcompat.app.AppCompatActivity;
+import android.content.Context;
+import android.os.Bundle;
+
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.content.Context;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.android.volley.VolleyError;
@@ -17,7 +20,8 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.List;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchFragment extends Fragment {
+
     TextInputEditText searchField;
     AppData appData;
     StockApi stockApi;
@@ -28,11 +32,11 @@ public class SearchActivity extends AppCompatActivity {
     RecyclerView trendingRecyclerView;
     BottomNavigationHandler bottomNavigationHandler;
     SensorHandler sensorHandler;
-
+    View fragmentView;
     public void initBackend(){
-        appData = AppData.getInstance(this);
-        stockApi = appData.getStockApi(this);
-        sensorHandler = appData.getSensorHandler(this);// new SensorHandler(this);
+        appData = AppData.getInstance(getContext());
+        stockApi = appData.getStockApi(getContext());
+        sensorHandler = appData.getSensorHandler(getContext());// new SensorHandler(this);
 
         sensorHandler.setOnShakeCallback(()->{
             appData.setRefreshing(true);
@@ -41,40 +45,37 @@ public class SearchActivity extends AppCompatActivity {
 
     }
 
-
-
-
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search);
-        bottomNavigationHandler = new BottomNavigationHandler(this);
-        bottomNavigationHandler.initNavigation(R.id.bottomNav,R.id.search);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        fragmentView = inflater.inflate(R.layout.fragment_search, container, false);
+        //bottomNavigationHandler = new BottomNavigationHandler(getContext(),appData);
+        //bottomNavigationHandler.initNavigation(R.id.bottomNav,R.id.search);
 
-        swipeRefreshLayout = findViewById(R.id.swipeContainer);
+        swipeRefreshLayout = getActivity().findViewById(R.id.swipeContainer);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             appData.setRefreshing(true);
             setTrendingData(() -> {
-               swipeRefreshLayout.setRefreshing(false);
-               appData.setRefreshing(false);
+                swipeRefreshLayout.setRefreshing(false);
+                appData.setRefreshing(false);
             });
 
 
         });
-        initSearchField();
+        // Inflate the layout for this fragment
+        return fragmentView;
     }
+
+
 
     @Override
     public void onStart(){
         super.onStart();
         initBackend();
-        bottomNavigationHandler.refresh();
-        if(appData != null){
-            initListViews();
-            setTrendingData(null);
-            clearSearchResults();
-        }
-
+        initSearchField();
+        initListViews();
+        setTrendingData(null);
+        clearSearchResults();
 
 
     }
@@ -82,14 +83,14 @@ public class SearchActivity extends AppCompatActivity {
 
 
     private RecyclerView setRecyclerSettings( int viewId, RecyclerAdapter adapter){
-        RecyclerView view = findViewById(viewId);
+        RecyclerView view = fragmentView.findViewById(viewId);
         view.setNestedScrollingEnabled(false);
         view.setAdapter(adapter);
-        view.setLayoutManager(new LinearLayoutManager(this));
+        view.setLayoutManager(new LinearLayoutManager(getContext()));
         return view;
     }
     public void initListViews(){
-        searchResultAdapter = new RecyclerAdapter(this, appData.getSearchResults(), appData, R.id.searchRecyclerView, new AdapterRefresh() {
+        searchResultAdapter = new RecyclerAdapter(getContext(), appData.getSearchResults(), appData, R.id.searchRecyclerView, new AdapterRefresh() {
             @Override
             public void onFavouriteAddClicked(int position, StockData stock) {
                 // search most changed list and set as a favourite
@@ -116,7 +117,7 @@ public class SearchActivity extends AppCompatActivity {
         });
         searchRecyclerView = setRecyclerSettings(R.id.searchRecyclerView,searchResultAdapter);
 
-        trendingRecyclerAdapter = new RecyclerAdapter(this, appData.getTrendingList(), appData, R.id.searchRecyclerView, new AdapterRefresh() {
+        trendingRecyclerAdapter = new RecyclerAdapter(getContext(), appData.getTrendingList(), appData, R.id.searchRecyclerView, new AdapterRefresh() {
             @Override
             public void onFavouriteAddClicked(int position, StockData stock) {
                 appData.updateFavouriteStatuses(stock,appData.getMostChanged(),true);
@@ -142,7 +143,6 @@ public class SearchActivity extends AppCompatActivity {
 
     }
     private List<StockData> clearSearchResults(){
-
         List<StockData> searchResults = appData.getSearchResults();
         if(searchResults.size()>0){
             searchResults.clear();
@@ -151,8 +151,8 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void initSearchField(){
-        searchField = findViewById(R.id.searchInput);
-        ProgressBar searchSpinner = (ProgressBar) findViewById(R.id.searchSpinner);
+        searchField = fragmentView.findViewById(R.id.searchInput);
+        ProgressBar searchSpinner = (ProgressBar) fragmentView.findViewById(R.id.searchSpinner);
         searchSpinner.setVisibility(View.INVISIBLE);
         searchField.addTextChangedListener(new TextWatcher() {
             @Override
@@ -186,7 +186,7 @@ public class SearchActivity extends AppCompatActivity {
                     searchResultAdapter.notifyDataSetChanged();
                 }
 
-                }
+            }
 
             @Override
             public void afterTextChanged(Editable s) {
@@ -201,7 +201,7 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
     private void setTrendingData(HelperCallback cb){
-        ProgressBar trendingSpinner = (ProgressBar) findViewById(R.id.trendingSpinner);
+        ProgressBar trendingSpinner = (ProgressBar) fragmentView.findViewById(R.id.trendingSpinner);
         List<StockData> trendingList = appData.getTrendingList();
         trendingSpinner.setVisibility(View.VISIBLE);
         if(trendingList.size() == 0 || cb != null){
@@ -233,36 +233,19 @@ public class SearchActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
 
-        if(sensorHandler != null){
-            sensorHandler.unRegisterSensors();
-        }
-    }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        if(appData != null){
-            AppData.saveAppDataToSharedPrefs(this,appData,false);
-        }
 
-        if(sensorHandler != null){
-            sensorHandler.unRegisterSensors();
-        }
-
+    public SearchFragment() {
 
     }
-    @Override
-    public void finish() {
-        super.finish();
-      //  AppData.saveAppDataToSharedPrefs(this,appData,false);
-        // override back button default animation
 
-        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+
+    public static SearchFragment newInstance() {
+        return new SearchFragment();
+
     }
+
 
 
 }

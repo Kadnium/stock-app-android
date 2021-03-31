@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ChartFragment">
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/mainContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <include
+                android:id="@+id/stockRow"
+                layout="@layout/stock_row"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/stockChart"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="10dp"
+                android:background="?attr/colorPrimary"
+                android:textColor="?attr/colorOnPrimary"
+                android:textColorHighlight="?attr/colorOnPrimary"
+                android:textColorHint="?attr/colorOnPrimary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/dayButton" />
+
+            <Button
+                android:id="@+id/dayButton"
+                android:layout_width="33dp"
+                android:layout_height="29dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:padding="0dp"
+                android:paddingLeft="0dp"
+                android:paddingTop="0dp"
+                android:paddingRight="0dp"
+                android:paddingBottom="0dp"
+                android:text="1d"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/stockRow" />
+
+            <Button
+                android:id="@+id/fiveDayButton"
+                android:layout_width="33dp"
+                android:layout_height="29dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="10dp"
+                android:padding="0dp"
+                android:paddingLeft="0dp"
+                android:paddingTop="0dp"
+                android:paddingRight="0dp"
+                android:paddingBottom="0dp"
+                android:text="5d"
+                android:textSize="12sp"
+                app:layout_constraintStart_toEndOf="@+id/dayButton"
+                app:layout_constraintTop_toBottomOf="@+id/stockRow" />
+
+            <Button
+                android:id="@+id/monthButton"
+                android:layout_width="33dp"
+                android:layout_height="29dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="10dp"
+                android:padding="0dp"
+                android:paddingLeft="0dp"
+                android:paddingTop="0dp"
+                android:paddingRight="0dp"
+                android:paddingBottom="0dp"
+                android:text="1m"
+                android:textSize="12sp"
+                app:layout_constraintStart_toEndOf="@+id/fiveDayButton"
+                app:layout_constraintTop_toBottomOf="@+id/stockRow" />
+
+            <Button
+                android:id="@+id/sixMonthButton"
+                android:layout_width="33dp"
+                android:layout_height="29dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="10dp"
+                android:padding="0dp"
+                android:paddingLeft="0dp"
+                android:paddingTop="0dp"
+                android:paddingRight="0dp"
+                android:paddingBottom="0dp"
+                android:text="6m"
+                android:textSize="12sp"
+                app:layout_constraintStart_toEndOf="@+id/monthButton"
+                app:layout_constraintTop_toBottomOf="@+id/stockRow" />
+
+            <Button
+                android:id="@+id/ytdButton"
+                android:layout_width="33dp"
+                android:layout_height="29dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="10dp"
+                android:padding="0dp"
+                android:paddingLeft="0dp"
+                android:paddingTop="0dp"
+                android:paddingRight="0dp"
+                android:paddingBottom="0dp"
+                android:text="ytd"
+                android:textSize="12sp"
+                app:layout_constraintStart_toEndOf="@+id/sixMonthButton"
+                app:layout_constraintTop_toBottomOf="@+id/stockRow" />
+
+            <Button
+                android:id="@+id/oneYearButton"
+                android:layout_width="33dp"
+                android:layout_height="29dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="10dp"
+                android:padding="0dp"
+                android:paddingLeft="0dp"
+                android:paddingTop="0dp"
+                android:paddingRight="0dp"
+                android:paddingBottom="0dp"
+                android:text="1y"
+                android:textSize="12sp"
+                app:layout_constraintStart_toEndOf="@+id/ytdButton"
+                app:layout_constraintTop_toBottomOf="@+id/stockRow" />
+
+            <Button
+                android:id="@+id/fiveYearButton"
+                android:layout_width="33dp"
+                android:layout_height="29dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="10dp"
+                android:padding="0dp"
+                android:paddingLeft="0dp"
+                android:paddingTop="0dp"
+                android:paddingRight="0dp"
+                android:paddingBottom="0dp"
+                android:text="5y"
+                android:textSize="12sp"
+                app:layout_constraintStart_toEndOf="@+id/oneYearButton"
+                app:layout_constraintTop_toBottomOf="@+id/stockRow" />
+
+            <Button
+                android:id="@+id/maxButton"
+                android:layout_width="33dp"
+                android:layout_height="29dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="10dp"
+                android:padding="0dp"
+                android:paddingLeft="0dp"
+                android:paddingTop="0dp"
+                android:paddingRight="0dp"
+                android:paddingBottom="0dp"
+                android:text="MAX"
+                android:textSize="12sp"
+                app:layout_constraintStart_toEndOf="@+id/fiveYearButton"
+                app:layout_constraintTop_toBottomOf="@+id/stockRow" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="232dp"
+                app:layout_constraintEnd_toEndOf="@+id/stockChart"
+                app:layout_constraintHorizontal_bias="0.498"
+                app:layout_constraintStart_toStartOf="@+id/stockChart"
+                app:layout_constraintTop_toTopOf="@+id/stockChart" />
+
+            <TextView
+                android:id="@+id/chartDateInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="50dp"
+                android:layout_marginTop="25dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/stockChart" />
+
+            <TextView
+                android:id="@+id/chartPriceInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="50dp"
+                android:layout_marginTop="5dp"
+                app:layout_constraintStart_toStartOf="@+id/stockChart"
+                app:layout_constraintTop_toBottomOf="@+id/chartDateInfo" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
