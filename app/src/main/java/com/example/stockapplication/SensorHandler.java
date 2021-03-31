@@ -44,6 +44,10 @@ public class SensorHandler {
 
     }
 
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
     public void setOnShakeCallback(HelperCallback onShakeCallback) {
         this.onShakeCallback = onShakeCallback;
     }

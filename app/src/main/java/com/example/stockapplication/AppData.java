@@ -45,17 +45,16 @@ public class AppData {
 
     public StockApi getStockApi(Context context){
         if(stockApi == null){
-            Log.d("STOCKAPI","add");
             stockApi = new StockApi(context);
         }
         return stockApi;
     }
     public SensorHandler getSensorHandler(Context context){
         if(sensorHandler == null){
-            Log.d("SENSORHA","add");
             sensorHandler = new SensorHandler(context,accelometerEnabled,lightSensorEnabled);
         }else{
             sensorHandler.updateSensors(accelometerEnabled,lightSensorEnabled);
+            sensorHandler.setContext(context);
         }
 
 

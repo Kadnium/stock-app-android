@@ -107,7 +107,7 @@ public class OptionsActivity extends AppCompatActivity  {
         SwitchCompat accelometerSwitch = findViewById(R.id.accelometerSwitch);
         SwitchCompat lightSwitch = findViewById(R.id.lightSwitch);
         boolean accelometerEnabled = appData.isAccelometerEnabled();//;AppData.getSettingFromPrefs(this,AppData.ACCELOMETER_ENABLED);
-        boolean ligthSensorEnabled = appData.isLightSensorEnabled();AppData.getSettingFromPrefs(this,AppData.LIGHT_SENSOR_ENABLED);
+        boolean ligthSensorEnabled = appData.isLightSensorEnabled();//AppData.getSettingFromPrefs(this,AppData.LIGHT_SENSOR_ENABLED);
 
         accelometerSwitch.setChecked(accelometerEnabled);
         lightSwitch.setChecked(ligthSensorEnabled);
@@ -134,9 +134,6 @@ public class OptionsActivity extends AppCompatActivity  {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(appData != null){
-            AppData.saveAppDataToSharedPrefs(this,appData,true);
-        }
 
         if(sensorHandler != null){
             sensorHandler.unRegisterSensors();

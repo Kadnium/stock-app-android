@@ -232,9 +232,6 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(appData != null){
-            AppData.saveAppDataToSharedPrefs(this,appData,true);
-        }
 
         if(sensorHandler != null){
             sensorHandler.unRegisterSensors();

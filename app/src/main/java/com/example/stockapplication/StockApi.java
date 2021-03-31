@@ -247,6 +247,7 @@ public class StockApi {
             stock.setChartData(datasetMap);
             stockList.add(stock);
         } catch (JSONException e) {
+            
             e.printStackTrace();
         }
         return stockList;

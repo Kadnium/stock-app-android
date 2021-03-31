@@ -53,20 +53,31 @@ public class ChartActivity extends AppCompatActivity {
     SensorHandler sensorHandler;
     StockApi stockApi;
     LineChart chart;
-    Gson gson = new Gson();
     StockData intentStock;
     List<Long> longList = new ArrayList<>();
     Object[] floatArray;
     String timeFrame =StockApi.DAILY_RANGE;
     TextView priceText,dateText;
-
+    SwipeRefreshLayout swipeRefreshLayout;
     private void initBackend() {
         appData = AppData.getInstance(this);
         sensorHandler = appData.getSensorHandler(this);
+        sensorHandler.setOnShakeCallback(()->initChartData(timeFrame,null));
         stockApi = appData.getStockApi(this);
 
         priceText=findViewById(R.id.chartPriceInfo);
         dateText=findViewById(R.id.chartDateInfo);
+        swipeRefreshLayout = findViewById(R.id.swipeContainer);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            appData.setRefreshing(true);
+            initChartData(timeFrame,()->{
+                appData.setRefreshing(false);
+                swipeRefreshLayout.setRefreshing(false);
+            });
+
+
+
+        });
 
     }
 
@@ -146,9 +157,11 @@ public class ChartActivity extends AppCompatActivity {
         favouriteStatus.setOnClickListener(v -> {
             if(isFavourite){
                 stock.setFavourite(false);
-                appData.removeFromFavourites(stock);
-                appData.updateFavouriteStatuses(stock,appData.getTrendingList(),false);
-                appData.updateFavouriteStatuses(stock,appData.getMostChanged(),false);
+                int favouriteIndex = appData.removeFromFavourites(stock);
+                if(favouriteIndex != -1){
+                    appData.updateFavouriteStatuses(stock,appData.getTrendingList(),false);
+                    appData.updateFavouriteStatuses(stock,appData.getMostChanged(),false);
+                }
             }else{
                 stock.setFavourite(true);
                 appData.addToFavourites(stock);
@@ -193,7 +206,7 @@ public class ChartActivity extends AppCompatActivity {
         return simpleDateFormat.format(new Date(timestamp * 1000));
 
     }
-    private void initChartData(String range){
+    private void initChartData(String range, HelperCallback callback){
         if(intentStock == null){
             Intent intent = getIntent();
             Gson gson = new Gson();
@@ -262,13 +275,19 @@ public class ChartActivity extends AppCompatActivity {
 
                 }
                 spinner.setVisibility(View.INVISIBLE);
+                if(callback != null){
+                    callback.onComplete();
+                }
+
 
 
             }
 
             @Override
             public void onError(VolleyError error, Context context) {
-
+                if(callback != null){
+                    callback.onComplete();
+                }
             }
         });
     }
@@ -286,7 +305,7 @@ public class ChartActivity extends AppCompatActivity {
             Button b = findViewById(buttonEntry.getKey());
             b.setOnClickListener(v -> {
                 timeFrame = buttonEntry.getValue();
-                initChartData(buttonEntry.getValue());
+                initChartData(buttonEntry.getValue(),null);
             });
            /* b.setOnTouchListener(new View.OnTouchListener() {
                 @Override
@@ -319,7 +338,7 @@ public class ChartActivity extends AppCompatActivity {
         super.onStart();
         initBackend();
         initChart();
-        initChartData(StockApi.DAILY_RANGE);
+        initChartData(StockApi.DAILY_RANGE,null);
         initButtons();
     }
 
@@ -330,9 +349,6 @@ public class ChartActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         // When app is closed
-        if(appData != null){
-            AppData.saveAppDataToSharedPrefs(this,appData,true);
-        }
         if(sensorHandler != null){
             sensorHandler.unRegisterSensors();
         }

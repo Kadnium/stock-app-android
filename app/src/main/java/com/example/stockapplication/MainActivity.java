@@ -94,9 +94,10 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onFavouriteRemoveClicked(int position, StockData stock) {
                 // update most changed list
-                int favouriteIndex = appData.updateFavouriteStatuses(stock,appData.getMostChanged(),false);
+                List<StockData> tempMostCHanged = appData.getMostChanged();
+                int favouriteIndex = appData.updateFavouriteStatuses(stock,tempMostCHanged,false);
                 if(favouriteIndex != -1){
-                    mostChangedAdapter.notifyItemRemoved(favouriteIndex);
+                    mostChangedAdapter.notifyItemChanged(favouriteIndex);
                 }
                 // In other activity - no need to update adapter
                 appData.updateFavouriteStatuses(stock,appData.getTrendingList(),false);
@@ -234,9 +235,6 @@ public class MainActivity extends AppCompatActivity{
     protected void onDestroy() {
         super.onDestroy();
         // When app is closed
-        if(appData != null){
-            AppData.saveAppDataToSharedPrefs(this,appData,true);
-        }
         if(sensorHandler != null){
             sensorHandler.unRegisterSensors();
         }
