@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">StockApplication</string>
+    <string name="app_name">Stonks</string>
     <string name="default_theme">Oletus</string>
     <string name="dark_theme">Tumma teema</string>
     <string name="light_theme">Vaalea teema</string>
@@ -26,6 +26,7 @@
     <string name="theme_by_lightness">Teeman vaihto valoisuuden mukaan</string>
     <string name="update_when_shaking">Päivitä osakkeet puhelinta ravistamalla</string>
     <string name="settings">Asetukset</string>
+
 
     <string-array name="theme_settings">
         <item>@string/default_theme</item>
