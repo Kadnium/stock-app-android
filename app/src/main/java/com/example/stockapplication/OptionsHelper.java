@@ -5,47 +5,51 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Objects;
 
 public class OptionsHelper {
     TextInputEditText stockPriceInput, stockAmountInput, averagePriceInput, calculateNewAverageInput, calculateWantedAverageInput;
     AppCompatButton calculateNewAverageButton, calculateWantedAverageButton;
-    Context context;
-    public OptionsHelper(Context context) {
+    final Context context;
+    final View fragmentView;
+    public OptionsHelper(Context context,View fragmentView) {
         this.context = context;
+        this.fragmentView = fragmentView;
     }
 
+    /**
+     * Finds correct elements and binds them to variables
+     * Sets listeners
+     */
     public void initAveragePriceFields(){
-        if(context instanceof AppCompatActivity){
-            AppCompatActivity act = (AppCompatActivity) context;
-            stockPriceInput = act.findViewById(R.id.stockPriceInput);
-            stockAmountInput = act.findViewById(R.id.stockAmountInput);
-            averagePriceInput = act.findViewById(R.id.averagePriceInput);
+        if(fragmentView != null){
+            stockPriceInput = fragmentView.findViewById(R.id.stockPriceInput);
+            stockAmountInput = fragmentView.findViewById(R.id.stockAmountInput);
+            averagePriceInput = fragmentView.findViewById(R.id.averagePriceInput);
 
-            calculateNewAverageInput = act.findViewById(R.id.calculateNewAverageInput);
-            calculateNewAverageButton = act.findViewById(R.id.calculateNewAverageButton);
+            calculateNewAverageInput = fragmentView.findViewById(R.id.calculateNewAverageInput);
+            calculateNewAverageButton = fragmentView.findViewById(R.id.calculateNewAverageButton);
 
-            calculateWantedAverageInput = act.findViewById(R.id.calculateWantedAverageInput);
-            calculateWantedAverageButton = act.findViewById(R.id.calculateWantedAverageButton);
+            calculateWantedAverageInput = fragmentView.findViewById(R.id.calculateWantedAverageInput);
+            calculateWantedAverageButton = fragmentView.findViewById(R.id.calculateWantedAverageButton);
 
-            calculateWantedAverageButton.setOnClickListener(v -> {
-                calculateWantedAveragePrice();
+            calculateWantedAverageButton.setOnClickListener(v -> calculateWantedAveragePrice());
 
-            });
-
-            calculateNewAverageButton.setOnClickListener(v->{
-                calculateNewAveragePrice();
-            });
-
+            calculateNewAverageButton.setOnClickListener(v-> calculateNewAveragePrice());
 
         }
     }
+
+    /**
+     * Check if all needed views are not null
+     * @return Is null
+     */
     private boolean checkViews(){
         return  stockPriceInput != null && stockAmountInput != null &&
                 averagePriceInput != null && calculateNewAverageInput != null &&
@@ -53,8 +57,13 @@ public class OptionsHelper {
                 calculateWantedAverageButton != null;
     }
 
+    /**
+     * Get input value from text input
+     * @param input Input to get text from
+     * @return Double value from input
+     */
     private Double getInputValue(TextInputEditText input){
-        String value = input.getText().toString();
+        String value = Objects.requireNonNull(input.getText()).toString();
         if(value.isEmpty()){
             return null;
 
@@ -62,6 +71,10 @@ public class OptionsHelper {
         return Double.parseDouble(input.getText().toString());
 
     }
+
+    /**
+     * Calculates new average price if calculate new average is clicked
+     */
     public void calculateNewAveragePrice(){
         if(checkViews()){
             Double stockPrice = getInputValue(stockPriceInput);
@@ -85,11 +98,20 @@ public class OptionsHelper {
         }
     }
 
+    /**
+     * Helper to show toasts
+     * @param text Toast text
+     * @param length Toast duration
+     */
     private void setToast(String text,int length){
         Toast toast = Toast.makeText(context, text, length);
         toast.setGravity(Gravity.CENTER|Gravity.CENTER_HORIZONTAL, 0, 0);
         toast.show();
     }
+
+    /**
+     * Calculates wanted average price if wanted average is clicked
+     */
     public void calculateWantedAveragePrice(){
         if(checkViews()){
             Double stockPrice = getInputValue(stockPriceInput);

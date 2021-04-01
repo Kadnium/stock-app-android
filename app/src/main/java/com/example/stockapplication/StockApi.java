@@ -1,15 +1,12 @@
 package com.example.stockapplication;
 
 import android.content.Context;
-import android.os.Build;
-import android.util.Log;
+import android.text.TextUtils;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.util.Pair;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -22,6 +19,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Objects;
+
 
 public class StockApi {
     private final Context context;
@@ -41,7 +40,7 @@ public class StockApi {
     public static final String YEAR_RANGE = "YEAR_RANGE";
     public static final String FIVE_YEAR_RANGE = "FIVE_YEAR_RANGE";
     public static final String ALL_TIME_RANGE = "ALL_TIME_RANGE";
-    private HashMap<String, Pair<String,String>> chartApiHelper = new HashMap<>();
+    private final HashMap<String, Pair<String,String>> chartApiHelper = new HashMap<>();
     public StockApi(Context context) {
         this.context = context;
         this.requestQueue = Volley.newRequestQueue(context.getApplicationContext());
@@ -55,13 +54,15 @@ public class StockApi {
         chartApiHelper.put(ALL_TIME_RANGE,new Pair<>("1mo","max"));
 
     }
-
+    /**
+     * Each api method has api path with added arguments and
+     * String constant name of api
+     */
     private Pair<String,String> stockDataApi(String symbol){
         return new Pair<>("https://query1.finance.yahoo.com/v7/finance/quote?formatted=true&lang=en-US&region=US&symbols="+symbol+"&fields=symbol%2CshortName%2ClongName%2CregularMarketPrice%2CregularMarketChange%2CregularMarketChangePercent",
                 STOCK_DATA_API
         );
     }
-    // Will return only symbols
     private Pair<String,String> trendingApi(int count){
         return new Pair<>(
                 "https://query1.finance.yahoo.com/v1/finance/trending/US?count="+count,
@@ -76,22 +77,27 @@ public class StockApi {
                 SEARCH_API
         );
     }
-
     private Pair<String,String> dailyGainerApi(int queryCount){
         return new Pair<>("https://query2.finance.yahoo.com/v1/finance/screener/predefined/saved?corsDomain=finance.yahoo.com&formatted=false&lang=en-US&region=US&scrIds=day_gainers&count="+queryCount,
                 DAILY_GAINER_API
         );
     }
-
     private Pair<String,String> dailyLoserApi(int queryCount){
         return new Pair<>("https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?corsDomain=finance.yahoo.com&formatted=false&lang=en-US&region=US&scrIds=day_losers&count="+queryCount,
                 DAILY_LOSER_API
         );
     }
 
+
+    /**
+     * Get trending tickers api
+     * @param count Amount to fetch
+     * @param cb After finish callback
+     */
     public void getTrending(int count,StockApiCallback cb){
         Pair<String,String> API = trendingApi(count);
-
+        // Trending api returns tickers so after fetching tickers
+        // Get data seperately for them
         fetchData(API, new StockApiCallback() {
             @Override
             public void onSuccess(List<StockData> response, Context context) {
@@ -99,8 +105,6 @@ public class StockApi {
                 for(StockData stock:response){
                     tickers.add(stock.getSymbol());
                 }
-                // parse response to JSON
-                // loop tickers and add them to array
                 getByTickerNames(tickers,cb);
             }
 
@@ -110,8 +114,17 @@ public class StockApi {
             }
         });
     }
+
+    /**
+     * Find stocks from api
+     * @param args Argument to use
+     * @param queryCount Amount to results to get
+     * @param cb After finish callback
+     */
     public void getSearchResults(String args,int queryCount,StockApiCallback cb){
         Pair<String,String> API = searchApi(args,queryCount);
+        // Returns tickers so after fetching tickers
+        // Get data seperately for them
         fetchData(API, new StockApiCallback() {
             @Override
             public void onSuccess(List<StockData> response, Context context) {
@@ -129,13 +142,28 @@ public class StockApi {
         });
 
     }
+
+    /**
+     * Get chart for stock using ticker
+     * @param ticker Ticker to get chart for
+     * @param type Timeframe string
+     * @param cb After finish callback
+     */
     public void getChart(String ticker,String type, StockApiCallback cb){
         Pair<String,String> rangePair = chartApiHelper.get(type);
+        assert rangePair != null;
         Pair<String,String> API = chartApi(ticker,rangePair);
         fetchData(API,cb);
 
 
     }
+
+    /**
+     * Daily gainer and daily loser both use same logic
+     * getDailyMovers uses these two
+     * @param count Amoun to get
+     * @param cb After finish callback
+     */
     public void getDailyGainers(int count, StockApiCallback cb){
         Pair<String,String> API = dailyGainerApi(count);
         fetchData(API,cb);
@@ -168,22 +196,32 @@ public class StockApi {
            }
        });
     }
+
+    /**
+     * Fetch stockdata by ticker names
+     * @param tickers List of tickers
+     * @param cb After finish callback
+     */
     public void getByTickerNames(List<String> tickers, StockApiCallback cb){
-        // TODO fix for lower versions
         String joinedTickers ="";
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            joinedTickers = String.join("%2C",tickers);
-        }
+        joinedTickers = TextUtils.join("%2C",tickers);
         Pair<String,String> API = stockDataApi(joinedTickers);
         fetchData(API,cb);
 
     }
 
+    /**
+     * Main method for fetching data
+     * Needs Pair which contains api name and api path
+     * @param API Pair which contains api name and api path
+     * @param callback After finish callback
+     */
     private void fetchData(Pair<String,String> API,StockApiCallback callback){
         StringRequest stringRequest = new StringRequest(Request.Method.GET, API.first,
                 response -> {
-                    List<StockData> responseArr = null;
-                    switch(API.second){
+                    // After fetch, parse json, put the to list and return
+                    List<StockData> responseArr;
+                    switch(Objects.requireNonNull(API.second)){
                         case STOCK_DATA_API:
                             responseArr  = stockDataApiParse(response);
                             break;
@@ -206,9 +244,7 @@ public class StockApi {
 
                     }
                     callback.onSuccess(responseArr,context);
-                }, error -> {
-                    callback.onError(error,context);
-        });
+                }, error -> callback.onError(error,context));
 
         if(requestQueue == null){
             requestQueue = Volley.newRequestQueue(context);
@@ -216,6 +252,11 @@ public class StockApi {
         requestQueue.add(stringRequest);
     }
 
+    /**
+     * Parser for chart api
+     * @param json JSON from volley
+     * @return parsed List of stockData
+     */
     private List<StockData> chartApiParse(String json){
         List<StockData> stockList = new ArrayList<>();
         try {
@@ -231,6 +272,8 @@ public class StockApi {
             double previousClose = meta.getDouble("chartPreviousClose");
             StockData stock = new StockData(null,null,null,0,0,false,null);
             stock.setPreviousClose(previousClose);
+            // Chart datapoints saved in LinkedHashMap
+            // LinkedHashMap used because data order can't change
             LinkedHashMap<Long,Float> datasetMap = new LinkedHashMap<>();
             for (int i = 0; i <timestamp.length(); i++) {
                 if(i<timestamp.length() && i<dataPoints.length()){
@@ -243,7 +286,6 @@ public class StockApi {
 
                 }
             }
-
             stock.setChartData(datasetMap);
             stockList.add(stock);
         } catch (JSONException e) {
@@ -252,7 +294,11 @@ public class StockApi {
         }
         return stockList;
     }
-
+    /**
+     * Parser for stock data
+     * @param json JSON from volley
+     * @return parsed List of stockData
+     */
     private List<StockData> stockDataApiParse(String json){
         List<StockData> stockList = new ArrayList<>();
         try {
@@ -277,7 +323,11 @@ public class StockApi {
         }
         return stockList;
     }
-
+    /**
+     * Parser for Trending data
+     * @param json JSON from volley
+     * @return parsed List of stockData
+     */
     private List<StockData> trendingApiParse(String json){
         List<StockData> stockList = new ArrayList<>();
         try {
@@ -299,6 +349,11 @@ public class StockApi {
         return stockList;
     }
 
+    /**
+     * Parser for search data
+     * @param json JSON from volley
+     * @return parsed List of stockData
+     */
     private List<StockData> searchApiParse(String json){
         List<StockData> stockList = new ArrayList<>();
         try {
@@ -318,6 +373,11 @@ public class StockApi {
         return stockList;
     }
 
+    /**
+     * Parser for daily movers
+     * @param json JSON from volley
+     * @return parsed List of stockData
+     */
     private List<StockData> dailyMoverApiParse(String json){
         List<StockData> stockList = new ArrayList<>();
         try {

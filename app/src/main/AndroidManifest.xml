@@ -11,14 +11,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/app_logo_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.StockApplication">
-        <activity android:name=".ChartActivity"></activity>
-        <activity
-            android:name=".OptionsActivity"
-            android:windowSoftInputMode="stateVisible|adjustResize" />
-        <activity
-            android:name=".SearchActivity"
-            android:windowSoftInputMode="adjustNothing" />
+        android:theme="@style/Theme.StockApplication"
+        android:fullBackupContent="@xml/backup_descriptor">
         <activity
             android:name=".MainActivity"
             android:windowSoftInputMode="adjustNothing">
