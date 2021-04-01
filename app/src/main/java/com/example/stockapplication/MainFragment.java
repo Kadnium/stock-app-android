@@ -43,7 +43,7 @@ public class MainFragment extends Fragment {
     public void initBackend(){
         appData = AppData.getInstance(getContext());
         stockApi = appData.getStockApi(getContext());
-        sensorHandler = appData.getSensorHandler(getContext());// new SensorHandler(this);
+        sensorHandler = appData.getSensorHandler(getContext());
         sensorHandler.setOnShakeCallback(() -> {
             appData.setRefreshing(true);
             updateDailyMovers(()->{
@@ -66,6 +66,7 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         fragmentView = inflater.inflate(R.layout.fragment_main, container, false);
         swipeRefreshLayout = getActivity().findViewById(R.id.swipeContainer);
+        swipeRefreshLayout.setEnabled(true);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             appData.setRefreshing(true);
             updateDailyMovers(() -> {

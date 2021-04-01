@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -18,17 +19,20 @@ import android.widget.Spinner;
 public class OptionsFragment extends Fragment {
 
     AppData appData;
-    BottomNavigationHandler bottomNavigationHandler;
     SensorHandler sensorHandler;
     Spinner spinner;
     boolean spinnerClicked = false;
     OptionsHelper optionsHelper;
     View fragmentView;
+    SwipeRefreshLayout swipeRefreshLayout;
     public void initBackend(){
         appData = AppData.getInstance(getContext());
         sensorHandler =appData.getSensorHandler(getContext());
-        optionsHelper = new OptionsHelper(getContext());
+        optionsHelper = new OptionsHelper(getContext(),fragmentView);
         optionsHelper.initAveragePriceFields();
+        swipeRefreshLayout = getActivity().findViewById(R.id.swipeContainer);
+        swipeRefreshLayout.setEnabled(false);
+
 
     }
 

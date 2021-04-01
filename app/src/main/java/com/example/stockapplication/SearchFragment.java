@@ -43,16 +43,8 @@ public class SearchFragment extends Fragment {
             setTrendingData(()->appData.setRefreshing(false));
         });
 
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        fragmentView = inflater.inflate(R.layout.fragment_search, container, false);
-        //bottomNavigationHandler = new BottomNavigationHandler(getContext(),appData);
-        //bottomNavigationHandler.initNavigation(R.id.bottomNav,R.id.search);
-
         swipeRefreshLayout = getActivity().findViewById(R.id.swipeContainer);
+        swipeRefreshLayout.setEnabled(true);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             appData.setRefreshing(true);
             setTrendingData(() -> {
@@ -62,6 +54,16 @@ public class SearchFragment extends Fragment {
 
 
         });
+
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        fragmentView = inflater.inflate(R.layout.fragment_search, container, false);
+        //bottomNavigationHandler = new BottomNavigationHandler(getContext(),appData);
+        //bottomNavigationHandler.initNavigation(R.id.bottomNav,R.id.search);
+
         // Inflate the layout for this fragment
         return fragmentView;
     }

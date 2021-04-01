@@ -32,9 +32,8 @@ public class MainActivity extends AppCompatActivity{
     public void initBackend(){
         appData = AppData.getInstance(this);
         stockApi = appData.getStockApi(this);
-        sensorHandler = appData.getSensorHandler(this);// new SensorHandler(this);
-        bottomNavigationHandler = new BottomNavigationHandler(this);//appData.getBottomNavigationHandler(this,R.id.home);
-
+        sensorHandler = appData.getSensorHandler(this);
+        bottomNavigationHandler = new BottomNavigationHandler(this);
     }
 
 
@@ -54,6 +53,10 @@ public class MainActivity extends AppCompatActivity{
         getSupportActionBar().hide();
 
     }
+
+    /**
+     * Handle bottom navigation selections after back button press
+     */
     private void setBottomNavigationItemSelected(){
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
         if(currentFragment instanceof MainFragment || currentFragment instanceof ChartFragment) {
@@ -65,6 +68,10 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
+    /**
+     * Get navigation item id's based on current visible view
+     * @return Navigation item id
+     */
     private int getCurrentFragmentsNavId(){
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
         if(currentFragment instanceof MainFragment) {
@@ -80,7 +87,6 @@ public class MainActivity extends AppCompatActivity{
     public void onBackPressed() {
         super.onBackPressed();
         setBottomNavigationItemSelected();
-
         }
 
 
@@ -91,19 +97,15 @@ public class MainActivity extends AppCompatActivity{
         if (!themeChanged) {
             initBackend();
             FragmentManager fragmentManager = getSupportFragmentManager();
-            // If theme is changed from settings or returned from desktop
-            // Without this, app will not redirect back to old fragment
             int id = R.id.home;
+            // If theme is changed from settings or returned from desktop
+            // Check if there are backstack, if not, start mainFragment
+            // and init navigation with home selected
             if (fragmentManager.getBackStackEntryCount() == 0) {
                 FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.fragmentContainer, MainFragment.newInstance()).commit();
-               /* // Get the current backstack entry (settings fragment in this case)
-                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                Fragment fragment = fragmentManager.getFragments().get(0);
-                // get latest fragment and redirect
-                fragmentTransaction.replace(R.id.fragmentContainer, fragment).commit();
-                setBottomNavigationItemSelected();*/
             }else{
+                // If backstack, get current visible fragment and init bottom navigation with it
                 id = getCurrentFragmentsNavId();
             }
             bottomNavigationHandler.initNavigation(R.id.bottomNav, id);
@@ -137,13 +139,6 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
-    @Override
-    public void finish() {
-        super.finish();
-        // Override back button default animation
-
-        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
-    }
 
 
 

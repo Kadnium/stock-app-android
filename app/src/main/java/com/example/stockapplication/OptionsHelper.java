@@ -17,22 +17,23 @@ public class OptionsHelper {
     TextInputEditText stockPriceInput, stockAmountInput, averagePriceInput, calculateNewAverageInput, calculateWantedAverageInput;
     AppCompatButton calculateNewAverageButton, calculateWantedAverageButton;
     Context context;
-    public OptionsHelper(Context context) {
+    View fragmentView;
+    public OptionsHelper(Context context,View fragmentView) {
         this.context = context;
+        this.fragmentView = fragmentView;
     }
 
     public void initAveragePriceFields(){
-        if(context instanceof AppCompatActivity){
-            AppCompatActivity act = (AppCompatActivity) context;
-            stockPriceInput = act.findViewById(R.id.stockPriceInput);
-            stockAmountInput = act.findViewById(R.id.stockAmountInput);
-            averagePriceInput = act.findViewById(R.id.averagePriceInput);
+        if(fragmentView != null){
+            stockPriceInput = fragmentView.findViewById(R.id.stockPriceInput);
+            stockAmountInput = fragmentView.findViewById(R.id.stockAmountInput);
+            averagePriceInput = fragmentView.findViewById(R.id.averagePriceInput);
 
-            calculateNewAverageInput = act.findViewById(R.id.calculateNewAverageInput);
-            calculateNewAverageButton = act.findViewById(R.id.calculateNewAverageButton);
+            calculateNewAverageInput = fragmentView.findViewById(R.id.calculateNewAverageInput);
+            calculateNewAverageButton = fragmentView.findViewById(R.id.calculateNewAverageButton);
 
-            calculateWantedAverageInput = act.findViewById(R.id.calculateWantedAverageInput);
-            calculateWantedAverageButton = act.findViewById(R.id.calculateWantedAverageButton);
+            calculateWantedAverageInput = fragmentView.findViewById(R.id.calculateWantedAverageInput);
+            calculateWantedAverageButton = fragmentView.findViewById(R.id.calculateWantedAverageButton);
 
             calculateWantedAverageButton.setOnClickListener(v -> {
                 calculateWantedAveragePrice();
@@ -42,7 +43,6 @@ public class OptionsHelper {
             calculateNewAverageButton.setOnClickListener(v->{
                 calculateNewAveragePrice();
             });
-
 
         }
     }

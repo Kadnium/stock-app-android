@@ -41,7 +41,6 @@ import java.util.TimeZone;
 
 
 public class ChartFragment extends Fragment {
-    BottomNavigationHandler bottomNavigationHandler;
     AppData appData;
     SensorHandler sensorHandler;
     StockApi stockApi;
@@ -61,6 +60,7 @@ public class ChartFragment extends Fragment {
         priceText=fragmentView.findViewById(R.id.chartPriceInfo);
         dateText=fragmentView.findViewById(R.id.chartDateInfo);
         swipeRefreshLayout = getActivity().findViewById(R.id.swipeContainer);
+        swipeRefreshLayout.setEnabled(true);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             appData.setRefreshing(true);
             initChartData(timeFrame,()->{
@@ -85,24 +85,26 @@ public class ChartFragment extends Fragment {
 
         }
     }
+
+    /**
+     * Will create chart and set settings for it
+     */
     private void initChart(){
         chart = fragmentView.findViewById(R.id.stockChart);
         TypedValue typedValue = new TypedValue();
+        // Get current theme and get color for chart axix colors
         Resources.Theme theme = getContext().getTheme();
         theme.resolveAttribute(R.attr.colorOnPrimary, typedValue, true);
         @ColorInt int color = typedValue.data;
-        // disable description text
+        // Disable description text
         chart.getDescription().setEnabled(false);
-        // enable touch gestures
+        // Enable touch gestures
         chart.setTouchEnabled(true);
-        // set listeners
-        // chart.setOnChartValueSelectedListener(this);
         chart.setDrawGridBackground(false);
         chart.getLegend().setEnabled(false);
-        // scaling and dragging
+        // Scaling and dragging
         chart.setDragEnabled(true);
         chart.setScaleEnabled(false);
-        //  pinch zoom along both axis
         chart.setPinchZoom(false);
         chart.getAxisRight().setEnabled(false);
         chart.getAxisLeft().setSpaceBottom(30);
@@ -121,6 +123,14 @@ public class ChartFragment extends Fragment {
 
     }
 
+    /**
+     * Will set stock information which is above the chart
+     * firstValue and lastValue is used to calculate percentage change of timeframe
+     * @param stock Stock instance to use
+     * @param firstValue First value of timeframe
+     * @param lastValue Last value of timeframe
+     * @return Id of used color
+     */
     private int setStockRow(StockData stock, float firstValue, float lastValue){
         TextView tSymbol, tFullName, tPercent, tStockPrice;
         ImageView favouriteStatus;
@@ -146,8 +156,11 @@ public class ChartFragment extends Fragment {
         favouriteStatus = fragmentView.findViewById(R.id.favouriteStatus);
         boolean isFavourite = stock.isFavourite();
         favouriteStatus.setImageResource(isFavourite?R.drawable.ic_favourite:R.drawable.ic_not_favourite);
+        // Set favouriteIcon click listener
         favouriteStatus.setOnClickListener(v -> {
             if(isFavourite){
+                // If favourite, remove from favouritelist
+                // and update statuses on trending and most changed
                 stock.setFavourite(false);
                 int favouriteIndex = appData.removeFromFavourites(stock);
                 if(favouriteIndex != -1){
@@ -155,6 +168,8 @@ public class ChartFragment extends Fragment {
                     appData.updateFavouriteStatuses(stock,appData.getMostChanged(),false);
                 }
             }else{
+                // If not favourite, add to favouritelist
+                // and update statuses on trending and most changed
                 stock.setFavourite(true);
                 appData.addToFavourites(stock);
                 appData.updateFavouriteStatuses(stock,appData.getTrendingList(),true);
@@ -166,6 +181,12 @@ public class ChartFragment extends Fragment {
 
 
     }
+
+    /**
+     * Get format for x-axis
+     * @param args Current range
+     * @return Time fromat
+     */
     private String getTimeFormat(String args){
         switch (args){
             case StockApi.DAILY_RANGE:
@@ -186,6 +207,13 @@ public class ChartFragment extends Fragment {
         }
 
     }
+
+    /**
+     * Method to format raw timestamp that api returns
+     * @param timestamp Timestamp
+     * @param customTimeFrame Timeframe to use in formatting, if null, will use current selected timeframe
+     * @return Formatted value
+     */
     private String formatTimestamp(long timestamp,String customTimeFrame){
         String pattern;
         if(customTimeFrame!= null){
@@ -198,7 +226,14 @@ public class ChartFragment extends Fragment {
         return simpleDateFormat.format(new Date(timestamp * 1000));
 
     }
+
+    /**
+     * Will add data to chart and stock row
+     * @param range timerange to use, use globals from AppData
+     * @param callback Callback what to do after chart is updated
+     */
     private void initChartData(String range, HelperCallback callback){
+        // If first time in fragment, get stock from bundle
         if(intentStock == null){
             Bundle bundle = getArguments();
             if(bundle != null){
@@ -215,7 +250,6 @@ public class ChartFragment extends Fragment {
             @Override
             public void onSuccess(List<StockData> response, Context context) {
                 if(response.size()>0) {
-
                     StockData stock = response.get(0);
                     List<Entry> yValues = new ArrayList<>();
                     LinkedHashMap<Long, Float> chartData = stock.getChartData();
@@ -224,12 +258,16 @@ public class ChartFragment extends Fragment {
                     floatArray = chartData.values().toArray();
                     float lastValue = (float) floatArray[chartData.size() - 1];
                     int chartColor = setStockRow(intentStock, (float) stock.getPreviousClose(), lastValue);
+                    // Add timestamps to seperate list
+                    // Create entries by index and value
+                    // Later get correct timestamp for index
                     for (Map.Entry<Long, Float> point : chartData.entrySet()) {
                         longList.add(point.getKey());
                         yValues.add(new Entry(index, point.getValue()));
                         index++;
                     }
                     LineDataSet set1;
+                    // Init chart data
                     if (chart.getData() != null && chart.getData().getDataSetCount() > 0) {
                         set1 = (LineDataSet) chart.getData().getDataSetByIndex(0);
                         set1.setValues(yValues);
@@ -252,6 +290,7 @@ public class ChartFragment extends Fragment {
                         set1.setDrawValues(false);
 
                         LineData data = new LineData(set1);
+                        // Get timestamps for index and format them
                         ValueFormatter formatter = new ValueFormatter() {
                             @Override
                             public String getFormattedValue(float value) {
@@ -286,6 +325,10 @@ public class ChartFragment extends Fragment {
             }
         });
     }
+
+    /**
+     * Inits timeframe buttons
+     */
     private void initButtons(){
         HashMap<Integer,String> buttonMap = new HashMap<>();
         buttonMap.put(R.id.dayButton,StockApi.DAILY_RANGE);
@@ -302,15 +345,6 @@ public class ChartFragment extends Fragment {
                 timeFrame = buttonEntry.getValue();
                 initChartData(buttonEntry.getValue(),null);
             });
-           /* b.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    b.setBackgroundColor(getColor(R.color.green));
-                    //unPressOtherButtons(buttonEntry.getKey(),buttonMap);
-                    initChartData(buttonEntry.getValue());
-                    return true;
-                }
-            });*/
 
         }
 
