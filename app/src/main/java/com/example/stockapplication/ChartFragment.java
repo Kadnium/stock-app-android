@@ -1,7 +1,6 @@
 package com.example.stockapplication;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 
@@ -11,7 +10,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -37,6 +35,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TimeZone;
 
 
@@ -46,7 +45,7 @@ public class ChartFragment extends Fragment {
     StockApi stockApi;
     LineChart chart;
     StockData intentStock;
-    List<Long> longList = new ArrayList<>();
+    final List<Long> longList = new ArrayList<>();
     Object[] floatArray;
     String timeFrame =StockApi.DAILY_RANGE;
     TextView priceText,dateText;
@@ -59,7 +58,7 @@ public class ChartFragment extends Fragment {
         stockApi = appData.getStockApi(getContext());
         priceText=fragmentView.findViewById(R.id.chartPriceInfo);
         dateText=fragmentView.findViewById(R.id.chartDateInfo);
-        swipeRefreshLayout = getActivity().findViewById(R.id.swipeContainer);
+        swipeRefreshLayout = Objects.requireNonNull(getActivity()).findViewById(R.id.swipeContainer);
         swipeRefreshLayout.setEnabled(true);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             appData.setRefreshing(true);
@@ -93,7 +92,7 @@ public class ChartFragment extends Fragment {
         chart = fragmentView.findViewById(R.id.stockChart);
         TypedValue typedValue = new TypedValue();
         // Get current theme and get color for chart axix colors
-        Resources.Theme theme = getContext().getTheme();
+        Resources.Theme theme = Objects.requireNonNull(getContext()).getTheme();
         theme.resolveAttribute(R.attr.colorOnPrimary, typedValue, true);
         @ColorInt int color = typedValue.data;
         // Disable description text
@@ -111,13 +110,10 @@ public class ChartFragment extends Fragment {
         chart.getAxisLeft().setTextColor(color);
         chart.getXAxis().setTextColor(color);
         chart.setNoDataText("");
-        chart.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                MPPointD point = chart.getTransformer(YAxis.AxisDependency.LEFT).getValuesByTouchPoint(event.getX(),event.getY());
-                setChartInfoTexts((int)point.x);
-                return false;
-            }
+        chart.setOnTouchListener((v, event) -> {
+            MPPointD point = chart.getTransformer(YAxis.AxisDependency.LEFT).getValuesByTouchPoint(event.getX(),event.getY());
+            setChartInfoTexts((int)point.x);
+            return false;
         });
 
 
@@ -146,10 +142,10 @@ public class ChartFragment extends Fragment {
 
         String sign = "+";
         if(lastValue-firstValue<0){
-            tPercent.setTextColor(getContext().getColor(R.color.red));
+            tPercent.setTextColor(Objects.requireNonNull(getContext()).getColor(R.color.red));
             sign = "-";
         }else{
-            tPercent.setTextColor(getContext().getColor(R.color.green));
+            tPercent.setTextColor(Objects.requireNonNull(getContext()).getColor(R.color.green));
         }
         double formattedPercentChange =lastValue==0.0 || firstValue==0.0? 0:stock.formatDouble((lastValue/firstValue)*100-100);
         tPercent.setText(sign+""+formattedPercentChange+"%");
@@ -177,7 +173,7 @@ public class ChartFragment extends Fragment {
             }
             setStockRow(stock,firstValue,lastValue);
         });
-        return sign.equals("+")?getContext().getColor(R.color.green):getContext().getColor(R.color.red);
+        return sign.equals("+")? Objects.requireNonNull(getContext()).getColor(R.color.green): Objects.requireNonNull(getContext()).getColor(R.color.red);
 
 
     }

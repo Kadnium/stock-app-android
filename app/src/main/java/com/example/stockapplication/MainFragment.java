@@ -3,7 +3,6 @@ package com.example.stockapplication;
 import android.content.Context;
 import android.os.Bundle;
 
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,6 +18,7 @@ import com.android.volley.VolleyError;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 public class MainFragment extends Fragment {
@@ -34,7 +34,6 @@ public class MainFragment extends Fragment {
     RecyclerAdapter favouriteAdapter;
     RecyclerAdapter mostChangedAdapter;
 
-    BottomNavigationHandler bottomNavigationHandler;
 
     SwipeRefreshLayout swipeRefreshLayout;
     SensorHandler sensorHandler;
@@ -46,9 +45,7 @@ public class MainFragment extends Fragment {
         sensorHandler = appData.getSensorHandler(getContext());
         sensorHandler.setOnShakeCallback(() -> {
             appData.setRefreshing(true);
-            updateDailyMovers(()->{
-                updateFavourites(()->appData.setRefreshing(false));
-            });
+            updateDailyMovers(()-> updateFavourites(()->appData.setRefreshing(false)));
         });
 
     }
@@ -65,16 +62,14 @@ public class MainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         fragmentView = inflater.inflate(R.layout.fragment_main, container, false);
-        swipeRefreshLayout = getActivity().findViewById(R.id.swipeContainer);
+        swipeRefreshLayout = Objects.requireNonNull(getActivity()).findViewById(R.id.swipeContainer);
         swipeRefreshLayout.setEnabled(true);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             appData.setRefreshing(true);
-            updateDailyMovers(() -> {
-                updateFavourites(() ->{
-                    swipeRefreshLayout.setRefreshing(false);
-                    appData.setRefreshing(false);
-                });
-            });
+            updateDailyMovers(() -> updateFavourites(() ->{
+                swipeRefreshLayout.setRefreshing(false);
+                appData.setRefreshing(false);
+            }));
         });
 
         // Inflate the layout for this fragment
@@ -94,7 +89,7 @@ public class MainFragment extends Fragment {
         // Most changed
         mostChangedAdapter = new RecyclerAdapter(getContext(), appData.getMostChanged(), appData, R.id.mostChangedRecyclerView, new AdapterRefresh() {
             @Override
-            public void onFavouriteAddClicked(int position, StockData stock) {
+            public void onFavouriteAddClicked(StockData stock) {
                 // Add to favourites and update favouriteAdapter
                 appData.addToFavourites(stock);
                 favouriteAdapter.notifyItemInserted(0);
@@ -103,7 +98,7 @@ public class MainFragment extends Fragment {
             }
 
             @Override
-            public void onFavouriteRemoveClicked(int position, StockData stock) {
+            public void onFavouriteRemoveClicked(StockData stock) {
                 // Remove from favourites and update favouriteAdapter
                 int favouriteIndex = appData.removeFromFavourites(stock);
                 if(favouriteIndex!=-1){
@@ -120,12 +115,12 @@ public class MainFragment extends Fragment {
         // Favourites
         favouriteAdapter = new RecyclerAdapter(getContext(), appData.getFavouriteData(), appData, R.id.favouriteRecyclerView, new AdapterRefresh() {
             @Override
-            public void onFavouriteAddClicked(int position, StockData stock) {
+            public void onFavouriteAddClicked(StockData stock) {
                 // Not used
             }
 
             @Override
-            public void onFavouriteRemoveClicked(int position, StockData stock) {
+            public void onFavouriteRemoveClicked(StockData stock) {
                 // update most changed list
                 List<StockData> tempMostCHanged = appData.getMostChanged();
                 int favouriteIndex = appData.updateFavouriteStatuses(stock,tempMostCHanged,false);
@@ -181,7 +176,7 @@ public class MainFragment extends Fragment {
                 }
             });
         }else{
-            finishCallback(cb);
+            finishCallback(null);
             spinner.setVisibility(View.INVISIBLE);
         }
 

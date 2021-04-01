@@ -8,7 +8,6 @@
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/mainContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -45,7 +44,7 @@
                 android:paddingTop="0dp"
                 android:paddingRight="0dp"
                 android:paddingBottom="0dp"
-                android:text="1d"
+                android:text="@string/one_day"
                 android:textSize="12sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/stockRow" />
@@ -61,7 +60,7 @@
                 android:paddingTop="0dp"
                 android:paddingRight="0dp"
                 android:paddingBottom="0dp"
-                android:text="5d"
+                android:text="@string/five_day"
                 android:textSize="12sp"
                 app:layout_constraintStart_toEndOf="@+id/dayButton"
                 app:layout_constraintTop_toBottomOf="@+id/stockRow" />
@@ -77,7 +76,7 @@
                 android:paddingTop="0dp"
                 android:paddingRight="0dp"
                 android:paddingBottom="0dp"
-                android:text="1m"
+                android:text="@string/one_month"
                 android:textSize="12sp"
                 app:layout_constraintStart_toEndOf="@+id/fiveDayButton"
                 app:layout_constraintTop_toBottomOf="@+id/stockRow" />
@@ -93,7 +92,7 @@
                 android:paddingTop="0dp"
                 android:paddingRight="0dp"
                 android:paddingBottom="0dp"
-                android:text="6m"
+                android:text="@string/six_months"
                 android:textSize="12sp"
                 app:layout_constraintStart_toEndOf="@+id/monthButton"
                 app:layout_constraintTop_toBottomOf="@+id/stockRow" />
@@ -109,7 +108,7 @@
                 android:paddingTop="0dp"
                 android:paddingRight="0dp"
                 android:paddingBottom="0dp"
-                android:text="ytd"
+                android:text="@string/ytd"
                 android:textSize="12sp"
                 app:layout_constraintStart_toEndOf="@+id/sixMonthButton"
                 app:layout_constraintTop_toBottomOf="@+id/stockRow" />
@@ -125,7 +124,7 @@
                 android:paddingTop="0dp"
                 android:paddingRight="0dp"
                 android:paddingBottom="0dp"
-                android:text="1y"
+                android:text="@string/one_year"
                 android:textSize="12sp"
                 app:layout_constraintStart_toEndOf="@+id/ytdButton"
                 app:layout_constraintTop_toBottomOf="@+id/stockRow" />
@@ -141,7 +140,7 @@
                 android:paddingTop="0dp"
                 android:paddingRight="0dp"
                 android:paddingBottom="0dp"
-                android:text="5y"
+                android:text="@string/five_years"
                 android:textSize="12sp"
                 app:layout_constraintStart_toEndOf="@+id/oneYearButton"
                 app:layout_constraintTop_toBottomOf="@+id/stockRow" />
@@ -157,7 +156,7 @@
                 android:paddingTop="0dp"
                 android:paddingRight="0dp"
                 android:paddingBottom="0dp"
-                android:text="MAX"
+                android:text="@string/max"
                 android:textSize="12sp"
                 app:layout_constraintStart_toEndOf="@+id/fiveYearButton"
                 app:layout_constraintTop_toBottomOf="@+id/stockRow" />

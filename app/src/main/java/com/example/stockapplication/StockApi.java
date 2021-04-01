@@ -1,15 +1,11 @@
 package com.example.stockapplication;
 
 import android.content.Context;
-import android.os.Build;
-import android.util.Log;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.util.Pair;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -22,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class StockApi {
     private final Context context;
@@ -41,7 +38,7 @@ public class StockApi {
     public static final String YEAR_RANGE = "YEAR_RANGE";
     public static final String FIVE_YEAR_RANGE = "FIVE_YEAR_RANGE";
     public static final String ALL_TIME_RANGE = "ALL_TIME_RANGE";
-    private HashMap<String, Pair<String,String>> chartApiHelper = new HashMap<>();
+    private final HashMap<String, Pair<String,String>> chartApiHelper = new HashMap<>();
     public StockApi(Context context) {
         this.context = context;
         this.requestQueue = Volley.newRequestQueue(context.getApplicationContext());
@@ -131,6 +128,7 @@ public class StockApi {
     }
     public void getChart(String ticker,String type, StockApiCallback cb){
         Pair<String,String> rangePair = chartApiHelper.get(type);
+        assert rangePair != null;
         Pair<String,String> API = chartApi(ticker,rangePair);
         fetchData(API,cb);
 
@@ -182,8 +180,8 @@ public class StockApi {
     private void fetchData(Pair<String,String> API,StockApiCallback callback){
         StringRequest stringRequest = new StringRequest(Request.Method.GET, API.first,
                 response -> {
-                    List<StockData> responseArr = null;
-                    switch(API.second){
+                    List<StockData> responseArr;
+                    switch(Objects.requireNonNull(API.second)){
                         case STOCK_DATA_API:
                             responseArr  = stockDataApiParse(response);
                             break;
@@ -206,9 +204,7 @@ public class StockApi {
 
                     }
                     callback.onSuccess(responseArr,context);
-                }, error -> {
-                    callback.onError(error,context);
-        });
+                }, error -> callback.onError(error,context));
 
         if(requestQueue == null){
             requestQueue = Volley.newRequestQueue(context);

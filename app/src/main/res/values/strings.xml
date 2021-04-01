@@ -34,5 +34,12 @@
         <item>@string/light_theme</item>
     </string-array>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="one_day">1d</string>
+    <string name="five_day">5d</string>
+    <string name="one_month">1m</string>
+    <string name="six_months">6m</string>
+    <string name="ytd">ytd</string>
+    <string name="one_year">1y</string>
+    <string name="five_years">5y</string>
+    <string name="max">MAX</string>
 </resources>

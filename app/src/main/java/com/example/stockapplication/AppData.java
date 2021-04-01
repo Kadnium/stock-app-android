@@ -1,12 +1,7 @@
 package com.example.stockapplication;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.util.Log;
 
 import androidx.appcompat.app.AppCompatDelegate;
 
@@ -37,7 +32,6 @@ public class AppData {
     // Transient variables prevent saving to json when serializing
     private transient StockApi stockApi;
     private transient SensorHandler sensorHandler;
-    private transient BottomNavigationHandler bottomNavigationHandler;
     private transient boolean refreshing = false;
 
 

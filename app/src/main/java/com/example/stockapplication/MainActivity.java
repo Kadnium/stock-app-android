@@ -5,25 +5,13 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.SimpleAdapter;
-import android.widget.Toast;
 
-import com.android.volley.VolleyError;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity{
-    StockApi stockApi;
+
     AppData appData;
     BottomNavigationHandler bottomNavigationHandler;
     SensorHandler sensorHandler;
@@ -31,7 +19,6 @@ public class MainActivity extends AppCompatActivity{
 
     public void initBackend(){
         appData = AppData.getInstance(this);
-        stockApi = appData.getStockApi(this);
         sensorHandler = appData.getSensorHandler(this);
         bottomNavigationHandler = new BottomNavigationHandler(this);
     }
@@ -50,7 +37,7 @@ public class MainActivity extends AppCompatActivity{
             return;
         }
         setContentView(R.layout.activity_main);
-        getSupportActionBar().hide();
+        Objects.requireNonNull(getSupportActionBar()).hide();
 
     }
 

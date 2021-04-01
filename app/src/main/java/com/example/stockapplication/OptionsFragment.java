@@ -8,12 +8,13 @@ import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+
+import java.util.Objects;
 
 
 public class OptionsFragment extends Fragment {
@@ -30,7 +31,7 @@ public class OptionsFragment extends Fragment {
         sensorHandler =appData.getSensorHandler(getContext());
         optionsHelper = new OptionsHelper(getContext(),fragmentView);
         optionsHelper.initAveragePriceFields();
-        swipeRefreshLayout = getActivity().findViewById(R.id.swipeContainer);
+        swipeRefreshLayout = Objects.requireNonNull(getActivity()).findViewById(R.id.swipeContainer);
         swipeRefreshLayout.setEnabled(false);
 
 
@@ -69,7 +70,7 @@ public class OptionsFragment extends Fragment {
 
     private void setAppTheme(int selected){
         int theme = AppData.getThemeSetting(selected);
-        AppData.setSettingToPrefs(getContext(),AppData.SELECTED_THEME,selected);
+        AppData.setSettingToPrefs(Objects.requireNonNull(getContext()),AppData.SELECTED_THEME,selected);
         AppCompatDelegate.setDefaultNightMode(theme);
         //getActivity().recreate();
     }
@@ -80,14 +81,11 @@ public class OptionsFragment extends Fragment {
         spinner.setAdapter(adapter);
 
 
-        spinner.setSelection(AppData.getSettingFromPrefs(getContext(),AppData.SELECTED_THEME),false);
+        spinner.setSelection(AppData.getSettingFromPrefs(Objects.requireNonNull(getContext()),AppData.SELECTED_THEME),false);
         // Prevent onItemSelected getting called when auto theme switch is enabled
-        spinner.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                spinnerClicked = true;
-                return false;
-            }
+        spinner.setOnTouchListener((v, event) -> {
+            spinnerClicked = true;
+            return false;
         });
 
 

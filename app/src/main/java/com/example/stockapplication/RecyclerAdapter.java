@@ -1,7 +1,6 @@
 package com.example.stockapplication;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,11 +20,11 @@ import java.util.List;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder>{
     List<StockData> stockList;
-    Context context;
-    AppData data;
-    int viewId;
-    AdapterRefresh refresh;
-    Gson gson;
+    final Context context;
+    final AppData data;
+    final int viewId;
+    final AdapterRefresh refresh;
+    final Gson gson;
     public RecyclerAdapter(Context ctx, List<StockData> stockList,AppData data,int viewId,AdapterRefresh refresh){
         this.stockList = stockList;
         this.context = ctx;
@@ -102,7 +101,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
                         notifyItemRemoved(adapterPosition);
                     }
                     // Callback to do custom logic
-                    refresh.onFavouriteRemoveClicked(adapterPosition, selectedStock);
+                    refresh.onFavouriteRemoveClicked(selectedStock);
 
                 }else{
                     // Stock is not yet favourite so can't be on favourite list
@@ -110,7 +109,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
                     selectedStock.setFavourite(true);
                     notifyItemChanged(adapterPosition);
                     // Callback to do custom logic
-                    refresh.onFavouriteAddClicked(adapterPosition, selectedStock);
+                    refresh.onFavouriteAddClicked(selectedStock);
 
 
                 }
@@ -132,10 +131,13 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
 
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView priceChange, stockPrice, stockName, stockTicker;
-        ImageView favouriteStatus;
-        ConstraintLayout mainLayout;
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        final TextView priceChange;
+        final TextView stockPrice;
+        final TextView stockName;
+        final TextView stockTicker;
+        final ImageView favouriteStatus;
+        final ConstraintLayout mainLayout;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             priceChange = itemView.findViewById(R.id.priceChange);

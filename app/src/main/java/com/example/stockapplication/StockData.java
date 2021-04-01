@@ -2,16 +2,13 @@ package com.example.stockapplication;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.UUID;
 
 public class StockData {
-    private String symbol;
-    private String market;
-    private String name;
+    private final String symbol;
+    private final String market;
+    private final String name;
     private String uuid;
     private double percentChange;
     private double marketPrice;

@@ -5,19 +5,19 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Objects;
 
 public class OptionsHelper {
     TextInputEditText stockPriceInput, stockAmountInput, averagePriceInput, calculateNewAverageInput, calculateWantedAverageInput;
     AppCompatButton calculateNewAverageButton, calculateWantedAverageButton;
-    Context context;
-    View fragmentView;
+    final Context context;
+    final View fragmentView;
     public OptionsHelper(Context context,View fragmentView) {
         this.context = context;
         this.fragmentView = fragmentView;
@@ -35,14 +35,9 @@ public class OptionsHelper {
             calculateWantedAverageInput = fragmentView.findViewById(R.id.calculateWantedAverageInput);
             calculateWantedAverageButton = fragmentView.findViewById(R.id.calculateWantedAverageButton);
 
-            calculateWantedAverageButton.setOnClickListener(v -> {
-                calculateWantedAveragePrice();
+            calculateWantedAverageButton.setOnClickListener(v -> calculateWantedAveragePrice());
 
-            });
-
-            calculateNewAverageButton.setOnClickListener(v->{
-                calculateNewAveragePrice();
-            });
+            calculateNewAverageButton.setOnClickListener(v-> calculateNewAveragePrice());
 
         }
     }
@@ -54,7 +49,7 @@ public class OptionsHelper {
     }
 
     private Double getInputValue(TextInputEditText input){
-        String value = input.getText().toString();
+        String value = Objects.requireNonNull(input.getText()).toString();
         if(value.isEmpty()){
             return null;
 

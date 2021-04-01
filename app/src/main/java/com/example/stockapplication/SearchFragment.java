@@ -19,6 +19,7 @@ import com.android.volley.VolleyError;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.List;
+import java.util.Objects;
 
 public class SearchFragment extends Fragment {
 
@@ -30,7 +31,6 @@ public class SearchFragment extends Fragment {
     SwipeRefreshLayout swipeRefreshLayout;
     RecyclerAdapter trendingRecyclerAdapter;
     RecyclerView trendingRecyclerView;
-    BottomNavigationHandler bottomNavigationHandler;
     SensorHandler sensorHandler;
     View fragmentView;
     public void initBackend(){
@@ -43,7 +43,7 @@ public class SearchFragment extends Fragment {
             setTrendingData(()->appData.setRefreshing(false));
         });
 
-        swipeRefreshLayout = getActivity().findViewById(R.id.swipeContainer);
+        swipeRefreshLayout = Objects.requireNonNull(getActivity()).findViewById(R.id.swipeContainer);
         swipeRefreshLayout.setEnabled(true);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             appData.setRefreshing(true);
@@ -61,8 +61,7 @@ public class SearchFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         fragmentView = inflater.inflate(R.layout.fragment_search, container, false);
-        //bottomNavigationHandler = new BottomNavigationHandler(getContext(),appData);
-        //bottomNavigationHandler.initNavigation(R.id.bottomNav,R.id.search);
+
 
         // Inflate the layout for this fragment
         return fragmentView;
@@ -94,7 +93,7 @@ public class SearchFragment extends Fragment {
     public void initListViews(){
         searchResultAdapter = new RecyclerAdapter(getContext(), appData.getSearchResults(), appData, R.id.searchRecyclerView, new AdapterRefresh() {
             @Override
-            public void onFavouriteAddClicked(int position, StockData stock) {
+            public void onFavouriteAddClicked(StockData stock) {
                 // search most changed list and set as a favourite
                 appData.updateFavouriteStatuses(stock,appData.getMostChanged(),true);
                 int index = appData.updateFavouriteStatuses(stock,appData.getTrendingList(),true);
@@ -105,7 +104,7 @@ public class SearchFragment extends Fragment {
             }
 
             @Override
-            public void onFavouriteRemoveClicked(int position, StockData stock) {
+            public void onFavouriteRemoveClicked(StockData stock) {
                 // update most changed
                 appData.updateFavouriteStatuses(stock,appData.getMostChanged(),false);
                 int index = appData.updateFavouriteStatuses(stock,appData.getTrendingList(),false);
@@ -121,7 +120,7 @@ public class SearchFragment extends Fragment {
 
         trendingRecyclerAdapter = new RecyclerAdapter(getContext(), appData.getTrendingList(), appData, R.id.searchRecyclerView, new AdapterRefresh() {
             @Override
-            public void onFavouriteAddClicked(int position, StockData stock) {
+            public void onFavouriteAddClicked(StockData stock) {
                 appData.updateFavouriteStatuses(stock,appData.getMostChanged(),true);
                 int index = appData.updateFavouriteStatuses(stock,appData.getSearchResults(),true);
                 if(index != -1){
@@ -131,7 +130,7 @@ public class SearchFragment extends Fragment {
             }
 
             @Override
-            public void onFavouriteRemoveClicked(int position, StockData stock) {
+            public void onFavouriteRemoveClicked(StockData stock) {
                 appData.updateFavouriteStatuses(stock,appData.getMostChanged(),false);
                 int index = appData.updateFavouriteStatuses(stock,appData.getSearchResults(),false);
                 if(index != -1){
@@ -154,7 +153,7 @@ public class SearchFragment extends Fragment {
 
     private void initSearchField(){
         searchField = fragmentView.findViewById(R.id.searchInput);
-        ProgressBar searchSpinner = (ProgressBar) fragmentView.findViewById(R.id.searchSpinner);
+        ProgressBar searchSpinner = fragmentView.findViewById(R.id.searchSpinner);
         searchSpinner.setVisibility(View.INVISIBLE);
         searchField.addTextChangedListener(new TextWatcher() {
             @Override
@@ -203,7 +202,7 @@ public class SearchFragment extends Fragment {
         }
     }
     private void setTrendingData(HelperCallback cb){
-        ProgressBar trendingSpinner = (ProgressBar) fragmentView.findViewById(R.id.trendingSpinner);
+        ProgressBar trendingSpinner = fragmentView.findViewById(R.id.trendingSpinner);
         List<StockData> trendingList = appData.getTrendingList();
         trendingSpinner.setVisibility(View.VISIBLE);
         if(trendingList.size() == 0 || cb != null){
@@ -229,7 +228,7 @@ public class SearchFragment extends Fragment {
             });
         }else{
             trendingSpinner.setVisibility(View.INVISIBLE);
-            finishCallback(cb);
+            finishCallback(null);
         }
 
     }
