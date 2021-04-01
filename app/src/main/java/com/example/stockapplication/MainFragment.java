@@ -76,15 +76,23 @@ public class MainFragment extends Fragment {
         return fragmentView;
     }
 
+    /**
+     * Helper method for setting recycler view settings
+     * @param viewId Recyclerview id
+     * @param adapter Created recycleradapter
+     * @return Returns recyclerview
+     */
     private RecyclerView setRecyclerSettings(int viewId, RecyclerAdapter adapter){
         RecyclerView view = fragmentView.findViewById(viewId);
         view.setNestedScrollingEnabled(false);
         view.setAdapter(adapter);
-        //view.suppressLayout(true);
         view.setLayoutManager(new LinearLayoutManager(getContext()));
         return view;
     }
 
+    /**
+     * Inits recycler views
+     */
     public void initListViews(){
         // Most changed
         mostChangedAdapter = new RecyclerAdapter(getContext(), appData.getMostChanged(), appData, R.id.mostChangedRecyclerView, new AdapterRefresh() {
@@ -151,7 +159,10 @@ public class MainFragment extends Fragment {
     }
 
 
-
+    /**
+     * Updates daily movers
+     * @param cb After finish callback
+     */
     public void updateDailyMovers(HelperCallback cb){
         ProgressBar spinner = fragmentView.findViewById(R.id.mostChangedProgress);
         spinner.setVisibility(View.VISIBLE);
@@ -182,11 +193,20 @@ public class MainFragment extends Fragment {
 
     }
 
+    /**
+     * Helper method for running callbacks
+     * @param cb HelperCallback instance
+     */
     private void finishCallback(HelperCallback cb){
         if(cb != null){
             cb.onComplete();
         }
     }
+
+    /**
+     * Updates favourites
+     * @param cb After finish callback
+     */
     public void updateFavourites(HelperCallback cb){
         List<StockData> userFavourites = appData.getFavouriteData();
         ProgressBar spinner = fragmentView.findViewById(R.id.favouriteProgressBar);
@@ -209,7 +229,6 @@ public class MainFragment extends Fragment {
 
                     }
                     finishCallback(cb);
-
                     spinner.setVisibility(View.INVISIBLE);
                 }
 

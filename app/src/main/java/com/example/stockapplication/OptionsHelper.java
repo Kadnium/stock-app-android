@@ -23,6 +23,10 @@ public class OptionsHelper {
         this.fragmentView = fragmentView;
     }
 
+    /**
+     * Finds correct elements and binds them to variables
+     * Sets listeners
+     */
     public void initAveragePriceFields(){
         if(fragmentView != null){
             stockPriceInput = fragmentView.findViewById(R.id.stockPriceInput);
@@ -41,6 +45,11 @@ public class OptionsHelper {
 
         }
     }
+
+    /**
+     * Check if all needed views are not null
+     * @return Is null
+     */
     private boolean checkViews(){
         return  stockPriceInput != null && stockAmountInput != null &&
                 averagePriceInput != null && calculateNewAverageInput != null &&
@@ -48,6 +57,11 @@ public class OptionsHelper {
                 calculateWantedAverageButton != null;
     }
 
+    /**
+     * Get input value from text input
+     * @param input Input to get text from
+     * @return Double value from input
+     */
     private Double getInputValue(TextInputEditText input){
         String value = Objects.requireNonNull(input.getText()).toString();
         if(value.isEmpty()){
@@ -57,6 +71,10 @@ public class OptionsHelper {
         return Double.parseDouble(input.getText().toString());
 
     }
+
+    /**
+     * Calculates new average price if calculate new average is clicked
+     */
     public void calculateNewAveragePrice(){
         if(checkViews()){
             Double stockPrice = getInputValue(stockPriceInput);
@@ -80,11 +98,20 @@ public class OptionsHelper {
         }
     }
 
+    /**
+     * Helper to show toasts
+     * @param text Toast text
+     * @param length Toast duration
+     */
     private void setToast(String text,int length){
         Toast toast = Toast.makeText(context, text, length);
         toast.setGravity(Gravity.CENTER|Gravity.CENTER_HORIZONTAL, 0, 0);
         toast.show();
     }
+
+    /**
+     * Calculates wanted average price if wanted average is clicked
+     */
     public void calculateWantedAveragePrice(){
         if(checkViews()){
             Double stockPrice = getInputValue(stockPriceInput);

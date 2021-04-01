@@ -38,7 +38,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
+        // Get stock row xml
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.stock_row,parent,false);
         return new ViewHolder(view);
@@ -47,7 +47,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        // priceChange, stockPrice, stockName, stockTicker;
+        // Loops all from list and binds them to stock row xml
         StockData stock = stockList.get(position);
         double change = stock.getPercentChange();
         if(change<0){
@@ -60,19 +60,18 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         holder.stockPrice.setText(String.valueOf(stock.getMarketPrice()));
         holder.stockName.setText(String.valueOf(stock.getName()));
         holder.stockTicker.setText(String.valueOf(stock.getSymbol()));
+        // If not favourite recycler
+        // Check if favourite and set to favourite if it is
         if(this.viewId != R.id.favouriteRecyclerView && !stock.isFavourite()){
             if(data.isStockInFavouriteList(stock.getSymbol())){
                 stock.setFavourite(true);
             }
 
         }
-
+        // Listener for stock row click -> redirects to stock chart fragment
         holder.mainLayout.setOnClickListener(v->{
-            //Intent intent = new Intent(context.getApplicationContext(),ChartActivity.class);
-            //setIntentData(intent);
             String stockString = gson.toJson(stock);
             FragmentTransaction fragmentTransaction=((AppCompatActivity) context).getSupportFragmentManager().beginTransaction();
-           // fragmentTransaction.setCustomAnimations(R.anim.slide_in_right,android.R.anim.fade_out,android.R.anim.fade_in,android.R.anim.fade_out);
             ChartFragment chartFragment = ChartFragment.newInstance();
             Bundle bundle = new Bundle();
             bundle.putString("Stock",stockString);
@@ -80,9 +79,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             fragmentTransaction.replace(R.id.fragmentContainer,chartFragment);
             fragmentTransaction.addToBackStack(AppData.CHART_FRAGMENT);
             fragmentTransaction.commit();
-           // activity.overridePendingTransition(R.anim.slide_in_right,android.R.anim.fade_out);
         });
+
         holder.favouriteStatus.setImageResource(stock.isFavourite()?R.drawable.ic_favourite:R.drawable.ic_not_favourite);
+        // Listener for star icon
         holder.favouriteStatus.setOnClickListener(v -> {
             if(!data.isRefreshing()){
                 int adapterPosition = holder.getAdapterPosition();
@@ -90,13 +90,13 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
                 if(selectedStock.isFavourite()){
                     // CLICKED FROM MOST CHANGED OR SEARCH/TRENDING
                     // Uuid is null for non favourites
-                    // dont remove from list, only modify
+                    // Dont remove from list, only modify
                     if(selectedStock.getUuid() == null){
                         selectedStock.setFavourite(false);
                         notifyItemChanged(adapterPosition);
                     }else{
                         // CLICKED FROM FAVOURITES LIST
-                        // remove from current list
+                        // Remove from current list
                         stockList.remove(adapterPosition);
                         notifyItemRemoved(adapterPosition);
                     }
@@ -121,14 +121,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     }
 
-    public void setStockList(List<StockData> list){
-        this.stockList = list;
-    }
     @Override
     public int getItemCount() {
         return stockList.size();
     }
-
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -140,6 +136,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         final ConstraintLayout mainLayout;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            // Find and set views
             priceChange = itemView.findViewById(R.id.priceChange);
             stockPrice = itemView.findViewById(R.id.stockPrice);
             stockName = itemView.findViewById(R.id.stockName);

@@ -36,7 +36,7 @@ public class SearchFragment extends Fragment {
     public void initBackend(){
         appData = AppData.getInstance(getContext());
         stockApi = appData.getStockApi(getContext());
-        sensorHandler = appData.getSensorHandler(getContext());// new SensorHandler(this);
+        sensorHandler = appData.getSensorHandler(getContext());
 
         sensorHandler.setOnShakeCallback(()->{
             appData.setRefreshing(true);
@@ -82,19 +82,28 @@ public class SearchFragment extends Fragment {
     }
 
 
-
-    private RecyclerView setRecyclerSettings( int viewId, RecyclerAdapter adapter){
+    /**
+     * Helper for setting recycler settings
+     * @param viewId Id of recycler
+     * @param adapter Recycleradapter instance
+     * @return RecyclerAdapter
+     */
+    private RecyclerView setRecyclerSettings(int viewId, RecyclerAdapter adapter){
         RecyclerView view = fragmentView.findViewById(viewId);
         view.setNestedScrollingEnabled(false);
         view.setAdapter(adapter);
         view.setLayoutManager(new LinearLayoutManager(getContext()));
         return view;
     }
+
+    /**
+     * Inits recyclerviewrs
+     */
     public void initListViews(){
         searchResultAdapter = new RecyclerAdapter(getContext(), appData.getSearchResults(), appData, R.id.searchRecyclerView, new AdapterRefresh() {
             @Override
             public void onFavouriteAddClicked(StockData stock) {
-                // search most changed list and set as a favourite
+                // Search most changed list and set as a favourite
                 appData.updateFavouriteStatuses(stock,appData.getMostChanged(),true);
                 int index = appData.updateFavouriteStatuses(stock,appData.getTrendingList(),true);
                 if(index != -1){
@@ -143,6 +152,11 @@ public class SearchFragment extends Fragment {
 
 
     }
+
+    /**
+     * Clear searchresults from appData
+     * @return empty searchresults list
+     */
     private List<StockData> clearSearchResults(){
         List<StockData> searchResults = appData.getSearchResults();
         if(searchResults.size()>0){
@@ -151,6 +165,9 @@ public class SearchFragment extends Fragment {
         return searchResults;
     }
 
+    /**
+     * Inits search field
+     */
     private void initSearchField(){
         searchField = fragmentView.findViewById(R.id.searchInput);
         ProgressBar searchSpinner = fragmentView.findViewById(R.id.searchSpinner);
@@ -196,11 +213,21 @@ public class SearchFragment extends Fragment {
 
         });
     }
+
+    /**
+     * Helper for finishing callbacks
+     * @param cb HelperCallback instance
+     */
     private void finishCallback(HelperCallback cb){
         if(cb != null){
             cb.onComplete();
         }
     }
+
+    /**
+     * Finds and sets trending data
+     * @param cb
+     */
     private void setTrendingData(HelperCallback cb){
         ProgressBar trendingSpinner = fragmentView.findViewById(R.id.trendingSpinner);
         List<StockData> trendingList = appData.getTrendingList();

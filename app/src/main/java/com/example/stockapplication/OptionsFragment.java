@@ -49,8 +49,6 @@ public class OptionsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         fragmentView = inflater.inflate(R.layout.fragment_options, container, false);
-        //bottomNavigationHandler = new BottomNavigationHandler(getContext(),appData);
-      //  bottomNavigationHandler.initNavigation(R.id.bottomNav,R.id.settings);
         // Inflate the layout for this fragment
         return fragmentView;
     }
@@ -63,17 +61,21 @@ public class OptionsFragment extends Fragment {
         initThemeSpinner();
         initSettingSwitches();
 
-
-
     }
 
-
+    /**
+     * Sets app theme
+     * @param selected Selected dropdown options
+     */
     private void setAppTheme(int selected){
         int theme = AppData.getThemeSetting(selected);
         AppData.setSettingToPrefs(Objects.requireNonNull(getContext()),AppData.SELECTED_THEME,selected);
         AppCompatDelegate.setDefaultNightMode(theme);
-        //getActivity().recreate();
     }
+
+    /**
+     * Init theme drop down
+     */
     private void initThemeSpinner(){
         spinner = fragmentView.findViewById(R.id.spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),R.array.theme_settings, android.R.layout.simple_spinner_item);
@@ -87,7 +89,6 @@ public class OptionsFragment extends Fragment {
             spinnerClicked = true;
             return false;
         });
-
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -105,27 +106,29 @@ public class OptionsFragment extends Fragment {
             }
         });
     }
+
+    /**
+     * Inits settings switches
+     */
     private void initSettingSwitches(){
         SwitchCompat accelometerSwitch = fragmentView.findViewById(R.id.accelometerSwitch);
         SwitchCompat lightSwitch = fragmentView.findViewById(R.id.lightSwitch);
-        boolean accelometerEnabled = appData.isAccelometerEnabled();//;AppData.getSettingFromPrefs(this,AppData.ACCELOMETER_ENABLED);
-        boolean ligthSensorEnabled = appData.isLightSensorEnabled();//AppData.getSettingFromPrefs(this,AppData.LIGHT_SENSOR_ENABLED);
+        boolean accelometerEnabled = appData.isAccelometerEnabled();
+        boolean ligthSensorEnabled = appData.isLightSensorEnabled();
 
         accelometerSwitch.setChecked(accelometerEnabled);
         lightSwitch.setChecked(ligthSensorEnabled);
         setSpinnerEnabled(!ligthSensorEnabled);
         accelometerSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             appData.setAccelometerEnabled(isChecked);
-            //AppData.setSettingToPrefs(this,AppData.ACCELOMETER_ENABLED,isChecked?1:0);
             sensorHandler.updateSensors(isChecked,ligthSensorEnabled);
 
         });
         lightSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             appData.setLightSensorEnabled(isChecked);
-            //AppData.setSettingToPrefs(this,AppData.LIGHT_SENSOR_ENABLED,isChecked?1:0);
+            // Disable theme selector if ligth setting is selected
             setSpinnerEnabled(!isChecked);
             sensorHandler.updateSensors(accelometerEnabled,isChecked);
-
         });
     }
     private void setSpinnerEnabled(boolean value){
