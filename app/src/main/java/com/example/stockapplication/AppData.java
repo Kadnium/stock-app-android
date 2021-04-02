@@ -25,6 +25,7 @@ public class AppData {
     private List<StockData> mostChanged = new ArrayList<>();
     private List<StockData> trendingList = new ArrayList<>();
     private List<StockData> searchResults = new ArrayList<>();
+    private List<StockData> infoData = new ArrayList<>();
     // Manage state of sensors
     private boolean lightSensorEnabled = false;
     private boolean accelometerEnabled = false;
@@ -294,6 +295,12 @@ public class AppData {
         this.favouriteData = favouriteData;
     }
 
+    public List<StockData> getInfoData() {
+        return infoData;
+    }
 
+    public void setInfoData(List<StockData> infoData) {
+        this.infoData = infoData;
+    }
 }
 

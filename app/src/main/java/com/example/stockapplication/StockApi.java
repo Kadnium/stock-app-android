@@ -16,10 +16,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 
 public class StockApi {
@@ -31,6 +34,7 @@ public class StockApi {
     public static final String DAILY_GAINER_API = "DAILY_GAINER";
     public static final String DAILY_LOSER_API = "DAILY_LOSER";
     public static final String CHART_API = "CHART_API";
+    public static final String SPARK_API = "SPARK_API";
     // CHART RANGES
     public static final String DAILY_RANGE = "DAILY_RANGE";
     public static final String FIVE_DAY_RANGE = "FIVE_DAY_RANGE";
@@ -40,18 +44,37 @@ public class StockApi {
     public static final String YEAR_RANGE = "YEAR_RANGE";
     public static final String FIVE_YEAR_RANGE = "FIVE_YEAR_RANGE";
     public static final String ALL_TIME_RANGE = "ALL_TIME_RANGE";
-    private final HashMap<String, Pair<String,String>> chartApiHelper = new HashMap<>();
+    private final HashMap<String, Pair<String,String>> chartApiHelper = new HashMap<String,Pair<String,String>>(){{
+        put(DAILY_RANGE,new Pair<>("2m","1d"));
+        put(FIVE_DAY_RANGE,new Pair<>("15m","5d"));
+        put(ONE_MONTH_RANGE,new Pair<>("1h","1mo"));
+        put(SIX_MONTH_RANGE,new Pair<>("1d","6mo"));
+        put(YTD_RANGE,new Pair<>("1d","ytd"));
+        put(YEAR_RANGE,new Pair<>("1wk","1y"));
+        put(FIVE_YEAR_RANGE,new Pair<>("1mo","5y"));
+        put(ALL_TIME_RANGE,new Pair<>("1mo","max"));
+    }};
+    public static final LinkedHashMap<String,String>  FRONT_PAGE_SYMBOL_MAP = new LinkedHashMap<String,String>(){{
+        put("^GSPC","S&P 500");
+        put("^DJI","DOW 30");
+        put("^IXIC","NASDAQ");
+        put("^RUT","Russel 2000");
+        put("CL=F","Oil");
+        put("GC=F","Gold");
+        put("SI=F","Silver");
+        put("EURUSD=X","EUR/USD");
+        put("^TNX","10-Yr Bond");
+        put("GBPUSD=X","GBP/USD");
+        put("JPY=X","USD/JPY");
+        put("BTC-USD","BITCOIN");
+        put("^CMC200","CMC Crypto");
+        put("^FTSE","FTSE 100");
+        put("^N225","Nikkei 225");
+    }};
     public StockApi(Context context) {
         this.context = context;
         this.requestQueue = Volley.newRequestQueue(context.getApplicationContext());
-        chartApiHelper.put(DAILY_RANGE,new Pair<>("2m","1d"));
-        chartApiHelper.put(FIVE_DAY_RANGE,new Pair<>("15m","5d"));
-        chartApiHelper.put(ONE_MONTH_RANGE,new Pair<>("1h","1mo"));
-        chartApiHelper.put(SIX_MONTH_RANGE,new Pair<>("1d","6mo"));
-        chartApiHelper.put(YTD_RANGE,new Pair<>("1d","ytd"));
-        chartApiHelper.put(YEAR_RANGE,new Pair<>("1wk","1y"));
-        chartApiHelper.put(FIVE_YEAR_RANGE,new Pair<>("1mo","5y"));
-        chartApiHelper.put(ALL_TIME_RANGE,new Pair<>("1mo","max"));
+
 
     }
     /**
@@ -70,7 +93,7 @@ public class StockApi {
         );
     }
     private Pair<String,String> chartApi(String ticker, Pair<String,String> rangePair){
-        return new Pair<>("https://query1.finance.yahoo.com/v8/finance/chart/"+ticker+"?region=US&lang=en-US&includePrePost=false&interval="+rangePair.first+"&useYfid=true&range="+rangePair.second,CHART_API);
+        return new Pair<>("https://query1.finance.yahoo.com/v8/finance/chart/"+ticker+"?region=US&lang=en-US&includePrePost=false&indicators=close&interval="+rangePair.first+"&useYfid=true&range="+rangePair.second,CHART_API);
     }
     private Pair<String,String> searchApi(String args,int queryCount){
         return new Pair<>("https://query2.finance.yahoo.com/v1/finance/search?newsCount=0&enableFuzzyQuery=false&enableEnhancedTrivialQuery=true&region=US&lang=en-US&q="+args+"&quotesCount="+queryCount,
@@ -87,6 +110,7 @@ public class StockApi {
                 DAILY_LOSER_API
         );
     }
+
 
 
     /**
@@ -155,7 +179,16 @@ public class StockApi {
         Pair<String,String> API = chartApi(ticker,rangePair);
         fetchData(API,cb);
 
+    }
 
+    /**
+     * Fetch data for frontpage symbols
+     * @param cb After finish callback
+     */
+    public void getFrontPageSymbols(StockApiCallback cb){
+        Set<String> mapKeys = FRONT_PAGE_SYMBOL_MAP.keySet();
+        List<String> symbols = new ArrayList<>(mapKeys);
+        getByTickerNames(symbols,cb);
     }
 
     /**
@@ -402,6 +435,7 @@ public class StockApi {
         return stockList;
 
     }
+
 
 
 }

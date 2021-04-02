@@ -93,7 +93,7 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/stockPriceLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="50dp"
                     android:layout_marginEnd="12dp"
@@ -111,7 +111,7 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/stockPriceInput"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:backgroundTint="?attr/colorPrimary"
                         android:hint="@string/price_now"
                         android:inputType="number|numberDecimal"
@@ -134,7 +134,7 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/stockAmountLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="25dp"
                     android:layout_marginEnd="12dp"
@@ -152,7 +152,7 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/stockAmountInput"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:backgroundTint="?attr/colorPrimary"
                         android:hint="@string/position_size"
                         android:inputType="number"
@@ -165,7 +165,7 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/averagePriceLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="25dp"
                     android:layout_marginEnd="12dp"
@@ -183,7 +183,7 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/averagePriceInput"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:backgroundTint="?attr/colorPrimary"
                         android:hint="@string/position_average"
                         android:inputType="number|numberDecimal"
@@ -207,7 +207,7 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/calculateNewAverageLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="25dp"
                     android:layout_marginEnd="12dp"
@@ -225,7 +225,7 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/calculateNewAverageInput"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:backgroundTint="?attr/colorPrimary"
                         android:hint="@string/amount_to_buy_with"
                         android:inputType="number|numberDecimal"
@@ -266,7 +266,7 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/calculateWantedAverageLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="25dp"
                     android:layout_marginEnd="12dp"
@@ -284,7 +284,7 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/calculateWantedAverageInput"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:backgroundTint="?attr/colorPrimary"
                         android:hint="@string/give_wanted_avg"
                         android:inputType="number|numberDecimal"
