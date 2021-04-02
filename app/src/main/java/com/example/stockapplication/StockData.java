@@ -97,6 +97,19 @@ public class StockData {
     }
 
     /**
+     * Helper method for formatting front page info boxes
+     */
+    public String formatInfoBoxText(String text){
+        String value =  StockApi.FRONT_PAGE_SYMBOL_MAP.get(text);
+        if(value == null){
+            return "-";
+        }
+        return value;
+
+
+    }
+
+    /**
      * Shorten the name
      *
      * @return Shortened name

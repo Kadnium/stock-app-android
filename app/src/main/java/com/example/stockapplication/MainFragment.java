@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -43,15 +45,52 @@ public class MainFragment extends Fragment {
         appData = AppData.getInstance(getContext());
         stockApi = appData.getStockApi(getContext());
         sensorHandler = appData.getSensorHandler(getContext());
-        sensorHandler.setOnShakeCallback(() -> {
-            appData.setRefreshing(true);
-            updateDailyMovers(()-> updateFavourites(()->appData.setRefreshing(false)));
-        });
+        sensorHandler.setOnShakeCallback(()->refreshData(true));
+        refreshData(false);
+
+
+
+
+    }
+    private void refreshData(boolean manualRefresh){
+        appData.setRefreshing(true);
+        if(manualRefresh){
+            FragmentManager m = getFragmentManager();
+            if(m != null){
+                MainInfoFragment fragment = (MainInfoFragment) getFragmentManager().findFragmentById(R.id.infoBoxLayout);
+                if(fragment != null){
+                    fragment.updateInfoBoxes(()->{});
+                }else{
+                    addInfoLayout();
+                }
+            }
+            updateDailyMovers(()-> updateFavourites(()-> {
+                if(swipeRefreshLayout.isRefreshing()){
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+                appData.setRefreshing(false);
+            }));
+        }else{
+            addInfoLayout();
+            updateDailyMovers(()-> updateFavourites(()->{
+                appData.setRefreshing(false);
+            }));
+        }
+
 
     }
     public MainFragment() {
+
     }
 
+    /**
+     * Adds info layout which is on top of lists
+     */
+    public void addInfoLayout(){
+        FragmentTransaction fragmentTransaction= Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.infoBoxLayout,MainInfoFragment.newInstance());
+        fragmentTransaction.commit();
+    }
     public static MainFragment newInstance() {
         return new MainFragment();
     }
@@ -65,11 +104,8 @@ public class MainFragment extends Fragment {
         swipeRefreshLayout = Objects.requireNonNull(getActivity()).findViewById(R.id.swipeContainer);
         swipeRefreshLayout.setEnabled(true);
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            appData.setRefreshing(true);
-            updateDailyMovers(() -> updateFavourites(() ->{
-                swipeRefreshLayout.setRefreshing(false);
-                appData.setRefreshing(false);
-            }));
+            refreshData(true);
+
         });
 
         // Inflate the layout for this fragment
@@ -95,7 +131,7 @@ public class MainFragment extends Fragment {
      */
     public void initListViews(){
         // Most changed
-        mostChangedAdapter = new RecyclerAdapter(getContext(), appData.getMostChanged(), appData, R.id.mostChangedRecyclerView, new AdapterRefresh() {
+        mostChangedAdapter = new RecyclerAdapter(getContext(), appData.getMostChanged(), appData, R.id.mostChangedRecyclerView, R.layout.stock_row, new AdapterRefresh() {
             @Override
             public void onFavouriteAddClicked(StockData stock) {
                 // Add to favourites and update favouriteAdapter
@@ -121,7 +157,7 @@ public class MainFragment extends Fragment {
         mostChangedRecyclerView = setRecyclerSettings(R.id.mostChangedRecyclerView,mostChangedAdapter);
 
         // Favourites
-        favouriteAdapter = new RecyclerAdapter(getContext(), appData.getFavouriteData(), appData, R.id.favouriteRecyclerView, new AdapterRefresh() {
+        favouriteAdapter = new RecyclerAdapter(getContext(), appData.getFavouriteData(), appData, R.id.favouriteRecyclerView,R.layout.stock_row, new AdapterRefresh() {
             @Override
             public void onFavouriteAddClicked(StockData stock) {
                 // Not used
@@ -152,7 +188,6 @@ public class MainFragment extends Fragment {
         super.onStart();
         initBackend();
         initListViews();
-        updateDailyMovers(null);
         ProgressBar spinner = fragmentView.findViewById(R.id.favouriteProgressBar);
         spinner.setVisibility(View.INVISIBLE);
 

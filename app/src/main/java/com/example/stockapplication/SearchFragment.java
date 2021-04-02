@@ -75,7 +75,7 @@ public class SearchFragment extends Fragment {
         initBackend();
         initSearchField();
         initListViews();
-        setTrendingData(null);
+        setTrendingData(()->{});
         clearSearchResults();
 
 
@@ -100,7 +100,7 @@ public class SearchFragment extends Fragment {
      * Inits recyclerviewrs
      */
     public void initListViews(){
-        searchResultAdapter = new RecyclerAdapter(getContext(), appData.getSearchResults(), appData, R.id.searchRecyclerView, new AdapterRefresh() {
+        searchResultAdapter = new RecyclerAdapter(getContext(), appData.getSearchResults(), appData, R.id.searchRecyclerView, R.layout.stock_row, new AdapterRefresh() {
             @Override
             public void onFavouriteAddClicked(StockData stock) {
                 // Search most changed list and set as a favourite
@@ -127,7 +127,7 @@ public class SearchFragment extends Fragment {
         });
         searchRecyclerView = setRecyclerSettings(R.id.searchRecyclerView,searchResultAdapter);
 
-        trendingRecyclerAdapter = new RecyclerAdapter(getContext(), appData.getTrendingList(), appData, R.id.searchRecyclerView, new AdapterRefresh() {
+        trendingRecyclerAdapter = new RecyclerAdapter(getContext(), appData.getTrendingList(), appData, R.id.searchRecyclerView,R.layout.stock_row, new AdapterRefresh() {
             @Override
             public void onFavouriteAddClicked(StockData stock) {
                 appData.updateFavouriteStatuses(stock,appData.getMostChanged(),true);

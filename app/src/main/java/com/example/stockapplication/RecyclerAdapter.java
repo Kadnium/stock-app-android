@@ -25,13 +25,15 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     final int viewId;
     final AdapterRefresh refresh;
     final Gson gson;
-    public RecyclerAdapter(Context ctx, List<StockData> stockList,AppData data,int viewId,AdapterRefresh refresh){
+    final int layoutToInflate;
+    public RecyclerAdapter(Context ctx, List<StockData> stockList,AppData data,int viewId,int layoutToInflate, AdapterRefresh refresh){
         this.stockList = stockList;
         this.context = ctx;
         this.data = data;
         this.viewId = viewId;
         this.refresh = refresh;
         this.gson = new Gson();
+        this.layoutToInflate = layoutToInflate;
     }
 
 
@@ -40,23 +42,37 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // Get stock row xml
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.stock_row,parent,false);
+        View view = inflater.inflate(this.layoutToInflate,parent,false);
         return new ViewHolder(view);
     }
 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        // Loops all from list and binds them to stock row xml
+        // Loops all from list and binds them to wanted xml
         StockData stock = stockList.get(position);
+        if(this.layoutToInflate == R.layout.stock_row){
+            handleStockRow(holder,stock);
+        }else if(this.layoutToInflate == R.layout.info_box){
+            handleInfoBox(holder,stock);
+        }
+
+
+    }
+
+    /**
+     * Handle stock row view
+     * @param holder ViewHolder instance
+     * @param stock StockData instance
+     */
+    private void handleStockRow(@NonNull ViewHolder holder,StockData stock){
         double change = stock.getPercentChange();
         if(change<0){
             holder.priceChange.setTextColor(context.getColor(R.color.red));
         }else{
             holder.priceChange.setTextColor(context.getColor(R.color.green));
         }
-
-        holder.priceChange.setText(stock.getPercentChange()+"%");
+        holder.priceChange.setText(change+"%");
         holder.stockPrice.setText(String.valueOf(stock.getMarketPrice()));
         holder.stockName.setText(String.valueOf(stock.getName()));
         holder.stockTicker.setText(String.valueOf(stock.getSymbol()));
@@ -118,6 +134,38 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
         });
 
+    }
+
+    /**
+     * Handle info box view
+     * @param holder ViewHolder instance
+     * @param stock StockData instance
+     */
+    private void handleInfoBox(@NonNull ViewHolder holder,StockData stock){
+        double change = stock.getPercentChange();
+        if(change<0){
+            holder.priceChange.setTextColor(context.getColor(R.color.red));
+        }else{
+            holder.priceChange.setTextColor(context.getColor(R.color.green));
+        }
+        holder.priceChange.setText(change+"%");
+        holder.stockPrice.setText(String.valueOf(stock.getMarketPrice()));
+        holder.stockName.setText(String.valueOf(stock.formatInfoBoxText(stock.getSymbol())));
+        // If not favourite recycler
+        // Check if favourite and set to favourite if it is
+        // Listener for stock row click -> redirects to stock chart fragment
+        holder.mainLayout.setOnClickListener(v->{
+            String stockString = gson.toJson(stock);
+            FragmentTransaction fragmentTransaction=((AppCompatActivity) context).getSupportFragmentManager().beginTransaction();
+            ChartFragment chartFragment = ChartFragment.newInstance();
+            Bundle bundle = new Bundle();
+            bundle.putString("Stock",stockString);
+            chartFragment.setArguments(bundle);
+            fragmentTransaction.replace(R.id.fragmentContainer,chartFragment);
+            fragmentTransaction.addToBackStack(AppData.CHART_FRAGMENT);
+            fragmentTransaction.commit();
+        });
+
 
     }
 
@@ -142,7 +190,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             stockName = itemView.findViewById(R.id.stockName);
             stockTicker = itemView.findViewById(R.id.stockTicker);
             favouriteStatus = itemView.findViewById(R.id.favouriteStatus);
-            mainLayout = itemView.findViewById(R.id.stockCardLayout);
+            mainLayout = itemView.findViewById(R.id.mainLayout);
 
         }
     }
