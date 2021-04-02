@@ -54,6 +54,8 @@ public class StockApi {
         put(FIVE_YEAR_RANGE,new Pair<>("1mo","5y"));
         put(ALL_TIME_RANGE,new Pair<>("1mo","max"));
     }};
+    // Front page info symbols and their names
+    // Use these because these are better and simpler names than api returns
     public static final LinkedHashMap<String,String>  FRONT_PAGE_SYMBOL_MAP = new LinkedHashMap<String,String>(){{
         put("^GSPC","S&P 500");
         put("^DJI","DOW 30");
