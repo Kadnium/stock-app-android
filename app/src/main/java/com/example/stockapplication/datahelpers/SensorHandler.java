@@ -1,4 +1,4 @@
-package com.example.stockapplication;
+package com.example.stockapplication.datahelpers;
 
 import android.content.Context;
 import android.hardware.Sensor;
@@ -8,6 +8,8 @@ import android.hardware.SensorManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+
+import com.example.stockapplication.interfaces.HelperCallback;
 
 import java.util.ArrayList;
 import java.util.Timer;

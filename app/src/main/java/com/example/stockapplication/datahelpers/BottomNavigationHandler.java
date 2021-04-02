@@ -1,4 +1,4 @@
-package com.example.stockapplication;
+package com.example.stockapplication.datahelpers;
 
 import android.content.Context;
 
@@ -6,13 +6,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.stockapplication.R;
+import com.example.stockapplication.fragments.ChartFragment;
+import com.example.stockapplication.fragments.MainFragment;
+import com.example.stockapplication.fragments.OptionsFragment;
+import com.example.stockapplication.fragments.SearchFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Objects;
 
 public class BottomNavigationHandler {
     final Context context;
-    BottomNavigationView bottomNavigationView;
+    private BottomNavigationView bottomNavigationView;
     boolean selectedByCode = false;
     public BottomNavigationHandler(Context ctx) {
         this.context = ctx;

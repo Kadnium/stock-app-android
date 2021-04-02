@@ -1,4 +1,4 @@
-package com.example.stockapplication;
+package com.example.stockapplication.datahelpers;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

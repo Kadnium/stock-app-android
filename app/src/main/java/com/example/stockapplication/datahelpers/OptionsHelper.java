@@ -1,4 +1,4 @@
-package com.example.stockapplication;
+package com.example.stockapplication.datahelpers;
 
 import android.content.Context;
 import android.view.Gravity;
@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.widget.AppCompatButton;
 
+import com.example.stockapplication.R;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.math.BigDecimal;
@@ -14,10 +15,10 @@ import java.math.RoundingMode;
 import java.util.Objects;
 
 public class OptionsHelper {
-    TextInputEditText stockPriceInput, stockAmountInput, averagePriceInput, calculateNewAverageInput, calculateWantedAverageInput;
-    AppCompatButton calculateNewAverageButton, calculateWantedAverageButton;
-    final Context context;
-    final View fragmentView;
+    private TextInputEditText stockPriceInput, stockAmountInput, averagePriceInput, calculateNewAverageInput, calculateWantedAverageInput;
+    private AppCompatButton calculateNewAverageButton, calculateWantedAverageButton;
+    private final Context context;
+    private final View fragmentView;
     public OptionsHelper(Context context,View fragmentView) {
         this.context = context;
         this.fragmentView = fragmentView;

@@ -1,4 +1,4 @@
-package com.example.stockapplication;
+package com.example.stockapplication.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -16,27 +16,31 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.android.volley.VolleyError;
+import com.example.stockapplication.datahelpers.AppData;
+import com.example.stockapplication.R;
+import com.example.stockapplication.datahelpers.RecyclerAdapter;
+import com.example.stockapplication.datahelpers.SensorHandler;
+import com.example.stockapplication.datahelpers.StockApi;
+import com.example.stockapplication.datahelpers.StockData;
+import com.example.stockapplication.interfaces.AdapterRefresh;
+import com.example.stockapplication.interfaces.HelperCallback;
+import com.example.stockapplication.interfaces.StockApiCallback;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.List;
 import java.util.Objects;
 
 public class SearchFragment extends Fragment {
-
-    TextInputEditText searchField;
-    AppData appData;
-    StockApi stockApi;
-    RecyclerAdapter searchResultAdapter;
-    RecyclerView searchRecyclerView;
-    SwipeRefreshLayout swipeRefreshLayout;
-    RecyclerAdapter trendingRecyclerAdapter;
-    RecyclerView trendingRecyclerView;
-    SensorHandler sensorHandler;
-    View fragmentView;
+    private AppData appData;
+    private StockApi stockApi;
+    private RecyclerAdapter searchResultAdapter;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private RecyclerAdapter trendingRecyclerAdapter;
+    private View fragmentView;
     public void initBackend(){
         appData = AppData.getInstance(getContext());
         stockApi = appData.getStockApi(getContext());
-        sensorHandler = appData.getSensorHandler(getContext());
+        SensorHandler sensorHandler = appData.getSensorHandler(getContext());
 
         sensorHandler.setOnShakeCallback(()->{
             appData.setRefreshing(true);
@@ -125,7 +129,7 @@ public class SearchFragment extends Fragment {
             }
 
         });
-        searchRecyclerView = setRecyclerSettings(R.id.searchRecyclerView,searchResultAdapter);
+        setRecyclerSettings(R.id.searchRecyclerView,searchResultAdapter);
 
         trendingRecyclerAdapter = new RecyclerAdapter(getContext(), appData.getTrendingList(), appData, R.id.searchRecyclerView,R.layout.stock_row, new AdapterRefresh() {
             @Override
@@ -148,7 +152,7 @@ public class SearchFragment extends Fragment {
                 appData.removeFromFavourites(stock);
             }
         });
-        trendingRecyclerView = setRecyclerSettings(R.id.trendingRecyclerView,trendingRecyclerAdapter);
+        setRecyclerSettings(R.id.trendingRecyclerView,trendingRecyclerAdapter);
 
 
     }
@@ -169,7 +173,7 @@ public class SearchFragment extends Fragment {
      * Inits search field
      */
     private void initSearchField(){
-        searchField = fragmentView.findViewById(R.id.searchInput);
+        TextInputEditText searchField = fragmentView.findViewById(R.id.searchInput);
         ProgressBar searchSpinner = fragmentView.findViewById(R.id.searchSpinner);
         searchSpinner.setVisibility(View.INVISIBLE);
         searchField.addTextChangedListener(new TextWatcher() {

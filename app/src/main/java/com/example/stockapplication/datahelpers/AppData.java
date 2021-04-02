@@ -1,4 +1,4 @@
-package com.example.stockapplication;
+package com.example.stockapplication.datahelpers;
 
 import android.content.Context;
 import android.content.SharedPreferences;

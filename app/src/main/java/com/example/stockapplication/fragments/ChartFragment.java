@@ -1,4 +1,4 @@
-package com.example.stockapplication;
+package com.example.stockapplication.fragments;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -18,6 +18,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
+import com.example.stockapplication.datahelpers.AppData;
+import com.example.stockapplication.R;
+import com.example.stockapplication.datahelpers.SensorHandler;
+import com.example.stockapplication.datahelpers.StockApi;
+import com.example.stockapplication.datahelpers.StockData;
+import com.example.stockapplication.interfaces.HelperCallback;
+import com.example.stockapplication.interfaces.StockApiCallback;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -40,17 +47,17 @@ import java.util.TimeZone;
 
 
 public class ChartFragment extends Fragment {
-    AppData appData;
-    SensorHandler sensorHandler;
-    StockApi stockApi;
-    LineChart chart;
-    StockData intentStock;
-    final List<Long> longList = new ArrayList<>();
-    Object[] floatArray;
-    String timeFrame =StockApi.DAILY_RANGE;
-    TextView priceText,dateText;
-    SwipeRefreshLayout swipeRefreshLayout;
-    View fragmentView;
+    private AppData appData;
+    private SensorHandler sensorHandler;
+    private StockApi stockApi;
+    private LineChart chart;
+    private StockData intentStock;
+    private final List<Long> longList = new ArrayList<>();
+    private Object[] floatArray;
+    private String timeFrame =StockApi.DAILY_RANGE;
+    private TextView priceText,dateText;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private View fragmentView;
     private void initBackend() {
         appData = AppData.getInstance(getContext());
         sensorHandler = appData.getSensorHandler(getContext());

@@ -1,4 +1,4 @@
-package com.example.stockapplication;
+package com.example.stockapplication.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -17,6 +17,15 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
+import com.example.stockapplication.datahelpers.AppData;
+import com.example.stockapplication.R;
+import com.example.stockapplication.datahelpers.RecyclerAdapter;
+import com.example.stockapplication.datahelpers.SensorHandler;
+import com.example.stockapplication.datahelpers.StockApi;
+import com.example.stockapplication.datahelpers.StockData;
+import com.example.stockapplication.interfaces.AdapterRefresh;
+import com.example.stockapplication.interfaces.HelperCallback;
+import com.example.stockapplication.interfaces.StockApiCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,19 +36,17 @@ public class MainFragment extends Fragment {
 
 
 
-    StockApi stockApi;
-    AppData appData;
-
-    RecyclerView favouriteRecyclerView;
-    RecyclerView mostChangedRecyclerView;
-
-    RecyclerAdapter favouriteAdapter;
-    RecyclerAdapter mostChangedAdapter;
+    private StockApi stockApi;
+    private AppData appData;
 
 
-    SwipeRefreshLayout swipeRefreshLayout;
-    SensorHandler sensorHandler;
-    View fragmentView;
+    private RecyclerAdapter favouriteAdapter;
+    private RecyclerAdapter mostChangedAdapter;
+
+
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private SensorHandler sensorHandler;
+    private View fragmentView;
 
     public void initBackend(){
         appData = AppData.getInstance(getContext());
@@ -154,7 +161,7 @@ public class MainFragment extends Fragment {
             }
 
         });
-        mostChangedRecyclerView = setRecyclerSettings(R.id.mostChangedRecyclerView,mostChangedAdapter);
+        setRecyclerSettings(R.id.mostChangedRecyclerView,mostChangedAdapter);
 
         // Favourites
         favouriteAdapter = new RecyclerAdapter(getContext(), appData.getFavouriteData(), appData, R.id.favouriteRecyclerView,R.layout.stock_row, new AdapterRefresh() {
@@ -176,7 +183,7 @@ public class MainFragment extends Fragment {
             }
 
         });
-        favouriteRecyclerView = setRecyclerSettings(R.id.favouriteRecyclerView,favouriteAdapter);
+        setRecyclerSettings(R.id.favouriteRecyclerView,favouriteAdapter);
 
 
     }

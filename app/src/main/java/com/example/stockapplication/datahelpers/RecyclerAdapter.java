@@ -1,4 +1,4 @@
-package com.example.stockapplication;
+package com.example.stockapplication.datahelpers;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -14,18 +14,21 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.stockapplication.R;
+import com.example.stockapplication.fragments.ChartFragment;
+import com.example.stockapplication.interfaces.AdapterRefresh;
 import com.google.gson.Gson;
 
 import java.util.List;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder>{
-    List<StockData> stockList;
-    final Context context;
-    final AppData data;
-    final int viewId;
-    final AdapterRefresh refresh;
-    final Gson gson;
-    final int layoutToInflate;
+    private final List<StockData> stockList;
+    private final Context context;
+    private final AppData data;
+    private final int viewId;
+    private final AdapterRefresh refresh;
+    private final Gson gson;
+    private final int layoutToInflate;
     public RecyclerAdapter(Context ctx, List<StockData> stockList,AppData data,int viewId,int layoutToInflate, AdapterRefresh refresh){
         this.stockList = stockList;
         this.context = ctx;

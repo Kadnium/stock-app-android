@@ -1,4 +1,4 @@
-package com.example.stockapplication;
+package com.example.stockapplication.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -14,16 +14,23 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
+import com.example.stockapplication.datahelpers.AppData;
+import com.example.stockapplication.R;
+import com.example.stockapplication.datahelpers.RecyclerAdapter;
+import com.example.stockapplication.datahelpers.StockApi;
+import com.example.stockapplication.datahelpers.StockData;
+import com.example.stockapplication.interfaces.HelperCallback;
+import com.example.stockapplication.interfaces.StockApiCallback;
 
 import java.util.List;
 
 
 public class MainInfoFragment extends Fragment {
-    AppData appData;
-    StockApi stockApi;
-    View fragmentView;
-    RecyclerAdapter infoAdapter;
-    RecyclerView infoRecyclerView;
+    private AppData appData;
+    private StockApi stockApi;
+    private View fragmentView;
+    private RecyclerAdapter infoAdapter;
+    private RecyclerView infoRecyclerView;
     public MainInfoFragment() {
         // Required empty public constructor
     }

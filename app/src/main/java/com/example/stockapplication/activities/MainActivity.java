@@ -1,4 +1,4 @@
-package com.example.stockapplication;
+package com.example.stockapplication.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -8,14 +8,23 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 
+import com.example.stockapplication.datahelpers.AppData;
+import com.example.stockapplication.datahelpers.BottomNavigationHandler;
+import com.example.stockapplication.fragments.ChartFragment;
+import com.example.stockapplication.fragments.MainFragment;
+import com.example.stockapplication.fragments.OptionsFragment;
+import com.example.stockapplication.R;
+import com.example.stockapplication.fragments.SearchFragment;
+import com.example.stockapplication.datahelpers.SensorHandler;
+
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity{
 
-    AppData appData;
-    BottomNavigationHandler bottomNavigationHandler;
-    SensorHandler sensorHandler;
-    boolean themeChanged = false;
+    private AppData appData;
+    private BottomNavigationHandler bottomNavigationHandler;
+    private SensorHandler sensorHandler;
+    private boolean themeChanged = false;
 
     public void initBackend(){
         appData = AppData.getInstance(this);

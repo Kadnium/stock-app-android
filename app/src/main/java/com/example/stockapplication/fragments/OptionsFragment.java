@@ -1,4 +1,4 @@
-package com.example.stockapplication;
+package com.example.stockapplication.fragments;
 
 import android.os.Bundle;
 
@@ -14,18 +14,22 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import com.example.stockapplication.datahelpers.AppData;
+import com.example.stockapplication.datahelpers.OptionsHelper;
+import com.example.stockapplication.R;
+import com.example.stockapplication.datahelpers.SensorHandler;
+
 import java.util.Objects;
 
 
 public class OptionsFragment extends Fragment {
-
-    AppData appData;
-    SensorHandler sensorHandler;
-    Spinner spinner;
-    boolean spinnerClicked = false;
-    OptionsHelper optionsHelper;
-    View fragmentView;
-    SwipeRefreshLayout swipeRefreshLayout;
+    private AppData appData;
+    private SensorHandler sensorHandler;
+    private Spinner spinner;
+    private boolean spinnerClicked = false;
+    private OptionsHelper optionsHelper;
+    private View fragmentView;
+    private SwipeRefreshLayout swipeRefreshLayout;
     public void initBackend(){
         appData = AppData.getInstance(getContext());
         sensorHandler =appData.getSensorHandler(getContext());

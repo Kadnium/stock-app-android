@@ -1,4 +1,4 @@
-package com.example.stockapplication;
+package com.example.stockapplication.datahelpers;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -10,14 +10,13 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.stockapplication.interfaces.StockApiCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -120,7 +119,7 @@ public class StockApi {
      * @param count Amount to fetch
      * @param cb After finish callback
      */
-    public void getTrending(int count,StockApiCallback cb){
+    public void getTrending(int count, StockApiCallback cb){
         Pair<String,String> API = trendingApi(count);
         // Trending api returns tickers so after fetching tickers
         // Get data seperately for them
