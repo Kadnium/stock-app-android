@@ -44,7 +44,6 @@ public class MainInfoFragment extends Fragment {
         spinner = fragmentView.findViewById(R.id.infoProgress);
         spinner.setVisibility(View.INVISIBLE);
         if(appData.isFirstUpdate()){
-            Log.d("IN UPDATE","INFOBOXES");
             updateInfoBoxes(()->{});
             appData.setFirstUpdate(false);
         }
