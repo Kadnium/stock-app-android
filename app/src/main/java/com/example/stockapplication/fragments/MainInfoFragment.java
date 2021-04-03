@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ public class MainInfoFragment extends Fragment {
     private View fragmentView;
     private RecyclerAdapter infoAdapter;
     private RecyclerView infoRecyclerView;
+    private ProgressBar spinner;
     public MainInfoFragment() {
         // Required empty public constructor
     }
@@ -39,7 +41,14 @@ public class MainInfoFragment extends Fragment {
         appData = AppData.getInstance(getContext());
         stockApi = appData.getStockApi(getContext());
         initListViews();
-        updateInfoBoxes(()->{});
+        spinner = fragmentView.findViewById(R.id.infoProgress);
+        spinner.setVisibility(View.INVISIBLE);
+        if(appData.isFirstUpdate()){
+            Log.d("IN UPDATE","INFOBOXES");
+            updateInfoBoxes(()->{});
+            appData.setFirstUpdate(false);
+        }
+
 
 
     }
@@ -75,7 +84,6 @@ public class MainInfoFragment extends Fragment {
      * @param cb After finish callback
      */
     public void updateInfoBoxes(HelperCallback cb){
-        ProgressBar spinner = fragmentView.findViewById(R.id.infoProgress);
         spinner.setVisibility(View.VISIBLE);
         if(cb != null){
             stockApi.getFrontPageSymbols(new StockApiCallback() {
@@ -90,7 +98,7 @@ public class MainInfoFragment extends Fragment {
                 }
                 @Override
                 public void onError(VolleyError error, Context context) {
-                    Toast.makeText(context,error.networkResponse.toString(),Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,getString(R.string.error_msg),Toast.LENGTH_LONG).show();
                     spinner.setVisibility(View.INVISIBLE);
                     finishCallback(cb);
 

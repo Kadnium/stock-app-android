@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.example.stockapplication.datahelpers.AppData;
@@ -322,6 +323,8 @@ public class ChartFragment extends Fragment {
 
             @Override
             public void onError(VolleyError error, Context context) {
+                Toast.makeText(context,getString(R.string.error_msg),Toast.LENGTH_LONG).show();
+                spinner.setVisibility(View.INVISIBLE);
                 if(callback != null){
                     callback.onComplete();
                 }

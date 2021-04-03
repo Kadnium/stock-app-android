@@ -221,7 +221,7 @@ public class MainFragment extends Fragment {
                 }
                 @Override
                 public void onError(VolleyError error, Context context) {
-                    Toast.makeText(context,error.networkResponse.toString(),Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,getString(R.string.error_msg),Toast.LENGTH_LONG).show();
                     spinner.setVisibility(View.INVISIBLE);
                     finishCallback(cb);
 
@@ -276,6 +276,7 @@ public class MainFragment extends Fragment {
 
                 @Override
                 public void onError(VolleyError error, Context context) {
+                    Toast.makeText(context,getString(R.string.error_msg),Toast.LENGTH_LONG).show();
                     spinner.setVisibility(View.INVISIBLE);
                     finishCallback(cb);
                 }

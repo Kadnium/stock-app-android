@@ -84,7 +84,7 @@ public class BottomNavigationHandler {
      */
     private void navigateToFragment(Fragment fragment,String name, AppCompatActivity activity){
         FragmentTransaction fragmentTransaction=activity.getSupportFragmentManager().beginTransaction();
-        // fragmentTransaction.setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out,android.R.anim.fade_in,android.R.anim.fade_out);
+        //fragmentTransaction.setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out,android.R.anim.fade_in,android.R.anim.fade_out);
         fragmentTransaction.replace(R.id.fragmentContainer,fragment);
         fragmentTransaction.addToBackStack(name);
         fragmentTransaction.commit();

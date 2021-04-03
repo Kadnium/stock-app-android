@@ -26,6 +26,7 @@
     <string name="theme_by_lightness">Teeman vaihto valoisuuden mukaan</string>
     <string name="update_when_shaking">Päivitä osakkeet puhelinta ravistamalla</string>
     <string name="settings">Asetukset</string>
+    <string name="error_msg">Virhe datan lataamisessa</string>
 
 
     <string-array name="theme_settings">

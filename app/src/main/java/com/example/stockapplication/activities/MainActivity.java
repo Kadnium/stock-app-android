@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.example.stockapplication.datahelpers.AppData;
 import com.example.stockapplication.datahelpers.BottomNavigationHandler;
@@ -127,6 +128,7 @@ public class MainActivity extends AppCompatActivity{
         super.onPause();
         // Activity change
         if(appData != null){
+            appData.setFirstUpdate(true);
             AppData.saveAppDataToSharedPrefs(this,appData,false);
         }
         if(sensorHandler != null){

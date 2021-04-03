@@ -29,6 +29,8 @@ public class AppData {
     // Manage state of sensors
     private boolean lightSensorEnabled = false;
     private boolean accelometerEnabled = false;
+    // For handling updating
+    private boolean firstUpdate = true;
     // Helper classes for activities
     // Transient variables prevent saving to json when serializing
     private transient StockApi stockApi;
@@ -301,6 +303,14 @@ public class AppData {
 
     public void setInfoData(List<StockData> infoData) {
         this.infoData = infoData;
+    }
+
+    public boolean isFirstUpdate() {
+        return firstUpdate;
+    }
+
+    public void setFirstUpdate(boolean firstUpdate) {
+        this.firstUpdate = firstUpdate;
     }
 }
 

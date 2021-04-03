@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.example.stockapplication.datahelpers.AppData;
@@ -200,7 +201,8 @@ public class SearchFragment extends Fragment {
 
                         @Override
                         public void onError(VolleyError error, Context context) {
-
+                            Toast.makeText(context,getString(R.string.error_msg),Toast.LENGTH_LONG).show();
+                            searchSpinner.setVisibility(View.INVISIBLE);
                         }
                     });
                 }else if(s.length() == 0){
