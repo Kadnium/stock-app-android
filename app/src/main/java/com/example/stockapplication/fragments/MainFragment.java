@@ -33,16 +33,11 @@ import java.util.Objects;
 
 
 public class MainFragment extends Fragment {
-
-
-
     private StockApi stockApi;
     private AppData appData;
 
-
     private RecyclerAdapter favouriteAdapter;
     private RecyclerAdapter mostChangedAdapter;
-
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private SensorHandler sensorHandler;
@@ -55,10 +50,13 @@ public class MainFragment extends Fragment {
         sensorHandler.setOnShakeCallback(()->refreshData(true));
         refreshData(false);
 
-
-
-
     }
+
+    /**
+     * Refreshs data, will only refresh infoboxes on first run,
+     * others every time
+     * @param manualRefresh If called from user action - true
+     */
     private void refreshData(boolean manualRefresh){
         appData.setRefreshing(true);
         if(manualRefresh){

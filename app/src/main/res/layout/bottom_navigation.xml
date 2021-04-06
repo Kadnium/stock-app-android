@@ -6,11 +6,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_alignParentBottom="true"
+    android:background="?attr/colorPrimary"
+    android:backgroundTint="?attr/colorPrimary"
+
+    android:backgroundTintMode="?attr/colorPrimary"
     app:itemBackground="?attr/colorPrimary"
     app:itemIconSize="45dp"
     app:itemIconTint="@drawable/navigation_selector"
     app:itemTextColor="@drawable/navigation_selector"
-
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
