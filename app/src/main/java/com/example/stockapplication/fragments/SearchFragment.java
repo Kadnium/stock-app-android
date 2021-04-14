@@ -189,7 +189,7 @@ public class SearchFragment extends Fragment {
                 // if field is emptied, clear search results
                 if(s.length() >=2){
                     searchSpinner.setVisibility(View.VISIBLE);
-                    stockApi.getSearchResults(s.toString(), 5, new StockApiCallback() {
+                    stockApi.getSearchResults(s.toString(), AppData.SEARCH_QUERY_COUNT, new StockApiCallback() {
                         @Override
                         public void onSuccess(List<StockData> response, Context context) {
                             List<StockData> searchResults = clearSearchResults();
@@ -239,7 +239,7 @@ public class SearchFragment extends Fragment {
         List<StockData> trendingList = appData.getTrendingList();
         trendingSpinner.setVisibility(View.VISIBLE);
         if(trendingList.size() == 0 || cb != null){
-            stockApi.getTrending(5, new StockApiCallback() {
+            stockApi.getTrending(AppData.TRENDING_QUERY_COUNT, new StockApiCallback() {
                 @Override
                 public void onSuccess(List<StockData> response, Context context) {
                     List<StockData> trending = appData.getTrendingList();

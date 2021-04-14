@@ -207,7 +207,7 @@ public class MainFragment extends Fragment {
         ProgressBar spinner = fragmentView.findViewById(R.id.mostChangedProgress);
         spinner.setVisibility(View.VISIBLE);
         if(appData.getMostChanged().size() <2 || cb != null){
-            stockApi.getDailyMovers(1,new StockApiCallback() {
+            stockApi.getDailyMovers(AppData.MOST_CHANGED_QUERY_COUNT,new StockApiCallback() {
                 @Override
                 public void onSuccess(List<StockData> response, Context context) {
                     List<StockData> mostChanged = appData.getMostChanged();

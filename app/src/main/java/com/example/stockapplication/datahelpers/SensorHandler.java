@@ -22,7 +22,7 @@ public class SensorHandler {
     private SensorEventListener lightSensorListener;
 
     private final int LIGHT_THRESHOLD = 25;
-    private final int SHAKE_THRESHOLD = 400;
+    private final int SHAKE_THRESHOLD = 300;
 
     boolean firstRun = true;
     float lastX,lastY,lastZ;
@@ -35,8 +35,8 @@ public class SensorHandler {
         this.context = context;
         if(context instanceof AppCompatActivity){
             sensorManager = (SensorManager) context.getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
-            setAccelometer(accelometerEnabled);
-            setLightSensor(lightSensorEnabled);
+            //setAccelometer(accelometerEnabled);
+            //setLightSensor(lightSensorEnabled);
 
         }
 

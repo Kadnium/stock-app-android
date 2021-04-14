@@ -293,6 +293,8 @@ public class StockApi {
      */
     private List<StockData> chartApiParse(String json){
         List<StockData> stockList = new ArrayList<>();
+        // Dont check keys, just throw error if something is missing
+        // Will not crash app, but chart will not show
         try {
             JSONObject mainObject = new JSONObject(json);
             mainObject = mainObject.getJSONObject("chart");
@@ -328,6 +330,21 @@ public class StockApi {
         }
         return stockList;
     }
+
+    /**
+     * Helper for checking if JSONobject has keys
+     * @param keys Array of keys to check
+     * @param obj JSONobject instance
+     * @return If keys exists
+     */
+    private boolean checkKeys(String[] keys,JSONObject obj){
+        for(String key:keys){
+            if(!obj.has(key)){
+                return false;
+            }
+        }
+        return true;
+    }
     /**
      * Parser for stock data
      * @param json JSON from volley
@@ -342,15 +359,24 @@ public class StockApi {
             for (int i = 0; i <dataArr.length(); i++) {
                 JSONObject obj = dataArr.getJSONObject(i);
                // String symbol, String market, String name, double percentChange, double marketPrice, boolean isFavourite,String uuid
-                String symbol = obj.getString("symbol");
-                String market = obj.getString("fullExchangeName");
-                String name = obj.getString("shortName");
-                JSONObject priceObj = obj.getJSONObject("regularMarketPrice");
-                double price = priceObj.getDouble("raw");
-                JSONObject percentObj = obj.getJSONObject("regularMarketChangePercent");
-                double percent = percentObj.getDouble("raw");
-                StockData stock = new StockData(symbol,market,name,percent,price,false,null);
-                stockList.add(stock);
+                if(checkKeys(new String[]{"symbol","fullExchangeName","shortName","regularMarketPrice","regularMarketChangePercent"},obj)){
+                    String symbol = obj.getString("symbol");
+                    String market = obj.getString("fullExchangeName");
+                    String name = obj.getString("shortName");
+                    JSONObject priceObj = obj.getJSONObject("regularMarketPrice");
+                    JSONObject percentObj = obj.getJSONObject("regularMarketChangePercent");
+                    double price = 0;
+                    double percent = 0;
+                    if(checkKeys(new String[]{"raw"},priceObj)) {
+                        price = priceObj.getDouble("raw");
+                    }
+                    if(checkKeys(new String[]{"raw"},percentObj)) {
+                        percent = percentObj.getDouble("raw");
+                    }
+                    StockData stock = new StockData(symbol, market, name, percent, price, false, null);
+                    stockList.add(stock);
+                }
+
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -373,9 +399,11 @@ public class StockApi {
             for (int i = 0; i <dataArr.length(); i++) {
                 JSONObject obj = dataArr.getJSONObject(i);
                 // String symbol, String market, String name, double percentChange, double marketPrice, boolean isFavourite,String uuid
-                String symbol = obj.getString("symbol");
-                StockData stock = new StockData(symbol,null,null,0,0,false,null);
-                stockList.add(stock);
+                if(checkKeys(new String[]{"symbol"},obj)) {
+                    String symbol = obj.getString("symbol");
+                    StockData stock = new StockData(symbol,null,null,0,0,false,null);
+                    stockList.add(stock);
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -397,9 +425,11 @@ public class StockApi {
             for (int i = 0; i <dataArr.length(); i++) {
                 JSONObject obj = dataArr.getJSONObject(i);
                 // String symbol, String market, String name, double percentChange, double marketPrice, boolean isFavourite,String uuid
-                String symbol = obj.getString("symbol");
-                StockData stock = new StockData(symbol,null,null,0,0,false,null);
-                stockList.add(stock);
+                if(checkKeys(new String[]{"symbol"},obj)) {
+                    String symbol = obj.getString("symbol");
+                    StockData stock = new StockData(symbol,null,null,0,0,false,null);
+                    stockList.add(stock);
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -422,13 +452,15 @@ public class StockApi {
             for (int i = 0; i <dataArr.length(); i++) {
                 JSONObject obj = dataArr.getJSONObject(i);
                 // String symbol, String market, String name, double percentChange, double marketPrice, boolean isFavourite,String uuid
-                String symbol = obj.getString("symbol");
-                String market = obj.getString("fullExchangeName");
-                String name = obj.getString("shortName");
-                double price = obj.getDouble("regularMarketPrice");
-                double percent = obj.getDouble("regularMarketChangePercent");
-                StockData stock = new StockData(symbol,market,name,percent,price,false,null);
-                stockList.add(stock);
+                if(checkKeys(new String[]{"symbol","fullExchangeName","shortName","regularMarketPrice","regularMarketChangePercent"},obj)) {
+                    String symbol = obj.getString("symbol");
+                    String market = obj.getString("fullExchangeName");
+                    String name = obj.getString("shortName");
+                    double price = obj.getDouble("regularMarketPrice");
+                    double percent = obj.getDouble("regularMarketChangePercent");
+                    StockData stock = new StockData(symbol, market, name, percent, price, false, null);
+                    stockList.add(stock);
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();

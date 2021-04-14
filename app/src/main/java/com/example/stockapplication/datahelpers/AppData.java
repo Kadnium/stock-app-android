@@ -20,6 +20,10 @@ public class AppData {
     public static final String SEARCH_FRAGMENT = "SEARCH_FRAGMENT";
     public static final String OPTIONS_FRAGMENT = "OPTIONS_FRAGMENT";
     public static final String CHART_FRAGMENT = "CHART_FRAGMENT";
+
+    public static final int SEARCH_QUERY_COUNT = 5;
+    public static final int TRENDING_QUERY_COUNT = 5;
+    public static final int MOST_CHANGED_QUERY_COUNT = 1;
     // Store stock data in these lists
     private List<StockData> favouriteData = new ArrayList<>();
     private List<StockData> mostChanged = new ArrayList<>();
