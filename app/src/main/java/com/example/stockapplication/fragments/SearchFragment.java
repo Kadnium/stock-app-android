@@ -38,10 +38,11 @@ public class SearchFragment extends Fragment {
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerAdapter trendingRecyclerAdapter;
     private View fragmentView;
+    SensorHandler sensorHandler;
     public void initBackend(){
         appData = AppData.getInstance(getContext());
         stockApi = appData.getStockApi(getContext());
-        SensorHandler sensorHandler = appData.getSensorHandler(getContext());
+        sensorHandler = appData.getSensorHandler(getContext());
 
         sensorHandler.setOnShakeCallback(()->{
             appData.setRefreshing(true);
@@ -267,7 +268,14 @@ public class SearchFragment extends Fragment {
     }
 
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(sensorHandler != null){
+            sensorHandler.unRegisterSensors();
+        }
 
+    }
 
 
     public SearchFragment() {
