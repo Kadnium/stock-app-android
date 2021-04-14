@@ -12,7 +12,7 @@ import java.util.List;
 
 public class AppData {
     private static AppData appData;
-
+    // App constants
     public static final String APP_DATA = "APP_SHARED_PREFS";
     public static final String APP_DATA_JSON = "APP_DATA_JSON";
     public static final String SELECTED_THEME = "SELECTED_THEME";
@@ -20,7 +20,6 @@ public class AppData {
     public static final String SEARCH_FRAGMENT = "SEARCH_FRAGMENT";
     public static final String OPTIONS_FRAGMENT = "OPTIONS_FRAGMENT";
     public static final String CHART_FRAGMENT = "CHART_FRAGMENT";
-
     public static final int SEARCH_QUERY_COUNT = 5;
     public static final int TRENDING_QUERY_COUNT = 5;
     public static final int MOST_CHANGED_QUERY_COUNT = 1;

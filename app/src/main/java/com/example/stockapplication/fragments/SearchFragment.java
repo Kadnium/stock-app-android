@@ -13,6 +13,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -68,7 +69,7 @@ public class SearchFragment extends Fragment {
                              Bundle savedInstanceState) {
         fragmentView = inflater.inflate(R.layout.fragment_search, container, false);
 
-
+        Objects.requireNonNull(getActivity()).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
         // Inflate the layout for this fragment
         return fragmentView;
     }
